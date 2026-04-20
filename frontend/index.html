@@ -5453,7 +5453,17 @@ async function callAI(prompt, mode, files = []) {
     // Get the user's Gemini API key from localStorage (set by the bottom script)
     const apiKey = localStorage.getItem('geminiKey');
     if (!apiKey) {
-        return "⚠️ **No Gemini API key found.**\n\nPlease enter your Gemini API key in the settings (the key input at the top) and try again.\n\nGet a free key from [Google AI Studio](https://aistudio.google.com/apikey).";
+        return "🚧  Heads‑up! Xroga AI's complete backend is currently being wired up and will go fully live in just a few weeks.
+
+Here's what's coming:
+💻 Code Expert – AI‑powered coding, debugging, and architecture help  and hosted your website
+⚡ Lightning Creative – Fast, imaginative responses for brainstorming & content, Casual conversation, task help, and random topics
+✨ Travel Concierge – Book flights, hotels, and car rentals at affordable prices  
+🛍️ Ethical Shopper – Browse 1000+ brands with real‑time boycott alerts  
+🕌 Muslim Islamic – Learn Quran, Hadith, Halal/Haram, and daily Islamic topics  
+🤔 Deep Thought – In‑depth analysis, reasoning, and philosophical discussion  
+
+Right now, you're chatting with our preview brain – basic responses only. Nothing to be afraid of – the real magic is on its way. Thanks for your patience! 💙";
     }
 
     // Choose model – you can change this to any free Gemini model
