@@ -64,25 +64,10 @@
       ]
     }
     </script>
- 
-    <!-- Existing GrapesJS Core & Basic Plugins -->
-<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet"> 
-<script src="https://unpkg.com/grapesjs"></script>
-<script src="https://unpkg.com/grapesjs-blocks-basic"></script>
-<script src="https://unpkg.com/grapesjs-preset-webpage"></script>
-<script src="https://unpkg.com/grapesjs-plugin-forms"></script>
-<script src="https://unpkg.com/grapesjs-style-bg"></script>
-<script src="https://unpkg.com/grapesjs-tui-image-editor"></script>
-<script src="https://unpkg.com/grapesjs-custom-code"></script>
-<script src="https://unpkg.com/grapesjs-navbar"></script>
-
-<!-- ADDITIONAL PLUGINS for full builder experience -->
-<script src="https://unpkg.com/grapesjs-plugin-export"></script>
-<script src="https://unpkg.com/grapesjs-parser-postcss"></script>
-<script src="https://unpkg.com/grapesjs-component-countdown"></script> <!-- Countdown timer -->
-<script src="https://unpkg.com/grapesjs-tabs"></script>              <!-- Tabs component -->
-<script src="https://unpkg.com/grapesjs-tooltip"></script>           <!-- Tooltips -->
-<script src="https://unpkg.com/grapesjs-typed"></script>             <!-- Typed text effect -->
+ <!-- Core GrapesJS (required) -->
+<link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
+<script src="https://unpkg.com/grapesjs"></script>   
+<!-- Typed text effect -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Xroga AI · See Magic</title>
@@ -1653,7 +1638,7 @@
 </div>
 </div>
             
-<!-- XROGA AI · CHAT BAR v7 — THEME TOGGLE BUTTON AT TOP RIGHT (FINAL) -->
+<!-- XROGA AI · CHAT BAR v7 — HIDE/SHOW + THEME SYNC + 3‑PHASE ROCKET ANIMATION -->
 <style>
   /* ----- SCOPED ROOT (no conflicts) ----- */
   .xroga-chat-root {
@@ -1683,6 +1668,14 @@
     z-index: 99999;
     pointer-events: none;
     animation: xrogaFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  }
+
+  /* Hidden state – slide down & fade out */
+  .xroga-chat-root.chatbar-hidden .xroga-chat-bar {
+    transform: translateX(-50%) translateY(200%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .xroga-glass-panel {
@@ -1701,7 +1694,7 @@
     position: relative;
   }
 
-  /* Light theme overrides */
+  /* Light theme overrides – triggered when html does NOT have .dark */
   .xroga-chat-root.light-mode .xroga-glass-panel {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(20px) saturate(150%);
@@ -1715,7 +1708,6 @@
   .xroga-chat-root.light-mode .xroga-btn:not(.xroga-send) {
     background: rgba(0,0,0,0.04);
   }
-  /* Send button remains blue always */
   .xroga-chat-root.light-mode .xroga-send {
     background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
     color: white !important;
@@ -1728,55 +1720,51 @@
     background: rgba(255, 255, 255, 0.65);
   }
 
-  /* Top actions bar */
+  /* Top actions bar – reduced bottom margin */
   .xroga-top-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
   }
 
-  
-  .xroga-chat-root.light-mode .xroga-theme-toggle-btn {
-    background: rgba(255, 255, 255, 0.5);
+  .xroga-left-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .xroga-right-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Hide button – smaller text, compact */
+  .xroga-hide-btn {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    line-height: 1;
+  }
+  .xroga-chat-root.light-mode .xroga-hide-btn {
+    background: rgba(0,0,0,0.05);
     color: #1e1e2f;
     border-color: rgba(0,0,0,0.1);
   }
-  .xroga-theme-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
+  .xroga-hide-btn:hover {
+    background: rgba(255,255,255,0.18);
     transform: scale(1.02);
-  }
-  .xroga-theme-toggle-btn .theme-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255,255,255,0.2);
-    border-radius: 8px;
-    padding: 6px;
-  }
-  .xroga-chat-root.light-mode .xroga-theme-toggle-btn .theme-icon {
-    background: rgba(0,0,0,0.08);
-  }
-  .xroga-theme-toggle-btn .theme-icon i {
-    width: 16px;
-    height: 16px;
-    display: block;
-  }
-  .xroga-theme-toggle-btn .theme-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .xroga-theme-toggle-btn .theme-badge {
-    background: rgba(255,255,255,0.2);
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-  }
-  .xroga-chat-root.light-mode .xroga-theme-toggle-btn .theme-badge {
-    background: rgba(0,0,0,0.08);
   }
 
   /* Minimize button */
@@ -1919,18 +1907,7 @@
     100% { box-shadow: 0 0 0 0 rgba(220,38,38,0), 0 0 0 1px rgba(255,255,255,0.2) inset; }
   }
 
-  /* Send magic */
-  .xroga-send.magic-send {
-    animation: xrogaSendMagic 0.5s ease-out forwards;
-  }
-  @keyframes xrogaSendMagic {
-    0% { transform: scale(1); }
-    25% { transform: scale(1.15) rotate(5deg); box-shadow: 0 0 25px #3b82f6; }
-    50% { transform: scale(0.95) rotate(-3deg); }
-    75% { transform: scale(1.05) rotate(2deg); }
-    100% { transform: scale(1); }
-  }
-
+  /* Ripple effect */
   .xroga-ripple {
     position: absolute;
     border-radius: 50%;
@@ -1943,22 +1920,102 @@
   @keyframes xrogaRippleAnim {
     to { transform: scale(4); opacity: 0; }
   }
-  
-/* ----- GENEROUS SPACE ABOVE CHAT BAR (extra breathing room) ----- */
-/* Replace "#chat-messages" with your actual chat container ID */
-#chat-messages,
-.chat-messages,
-.messages-container {
-  padding-bottom: 160px !important;  /* desktop – plenty of space */
-}
 
-@media (max-width: 600px) {
-  #chat-messages,
-  .chat-messages,
-  .messages-container {
-    padding-bottom: 180px !important; /* mobile – even more generous */
+  /* ----- REVEAL BUTTON (bottom centre, appears when chatbar hidden) ----- */
+  .xroga-reveal-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9) translateY(10px);
+    z-index: 100000;
+    background: rgba(10, 18, 30, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    padding: 8px 20px;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+    opacity: 0;
+    pointer-events: none;
+    font-weight: 500;
+    font-size: 0.8rem;
+    border: 0.5px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
   }
-}
+  .xroga-reveal-btn i {
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+  .xroga-reveal-btn:hover {
+    background: rgba(20, 35, 55, 0.9);
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.2) inset;
+  }
+  .xroga-reveal-btn:hover i {
+    transform: translateY(-2px);
+  }
+  /* Light mode for reveal button */
+  .xroga-chat-root.light-mode .xroga-reveal-btn {
+    background: rgba(255, 255, 255, 0.7);
+    color: #0b1120;
+    border-color: rgba(0,0,0,0.08);
+  }
+  .xroga-chat-root.light-mode .xroga-reveal-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Show reveal button only when chatbar is hidden */
+  .xroga-chat-root.chatbar-hidden .xroga-reveal-btn {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* ----- 3‑PHASE ROCKET ANIMATIONS ----- */
+  .xroga-send {
+    transition: none;
+  }
+
+  /* Phase 1: Ignition */
+  .xroga-send.rocket-ignition {
+    animation: xrogaRocketIgnition 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+  @keyframes xrogaRocketIgnition {
+    0% { transform: scale(1) translateY(0); }
+    20% { transform: scale(1.1) translateY(-2px) rotate(2deg); }
+    40% { transform: scale(0.95) translateY(0) rotate(-1deg); }
+    60% { transform: scale(1.05) translateY(-4px) rotate(1deg); }
+    80% { transform: scale(1) translateY(-2px); }
+    100% { transform: scale(1) translateY(-8px); box-shadow: 0 12px 20px -5px #3b82f6; }
+  }
+
+  /* Phase 2: Orbital */
+  .xroga-send.rocket-orbital {
+    animation: xrogaRocketOrbital 1.8s infinite ease-in-out;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px -5px #3b82f6;
+  }
+  @keyframes xrogaRocketOrbital {
+    0%, 100% { transform: translateY(-8px) scale(1); }
+    50% { transform: translateY(-12px) scale(1.03); }
+  }
+
+  /* Phase 3: Re‑Entry */
+  .xroga-send.rocket-reentry {
+    animation: xrogaRocketReentry 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes xrogaRocketReentry {
+    0% { transform: translateY(-8px) scale(1); box-shadow: 0 12px 20px -5px #3b82f6; }
+    60% { transform: translateY(2px) scale(0.98); box-shadow: 0 4px 10px -3px #2563eb; }
+    80% { transform: translateY(-1px) scale(1.01); }
+    100% { transform: translateY(0) scale(1); box-shadow: 0 0 0 #3b82f6; }
+  }
 
   /* Mobile adjustments */
   @media (max-width: 600px) {
@@ -1982,9 +2039,21 @@
       width: 34px;
       height: 34px;
     }
-    .xroga-theme-toggle-btn {
-      padding: 4px 10px 4px 8px;
-      font-size: 0.8rem;
+    .xroga-hide-btn {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+    }
+    .xroga-reveal-btn {
+      bottom: 16px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      gap: 4px;
+    }
+    .xroga-reveal-btn i {
+      font-size: 0.9rem;
+    }
+    .xroga-top-actions {
+      margin-bottom: 4px;
     }
   }
 
@@ -1992,140 +2061,95 @@
     0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
     100% { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
-  
-  /* ========== DESKTOP – ONE ROW – FORCE IT ========== */
-.xroga-chat-root .xroga-flex-row {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: flex-end !important;
-  gap: 8px !important;
-} 
 
-.xroga-chat-root .xroga-action-buttons {
-  display: flex !important;
-  flex-direction: row !important;
-  gap: 8px !important;
-  flex-shrink: 0;
-}
-
-/* ========== DESKTOP (default) – ALWAYS ONE ROW ========== */
-.xroga-chat-root .xroga-flex-row {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: flex-end !important;
-  gap: 8px !important;
-}
-
-
-@media (max-width: 600px) {
+  /* Desktop – one row */
   .xroga-chat-root .xroga-flex-row {
-    display: grid !important;
-    grid-template-columns: 1fr auto;
-    align-items: start;
-    gap: 8px;
-  }
-
-  .xroga-chat-root .xroga-input-wrapper {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: end;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
   }
 
   .xroga-chat-root .xroga-action-buttons {
-    grid-column: 2;
-    grid-row: 1;
     display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-    align-self: start !important;
-    justify-self: end !important;
-    align-items: flex-end !important;
-    justify-content: flex-start !important;
-    width: fit-content !important;        /* 🆕 Container wraps its content */
-    min-width: min-content !important;    /* 🆕 Prevents stretching */
+    flex-direction: row !important;
+    gap: 8px !important;
+    flex-shrink: 0;
   }
 
-  /* Force buttons to behave consistently */
-  .xroga-chat-root .xroga-btn {
-    margin: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 1.1rem !important;
+  @media (max-width: 600px) {
+    .xroga-chat-root .xroga-flex-row {
+      display: grid !important;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 8px;
+    }
+    .xroga-chat-root .xroga-input-wrapper {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: end;
+    }
+    .xroga-chat-root .xroga-action-buttons {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      align-self: start !important;
+      justify-self: end !important;
+      align-items: flex-end !important;
+      width: fit-content !important;
+      min-width: min-content !important;
+    }
+    .xroga-chat-root .xroga-btn {
+      margin: 0 !important;
+      width: 36px !important;
+      height: 36px !important;
+      font-size: 1.1rem !important;
+    }
+    #chat-input {
+      min-height: 52px !important;
+      max-height: calc(1.5em * 12 + 16px);
+      padding: 8px 4px !important;
+    }
   }
-
-  /* Taller input area on mobile */
-  #chat-input {
-    min-height: 52px !important;
-    max-height: calc(1.5em * 12 + 16px);
-    padding: 8px 4px !important;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .xroga-minimize-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1rem;
-  }
-
-  .xroga-top-actions {
-    margin-bottom: 6px;
-  }
-
-  .xroga-glass-panel {
-    padding: 8px 10px;
-  }
-}
-
-/* Rocket send animation */
-.xroga-send.rocket-launch {
-  animation: xrogaRocket 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-@keyframes xrogaRocket {
-  0% { transform: scale(1) translateY(0); box-shadow: 0 0 0 #3b82f6; }
-  30% { transform: scale(1.2) translateY(-8px); box-shadow: 0 8px 20px #3b82f6; }
-  60% { transform: scale(0.9) translateY(2px); box-shadow: 0 2px 10px #2563eb; }
-  100% { transform: scale(1) translateY(0); box-shadow: 0 0 0 #3b82f6; }
-}
 </style>
 
 <div class="xroga-chat-root" id="xrogaRoot">
-  <!-- Hidden mobile theme toggle ID for external scripts -->
-  <span id="mobile-theme-toggle" style="display:none;"></span>
+  <!-- REVEAL BUTTON (bottom centre) -->
+  <div class="xroga-reveal-btn" id="xrogaRevealBtn">
+    <i class="fas fa-chevron-up"></i>
+    <span>Show chat</span>
+  </div>
 
   <div class="xroga-chat-bar">
     <div class="xroga-glass-panel">
-      <!-- Top actions: Theme toggle + Minimize button -->
       <div class="xroga-top-actions">
-       
-
-        <!-- Minimize button (appears when textarea reaches 6 rows) -->
-        <button class="xroga-minimize-btn" id="xrogaMinimizeBtn" title="Minimize/Expand" style="display: none;">
-          <i class="fas fa-chevron-up"></i>
-        </button>
+        <div class="xroga-left-actions">
+          <button class="xroga-hide-btn" id="xrogaHideBtn" title="Hide chat bar">
+            Hide ▾
+          </button>
+        </div>
+        <div class="xroga-right-actions">
+          <button class="xroga-minimize-btn" id="xrogaMinimizeBtn" title="Minimize/Expand" style="display: none;">
+            <i class="fas fa-chevron-up"></i>
+          </button>
+        </div>
       </div>
 
-      <!-- Main input row -->
       <div class="xroga-flex-row">
-  <div class="xroga-input-wrapper">
-    <textarea id="chat-input" ...></textarea>
-  </div>
-  <div class="xroga-action-buttons">
-  <button class="xroga-btn xroga-mic" id="xrogaMicBtn" aria-label="Voice input">
-    <i class="fas fa-microphone"></i>
-  </button>
-
-  <!-- ✅ This button uses id="send-btn" exactly as you want -->
-  <button class="xroga-btn xroga-send" id="send-btn" aria-label="Send message">
-    <i class="fa fa-rocket" aria-hidden="true"></i>
-  </button>
-</div>
-  </div>
-</div>
+        <div class="xroga-input-wrapper">
+          <textarea id="chat-input" placeholder="website portfolios, ecommerce, landing pages..."></textarea>
+        </div>
+        <div class="xroga-action-buttons">
+          <button class="xroga-btn xroga-mic" id="xrogaMicBtn" aria-label="Voice input">
+            <i class="fas fa-microphone"></i>
+          </button>
+          <button class="xroga-btn xroga-send" id="send-btn" aria-label="Send message">
+            <i class="fa fa-rocket" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2149,10 +2173,36 @@
       const root = document.getElementById('xrogaRoot');
       const textarea = document.getElementById('chat-input');
       const micBtn = document.getElementById('xrogaMicBtn');
-      const sendBtn = document.getElementById('send-btn');   // ✅ Exactly what you want
+      const sendBtn = document.getElementById('send-btn');
       const minimizeBtn = document.getElementById('xrogaMinimizeBtn');
+      const hideBtn = document.getElementById('xrogaHideBtn');
+      const revealBtn = document.getElementById('xrogaRevealBtn');
 
       if (!textarea) return;
+
+      // ----- THEME SYNC – watches html.dark class -----
+      function syncTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        if (isDark) {
+          root.classList.remove('light-mode');
+        } else {
+          root.classList.add('light-mode');
+        }
+      }
+
+      syncTheme();
+      const htmlObserver = new MutationObserver(syncTheme);
+      htmlObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+      // ----- HIDE / REVEAL -----
+      function hideChatBar() {
+        root.classList.add('chatbar-hidden');
+      }
+      function revealChatBar() {
+        root.classList.remove('chatbar-hidden');
+      }
+      if (hideBtn) hideBtn.addEventListener('click', hideChatBar);
+      if (revealBtn) revealBtn.addEventListener('click', revealChatBar);
 
       // ----- DYNAMIC PHRASES -----
       const phrases = [
@@ -2251,7 +2301,7 @@
       autoResize();
       startRotation();
 
-      // ----- MIC TOGGLE -----
+      // ----- MIC -----
       function startListening() {
         if (!micBtn) return;
         listening = true;
@@ -2284,68 +2334,9 @@
         if (listening && textarea.value.trim() !== '') stopListening(false);
       });
 
-      // ----- SEND FUNCTION (triggers main chat) -----
-      function triggerMainSend() {
-        const msg = textarea.value.trim();
-        if (!msg) {
-          const suggestion = phrases[Math.floor(Math.random() * phrases.length)];
-          textarea.placeholder = suggestion;
-          phraseIndex = phrases.indexOf(suggestion) + 1;
-          return;
-        }
+      // ----- SEND WITH 3‑PHASE ROCKET ANIMATION -----
+      let isAnimating = false;
 
-        // 1. Clear Xroga input and animate
-        console.log(`💬 Xroga AI · Sent: "${msg}"`);
-        textarea.value = '';
-        autoResize();
-        const fresh = phrases[Math.floor(Math.random() * phrases.length)];
-        textarea.placeholder = fresh;
-        phraseIndex = phrases.indexOf(fresh) + 1;
-        textarea.style.boxShadow = '0 0 0 2px #3b82f6';
-        setTimeout(() => textarea.style.boxShadow = '', 200);
-        if (document.activeElement !== textarea) paused = false;
-        if (listening) stopListening(false);
-
-        // 2. Find the main chat input (adjust ID to match your actual main input)
-        const mainInput = document.getElementById('main-chat-input') || 
-                          document.querySelector('#chat-input-main, [data-main-input]');
-        
-        if (!mainInput) {
-          console.error('❌ Main input not found. Set its ID to "main-chat-input".');
-          return;
-        }
-
-        // 3. Set main input value
-        mainInput.value = msg;
-        mainInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-        // 4. Click the main send button (ID = 'main-send-btn')
-        const mainSendBtn = document.getElementById('main-send-btn');
-        if (mainSendBtn) {
-          mainSendBtn.click();
-        } else {
-          // Fallback: simulate Enter key on main input
-          const enterEvent = new KeyboardEvent('keydown', {
-            key: 'Enter',
-            code: 'Enter',
-            keyCode: 13,
-            which: 13,
-            bubbles: true,
-            cancelable: true
-          });
-          mainInput.dispatchEvent(enterEvent);
-        }
-      }
-
-      // ----- ENTER KEY (Xroga input) -----
-      textarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          triggerMainSend();
-        }
-      });
-
-      // ----- XROGA SEND BUTTON (ROCKET LAUNCH) -----
       function createRipple(btn, e) {
         const ripple = document.createElement('span');
         ripple.className = 'xroga-ripple';
@@ -2359,45 +2350,101 @@
         setTimeout(() => ripple.remove(), 600);
       }
 
+      function triggerMainSendWithAnimation(e) {
+        if (!sendBtn) return;
+        if (isAnimating) return;
+        
+        const msg = textarea.value.trim();
+        if (!msg) {
+          const suggestion = phrases[Math.floor(Math.random() * phrases.length)];
+          textarea.placeholder = suggestion;
+          phraseIndex = phrases.indexOf(suggestion) + 1;
+          return;
+        }
+
+        isAnimating = true;
+
+        // Clear Xroga input
+        console.log(`💬 Xroga AI · Sent: "${msg}"`);
+        textarea.value = '';
+        autoResize();
+        const fresh = phrases[Math.floor(Math.random() * phrases.length)];
+        textarea.placeholder = fresh;
+        phraseIndex = phrases.indexOf(fresh) + 1;
+        textarea.style.boxShadow = '0 0 0 2px #3b82f6';
+        setTimeout(() => textarea.style.boxShadow = '', 200);
+        if (document.activeElement !== textarea) paused = false;
+        if (listening) stopListening(false);
+
+        // Ripple effect
+        if (e) createRipple(sendBtn, e);
+
+        // Phase 1: Ignition
+        sendBtn.classList.add('rocket-ignition');
+        
+        setTimeout(() => {
+          sendBtn.classList.remove('rocket-ignition');
+          sendBtn.classList.add('rocket-orbital');
+          
+          // Phase 2: Orbital (simulated processing – replace with real event)
+          setTimeout(() => {
+            sendBtn.classList.remove('rocket-orbital');
+            sendBtn.classList.add('rocket-reentry');
+            
+            setTimeout(() => {
+              sendBtn.classList.remove('rocket-reentry');
+              isAnimating = false;
+            }, 500);
+            
+          }, 2000);
+          
+        }, 400);
+
+        // Send to main chat (does not block animation)
+        const mainInput = document.getElementById('main-chat-input') || 
+                          document.querySelector('#chat-input-main, [data-main-input]');
+        if (mainInput) {
+          mainInput.value = msg;
+          mainInput.dispatchEvent(new Event('input', { bubbles: true }));
+          const mainSendBtn = document.getElementById('main-send-btn');
+          if (mainSendBtn) {
+            mainSendBtn.click();
+          } else {
+            mainInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+          }
+        } else {
+          console.error('❌ Main input not found. Set its ID to "main-chat-input".');
+        }
+      }
+
       if (sendBtn) {
         sendBtn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          sendBtn.classList.add('rocket-launch');
-          setTimeout(() => sendBtn.classList.remove('rocket-launch'), 600);
-          createRipple(sendBtn, e);
-          triggerMainSend();
+          triggerMainSendWithAnimation(e);
         });
-      } else {
-        console.warn('⚠️ send-btn not found. Using Enter key only.');
       }
 
-      // Reset paused state when clicking outside
+      textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          triggerMainSendWithAnimation();
+        }
+      });
+
+      // Reset paused when clicking outside
       document.addEventListener('click', (e) => {
         if (!e.target.closest('.xroga-chat-bar') && textarea.value.trim() === '' && !listening) {
           paused = false;
         }
       });
 
-      console.log('✅ Xroga AI v7 · Ready (using send-btn)');
+      console.log('✅ Xroga AI v7 · Ready (hide/show, theme sync, 3‑phase rocket)');
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initXroga);
     else initXroga();
   })();
-  
-(function() {
-  function applyChatPadding() {
-    const chatBar = document.querySelector('.xroga-chat-bar');
-    const msgContainer = document.querySelector('#chat-messages'); // 👈 change selector
-    if (!chatBar || !msgContainer) return;
-    const extra = window.innerWidth <= 600 ? 20 : 16;
-    msgContainer.style.paddingBottom = (chatBar.offsetHeight + extra) + 'px';
-  }
-  window.addEventListener('load', applyChatPadding);
-  window.addEventListener('resize', applyChatPadding);
-  setTimeout(applyChatPadding, 300);
-})();
 </script>
     
     <!-- Settings Modal (enhanced with auto-speak) -->
@@ -5698,9 +5745,12 @@ async function revealCodeResponse(fullCode, saveToHistory = true) {
     messageDiv.dataset.messageId = messageId;
 
     messageDiv.innerHTML = `
-        <div class="flex-shrink-0"><div class="w-10 h-10 rounded-full overflow-hidden shadow-lg"><img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" alt="Xroga AI" class="w-full h-full object-cover"></div></div>
-        <div class="flex-1 min-w-0"><div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg gradient-text">Xroga AI</span><span class="text-xs px-2 py-1 bg-purple-500/30 dark:bg-purple-900/40 rounded-full backdrop-blur-sm">Code Expert</span></div>
+       <div class="flex-1 min-w-0"><div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg gradient-text">Xroga AI</span>
+      <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-white/10 dark:bg-white/5 backdrop-blur-md text-gray-700 dark:text-gray-200 font-medium rounded-full border border-white/20 dark:border-white/10 shadow-sm">
+  <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+  Code Expert
+</span></div>
             <div class="code-block-container w-full overflow-hidden">
                 <div class="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-xl transition-all">
                     <div class="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700 flex-wrap gap-2">
@@ -5714,19 +5764,30 @@ async function revealCodeResponse(fullCode, saveToHistory = true) {
                             <button class="code-action copy-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
                             <button class="code-action download-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
                             <button class="code-action quick-view p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Live Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                            <button> AI EDIT
+                            <button>
 <button class="code-action ai-edit-drag p-1.5 rounded-lg transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" title="AI Drag & Drop Editor">
     <i data-lucide="sparkles" class="w-4 h-4"></i>
 </button>
 
-                            <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                            <button class="deploy-btn inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-sm font-bold shadow-md transition-all transform hover:scale-105">
-                                <i data-lucide="cloud-upload" class="w-4 h-4"></i> Deploy
-                                <span class="ml-0.5 text-[10px] bg-yellow-400 text-black px-1.5 py-0.5 rounded-full">PAID</span>
-                            </button>
-                        </div>
+                                          <!-- Divider - hidden on mobile -->
+  <div class="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+  <!-- Deploy button: full width on mobile forces new line, left aligned, smaller padding and text -->
+  <button class="deploy-btn w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-1 px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-xs sm:text-sm font-bold shadow-md transition-all transform hover:scale-105">
+    <i data-lucide="cloud-upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Deploy
+   
+  </button>
+</div>
+
+ <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+  <!-- Delete button -->
+  <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete">
+    <i data-lucide="trash-2" class="w-4 h-4"></i>
+  </button>
+
+
                     </div>
+
                     <div class="code-editor-container w-full overflow-x-auto">
                         <pre class="code-display p-4 text-sm font-mono whitespace-pre-wrap break-words"><code class="language-javascript"></code></pre>
                         <textarea class="code-edit-area hidden w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none" rows="12"></textarea>
@@ -5822,30 +5883,15 @@ function attachCodeBlockEvents(container, messageDiv, originalCode) {
         win.document.close();
     };
 
-            // AI Drag & Drop Editor
+ 
+
 container.querySelector('.ai-edit-drag').onclick = () => {
-    const isEditing = container.querySelector('.code-edit-area') && 
-                     !container.querySelector('.code-edit-area').classList.contains('hidden');
-    const currentCode = isEditing 
-        ? container.querySelector('.code-edit-area').value 
-        : container.querySelector('.code-display code').innerText;
-    openGrapesJSEditor(currentCode, messageDiv, container);
+    const code = container.querySelector('.code-display code').innerText;
+    openCustomVisualEditor(code, messageDiv, container);
 };
-    container.querySelector('.delete-code').onclick = () => {
-        if (confirm('Delete this code message?')) {
-            messageDiv.remove();
-            if (state.selectedChat) {
-                state.selectedChat.messages = state.selectedChat.messages.filter(m => m.messageId !== messageDiv.dataset.messageId);
-                saveChats();
-            }
-            showToast('Code message deleted', 'Deleted');
-        }
-    };
-    container.querySelector('.deploy-btn').onclick = () => {
-        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
-        openDeployModal(code);
-    };
 }
+
+
 
         // ===================== DEPLOYMENT MODAL (UPDATED PRICING & FEATURES) =====================
         function openDeployModal(code) {
@@ -6109,117 +6155,84 @@ async function sendMessage() {
     }
 }
 
-function openGrapesJSEditor(initialCode, messageDiv, codeContainer) {
-    const existing = document.getElementById('grapesjs-modal');
+function openCustomVisualEditor(initialCode, messageDiv, codeContainer) {
+    const existing = document.getElementById('custom-editor-modal');
     if (existing) existing.remove();
 
     const modal = document.createElement('div');
-    modal.id = 'grapesjs-modal';
-    modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md transition-all duration-300';
+    modal.id = 'custom-editor-modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-all duration-300';
     modal.innerHTML = `
-        <div class="glass-panel w-[96vw] h-[96vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-white/30 dark:border-gray-700/50 transform transition-all scale-95 opacity-0" id="grapesjs-modal-content">
-            <!-- Top Bar – Essential Actions Only -->
-            <div class="flex items-center justify-between px-4 py-2 bg-white/20 dark:bg-gray-800/40 backdrop-blur-xl border-b border-white/30">
+        <div class="bg-white w-[96vw] h-[96vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 transform transition-all scale-95 opacity-0" id="custom-editor-content">
+            <!-- Top Bar with Dark Device Toggle -->
+            <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2 bg-gray-50 border-b border-gray-200 shrink-0">
                 <div class="flex items-center gap-2">
-                    <button class="editor-undo p-2 rounded-xl hover:bg-white/20" title="Undo"><i data-lucide="undo-2" class="w-4 h-4"></i></button>
-                    <button class="editor-redo p-2 rounded-xl hover:bg-white/20" title="Redo"><i data-lucide="redo-2" class="w-4 h-4"></i></button>
-                    <button class="editor-preview p-2 rounded-xl hover:bg-white/20" title="Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                    <div class="flex bg-white/10 rounded-lg p-0.5">
-                        <button class="view-mode p-1.5 rounded-md bg-white/20" data-device="desktop"><i data-lucide="monitor" class="w-3.5 h-3.5"></i></button>
-                        <button class="view-mode p-1.5 rounded-md" data-device="tablet"><i data-lucide="tablet" class="w-3.5 h-3.5"></i></button>
-                        <button class="view-mode p-1.5 rounded-md" data-device="mobile"><i data-lucide="smartphone" class="w-3.5 h-3.5"></i></button>
-                    </div>
-                    <button id="logo-upload-btn" class="p-2 rounded-xl hover:bg-white/20 flex items-center gap-1 text-xs">
-                        <i data-lucide="image" class="w-3.5 h-3.5"></i> Logo
+                    <button class="custom-undo p-2 rounded-lg hover:bg-gray-200 text-gray-700 transition-colors" title="Undo">
+                        <i data-lucide="undo-2" class="w-4 h-4"></i>
                     </button>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button id="seo-settings-btn" class="p-2 rounded-xl hover:bg-indigo-500/20 text-indigo-400 text-xs flex items-center gap-1">
-                        <i data-lucide="search" class="w-3.5 h-3.5"></i> SEO
+                    <button class="custom-redo p-2 rounded-lg hover:bg-gray-200 text-gray-700 transition-colors" title="Redo">
+                        <i data-lucide="redo-2" class="w-4 h-4"></i>
                     </button>
-                    <button class="grapesjs-save px-4 py-1.5 bg-green-500/80 text-white rounded-xl text-xs font-semibold flex items-center gap-1">
-                        <i data-lucide="save" class="w-3.5 h-3.5"></i> Save
-                    </button>
-                    <button class="grapesjs-deploy px-4 py-1.5 gradient-btn rounded-xl text-xs font-semibold flex items-center gap-1">
-                        <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i> Deploy
-                    </button>
-                    <button class="grapesjs-close p-2 rounded-xl hover:bg-white/20"><i data-lucide="x" class="w-4 h-4"></i></button>
-                </div>
-            </div>
-
-            <!-- Canvas Area -->
-            <div id="gjs-editor-container" class="flex-1 bg-white/5 dark:bg-gray-900/40 backdrop-blur-sm relative"></div>
-
-            <!-- Floating Chat Bar with Mic -->
-            <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 z-30">
-                <div class="backdrop-blur-xl bg-white/10 dark:bg-black/20 rounded-full border border-white/30 dark:border-gray-700/50 shadow-2xl">
-                    <div class="flex items-center px-2 py-1.5">
-                        <!-- Voice Input Button -->
-                        <button id="voice-input-btn" class="p-2.5 rounded-full hover:bg-white/20 transition-colors relative" title="Voice input">
-                            <i data-lucide="mic" class="w-5 h-5"></i>
-                            <span id="voice-pulse" class="absolute inset-0 rounded-full border-2 border-indigo-400 opacity-0"></span>
+                    <!-- Device Toggle – Black/Dark Theme -->
+                    <div class="flex bg-gray-800 rounded-lg p-1 ml-2">
+                        <button class="view-mode p-1.5 rounded-md bg-black text-white shadow-sm" data-device="desktop" title="Desktop view">
+                            <i data-lucide="monitor" class="w-4 h-4"></i>
                         </button>
-                        <input type="text" id="ai-chat-input" placeholder="✨ Tell AI what to do..." 
-                               class="flex-1 bg-transparent border-none focus:outline-none px-2 py-2.5 text-sm placeholder-gray-500 dark:placeholder-gray-400">
-                        <button id="ai-send-btn" class="gradient-btn p-2.5 rounded-full transition-all shadow-lg hover:shadow-xl flex items-center justify-center w-10 h-10">
-                            <i data-lucide="send" class="w-4 h-4"></i>
+                        <button class="view-mode p-1.5 rounded-md text-gray-400 hover:text-white transition-colors" data-device="tablet" title="Tablet view">
+                            <i data-lucide="tablet" class="w-4 h-4"></i>
+                        </button>
+                        <button class="view-mode p-1.5 rounded-md text-gray-400 hover:text-white transition-colors" data-device="mobile" title="Mobile view">
+                            <i data-lucide="smartphone" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
-                <div class="text-center mt-1">
-                    <span class="text-[10px] text-white/60 dark:text-gray-400">Try: "add hero", "change text to Welcome", "upload image" — or click 🎤 to speak</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEO Modal -->
-        <div id="seo-modal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
-            <div class="glass-panel w-[500px] max-h-[80vh] rounded-2xl p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold"><i data-lucide="search" class="w-5 h-5 inline text-indigo-400 mr-2"></i>SEO Settings</h3>
-                    <button id="close-seo-modal" class="p-2 rounded-lg hover:bg-white/20"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                <div class="space-y-4">
-                    <div><label class="block text-sm font-medium mb-1">Meta Title</label><input type="text" id="seo-title" class="w-full bg-white/20 rounded-lg p-2 text-sm"><p class="text-xs text-gray-400 mt-1" id="seo-title-count">0/60</p></div>
-                    <div><label class="block text-sm font-medium mb-1">Meta Description</label><textarea id="seo-description" rows="3" class="w-full bg-white/20 rounded-lg p-2 text-sm"></textarea><p class="text-xs text-gray-400 mt-1" id="seo-desc-count">0/160</p></div>
-                    <div><label class="block text-sm font-medium mb-1">Keywords</label><input type="text" id="seo-keywords" class="w-full bg-white/20 rounded-lg p-2 text-sm"></div>
-                    <div><label class="block text-sm font-medium mb-1">OG Image URL</label><input type="text" id="seo-og-image" class="w-full bg-white/20 rounded-lg p-2 text-sm"></div>
-                    <div class="flex gap-2">
-                        <button id="auto-optimize-seo" class="flex-1 py-2 bg-indigo-500/30 hover:bg-indigo-500/50 rounded-lg text-sm flex items-center justify-center gap-1"><i data-lucide="sparkles" class="w-4 h-4"></i> Auto-Optimize</button>
-                        <button id="apply-seo" class="flex-1 py-2 gradient-btn rounded-lg text-sm">Apply</button>
+                <div class="flex items-center gap-2 relative">
+                    <!-- SEO Popover with Black Text -->
+                    <div class="relative">
+                        <button id="seo-settings-btn" class="px-3 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-medium flex items-center gap-1 border border-indigo-200 transition-colors">
+                            <i data-lucide="search" class="w-4 h-4"></i> SEO
+                        </button>
+                        <div id="seo-popover" class="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl p-4 shadow-xl border border-gray-200 hidden z-50">
+                            <div class="space-y-3">
+                                <div><label class="block text-xs font-medium text-black mb-1">Meta Title</label><input type="text" id="seo-title" class="w-full border border-gray-300 rounded-lg p-2 text-sm text-black bg-white"><span id="seo-title-count" class="text-[10px] text-gray-600">0/60</span></div>
+                                <div><label class="block text-xs font-medium text-black mb-1">Meta Description</label><textarea id="seo-description" rows="2" class="w-full border border-gray-300 rounded-lg p-2 text-sm text-black bg-white"></textarea><span id="seo-desc-count" class="text-[10px] text-gray-600">0/160</span></div>
+                                <div><label class="block text-xs font-medium text-black mb-1">Keywords</label><input type="text" id="seo-keywords" class="w-full border border-gray-300 rounded-lg p-2 text-sm text-black bg-white"></div>
+                                <div><label class="block text-xs font-medium text-black mb-1">OG Image URL</label><input type="text" id="seo-og-image" class="w-full border border-gray-300 rounded-lg p-2 text-sm text-black bg-white"></div>
+                                <div class="flex gap-2">
+                                    <button id="auto-optimize-seo" class="flex-1 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-200 transition-colors"><i data-lucide="sparkles" class="w-3 h-3"></i> Auto</button>
+                                    <button id="apply-seo" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium transition-colors">Apply</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <button class="custom-save px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg text-sm font-medium flex items-center gap-1 shadow-sm transition-all">
+                        <i data-lucide="save" class="w-4 h-4"></i> Save
+                    </button>
+                    <button class="custom-deploy px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-lg text-sm font-medium flex items-center gap-1 shadow-sm transition-all">
+                        <i data-lucide="cloud-upload" class="w-4 h-4"></i> Deploy
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <input type="file" id="logo-file-input" accept="image/*" style="display:none;">
-        <input type="file" id="image-file-input" accept="image/*" style="display:none;">
-
-        <!-- Floating Contextual Toolbar -->
-        <div id="context-toolbar" class="fixed z-50 hidden glass-panel rounded-2xl p-3 shadow-2xl border border-white/30 backdrop-blur-xl">
-            <div id="toolbar-content" class="flex flex-col gap-2 min-w-[260px]"></div>
+            <!-- Canvas Container -->
+            <div class="flex-1 w-full bg-white relative flex items-center justify-center" id="iframe-container">
+                <iframe id="editable-iframe" class="border-0 transition-all duration-200" style="background: white; width: 100%; height: 100%;"></iframe>
+            </div>
         </div>
     `;
     document.body.appendChild(modal);
     lucide.createIcons();
 
-    // Elements
-    const modalContent = modal.querySelector('#grapesjs-modal-content');
-    const containerEl = modal.querySelector('#gjs-editor-container');
-    const chatInput = modal.querySelector('#ai-chat-input');
-    const saveBtn = modal.querySelector('.grapesjs-save');
-    const deployBtn = modal.querySelector('.grapesjs-deploy');
-    const closeBtn = modal.querySelector('.grapesjs-close');
-    const undoBtn = modal.querySelector('.editor-undo');
-    const redoBtn = modal.querySelector('.editor-redo');
-    const previewBtn = modal.querySelector('.editor-preview');
+    const modalContent = modal.querySelector('#custom-editor-content');
+    const iframe = modal.querySelector('#editable-iframe');
+    const container = modal.querySelector('#iframe-container');
+    const undoBtn = modal.querySelector('.custom-undo');
+    const redoBtn = modal.querySelector('.custom-redo');
+    const saveBtn = modal.querySelector('.custom-save');
+    const deployBtn = modal.querySelector('.custom-deploy');
     const viewModeBtns = modal.querySelectorAll('.view-mode');
-    const logoUploadBtn = modal.querySelector('#logo-upload-btn');
-    const logoFileInput = modal.querySelector('#logo-file-input');
-    const imageFileInput = modal.querySelector('#image-file-input');
     const seoBtn = modal.querySelector('#seo-settings-btn');
-    const seoModal = modal.querySelector('#seo-modal');
-    const closeSeoModal = modal.querySelector('#close-seo-modal');
+    const seoPopover = modal.querySelector('#seo-popover');
     const seoTitle = modal.querySelector('#seo-title');
     const seoDesc = modal.querySelector('#seo-description');
     const seoKeywords = modal.querySelector('#seo-keywords');
@@ -6228,366 +6241,113 @@ function openGrapesJSEditor(initialCode, messageDiv, codeContainer) {
     const seoDescCount = modal.querySelector('#seo-desc-count');
     const autoOptimizeBtn = modal.querySelector('#auto-optimize-seo');
     const applySeoBtn = modal.querySelector('#apply-seo');
-    const contextToolbar = modal.querySelector('#context-toolbar');
-    const toolbarContent = modal.querySelector('#toolbar-content');
-    const voiceBtn = modal.querySelector('#voice-input-btn');
-    const voicePulse = modal.querySelector('#voice-pulse');
 
-    let selectedComponent = null;
-    let pendingImageComponent = null;
-
+    // Animate modal in
     requestAnimationFrame(() => {
         modalContent.classList.remove('scale-95', 'opacity-0');
         modalContent.classList.add('scale-100', 'opacity-100');
     });
 
-    // ========== GRAPESJS INIT ==========
-    const editor = grapesjs.init({
-        container: containerEl,
-        fromElement: false,
-        height: '100%',
-        width: 'auto',
-        storageManager: { type: 'none' },
-        plugins: ['gjs-blocks-basic', 'grapesjs-preset-webpage', 'grapesjs-plugin-forms', 'grapesjs-style-bg', 'grapesjs-tui-image-editor'],
-        canvas: {
-            styles: [
-                'https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css',
-                `body { background: ${document.documentElement.classList.contains('dark') ? '#0f172a' : '#f8fafc'} !important; font-family: system-ui, sans-serif; }`
-            ]
-        },
-        components: (() => {
-            if (!initialCode) return '';
-            const styleMatch = initialCode.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-            let html = initialCode;
-            if (styleMatch) {
-                html = initialCode.replace(styleMatch[0], '');
-                editor.once('load', () => editor.setStyle(styleMatch[1]));
-            }
-            return html;
-        })(),
-        style: '',
-        showOffsets: false,
-        noticeOnUnload: false,
-        allowScripts: true,
-        panels: { defaults: [] },
-        blockManager: {},
-        styleManager: { sectors: [] },
-        selectorManager: {}
-    });
-
-    // ========== VOICE RECOGNITION SETUP ==========
-    // Inject CSS for pulse animation
-    if (!document.querySelector('#voice-ping-style')) {
-        const style = document.createElement('style');
-        style.id = 'voice-ping-style';
-        style.textContent = `
-            @keyframes ping {
-                75%, 100% { transform: scale(1.8); opacity: 0; }
-            }
-            .animate-ping { animation: ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite; }
-        `;
-        document.head.appendChild(style);
-    }
-
-    let recognition = null;
-    let isListening = false;
-
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = () => {
-            isListening = true;
-            voiceBtn.classList.add('text-indigo-400');
-            voicePulse.classList.remove('opacity-0');
-            voicePulse.classList.add('animate-ping');
-            showToast('🎤 Listening... speak now', 'Voice');
-        };
-
-        recognition.onend = () => {
-            isListening = false;
-            voiceBtn.classList.remove('text-indigo-400');
-            voicePulse.classList.add('opacity-0');
-            voicePulse.classList.remove('animate-ping');
-        };
-
-        recognition.onerror = (event) => {
-            console.error('Speech recognition error:', event.error);
-            isListening = false;
-            voiceBtn.classList.remove('text-indigo-400');
-            voicePulse.classList.add('opacity-0');
-            voicePulse.classList.remove('animate-ping');
-            showToast('Voice recognition failed. Please type instead.', 'Error');
-        };
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            chatInput.value = transcript;
-            showToast(`Recognized: "${transcript}"`, 'Voice');
-            // Optional auto-send (uncomment next line to enable)
-            // setTimeout(() => { if (chatInput.value === transcript) sendBtn.click(); }, 1000);
-        };
-    } else {
-        if (voiceBtn) voiceBtn.style.display = 'none';
-        showToast('Speech recognition not supported in this browser.', 'Warning');
-    }
-
-    if (voiceBtn) {
-        voiceBtn.addEventListener('click', () => {
-            if (!recognition) {
-                showToast('Speech recognition not supported.', 'Error');
-                return;
-            }
-            if (isListening) {
-                recognition.stop();
-            } else {
-                recognition.start();
-            }
-        });
-    }
-
-    // ========== SECTION TEMPLATES ==========
-    const templates = {
-        hero: `<section style="padding:4rem 2rem;text-align:center;background:linear-gradient(145deg, #ffffff10, #00000005);border-radius:2rem"><h1 style="font-size:3rem;font-weight:800">Build Something Amazing</h1><p style="font-size:1.2rem;margin:1rem 0">Your headline here</p><button style="background:#6366f1;color:#fff;padding:0.8rem 2rem;border-radius:40px;font-weight:600">Get Started</button></section>`,
-        features: `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:2rem"><div style="text-align:center"><div style="font-size:2rem;margin-bottom:1rem">✨</div><h3>Feature One</h3><p>Description</p></div><div style="text-align:center"><div style="font-size:2rem;margin-bottom:1rem">🚀</div><h3>Feature Two</h3><p>Description</p></div><div style="text-align:center"><div style="font-size:2rem;margin-bottom:1rem">💡</div><h3>Feature Three</h3><p>Description</p></div></div>`,
-        pricing: `<div style="display:flex;gap:2rem;padding:2rem;justify-content:center"><div style="border:1px solid #ccc;border-radius:1rem;padding:2rem;text-align:center"><h3>Basic</h3><p style="font-size:2rem;margin:1rem 0">$9</p><button style="background:#6366f1;color:#fff;padding:0.5rem 1.5rem;border-radius:40px">Choose</button></div><div style="border:1px solid #ccc;border-radius:1rem;padding:2rem;text-align:center"><h3>Pro</h3><p style="font-size:2rem;margin:1rem 0">$19</p><button style="background:#6366f1;color:#fff;padding:0.5rem 1.5rem;border-radius:40px">Choose</button></div></div>`,
-        contact: `<div style="padding:3rem;background:rgba(99,102,241,0.1);border-radius:2rem"><h2 style="text-align:center;margin-bottom:2rem">Contact Us</h2><form id="xroga-contact-form" style="max-width:500px;margin:0 auto"><input type="text" name="name" placeholder="Your Name" style="width:100%;padding:0.8rem;margin-bottom:1rem;border-radius:8px;border:1px solid #ccc;background:white"/><input type="email" name="email" placeholder="Email Address" style="width:100%;padding:0.8rem;margin-bottom:1rem;border-radius:8px;border:1px solid #ccc;background:white"/><textarea name="message" placeholder="Message" rows="4" style="width:100%;padding:0.8rem;margin-bottom:1rem;border-radius:8px;border:1px solid #ccc;background:white"></textarea><button type="submit" style="background:#6366f1;color:white;padding:0.8rem 2rem;border-radius:40px;border:none;font-weight:600;cursor:pointer">Send Message</button></form></div>`
+    // Set iframe content and enable editing
+    iframe.srcdoc = initialCode || '<html><body style="font-family: system-ui, sans-serif; padding: 20px; margin:0;">Start editing...</body></html>';
+    iframe.onload = () => {
+        iframe.contentDocument.designMode = 'on';
+        iframe.contentDocument.execCommand('defaultParagraphSeparator', false, 'p');
+        const style = iframe.contentDocument.createElement('style');
+        style.textContent = `*:focus { outline: none; }`;
+        iframe.contentDocument.head.appendChild(style);
     };
 
-    // ========== AI COMMAND PROCESSING ==========
-    function showToast(msg, title = 'AI') { if (typeof showToast === 'function') showToast(msg, title); else alert(title + ': ' + msg); }
-
-    async function processCommand(cmd) {
-        const lower = cmd.toLowerCase();
-        const selected = editor.getSelected();
-        let response = '';
-
-        if (lower.includes('add')) {
-            if (lower.includes('hero')) { editor.addComponents(templates.hero); response = '✨ Hero section added!'; }
-            else if (lower.includes('feature')) { editor.addComponents(templates.features); response = '✨ Features section added!'; }
-            else if (lower.includes('pricing')) { editor.addComponents(templates.pricing); response = '✨ Pricing section added!'; }
-            else if (lower.includes('contact') || lower.includes('form')) { editor.addComponents(templates.contact); response = '📧 Contact form added!'; setTimeout(attachContactForm, 100); }
-            else { editor.addComponents(`<section style="padding:2rem"><h2>New Section</h2><p>Your content here</p></section>`); response = '✨ Section added.'; }
-            editor.store();
-        }
-        else if (lower.includes('remove') || lower.includes('delete')) {
-            if (selected) { selected.remove(); editor.store(); response = '✅ Removed.'; contextToolbar.classList.add('hidden'); }
-            else response = 'Select an element first.';
-        }
-        else if ((lower.includes('upload') || lower.includes('change')) && lower.includes('image')) {
-            if (selected?.is('image')) { pendingImageComponent = selected; imageFileInput.click(); response = '📁 Choose an image file.'; }
-            else response = 'Click an image first.';
-        }
-        else if (lower.includes('text') || lower.includes('heading')) {
-            if (selected && (selected.is('text') || selected.is('heading') || selected.is('paragraph') || selected.is('button'))) {
-                const newText = cmd.replace(/.*?(change|set|update)\s+(text|heading)\s+to\s+/i, '').trim();
-                if (newText) { selected.set('content', newText); editor.store(); response = `✅ Text updated.`; }
-                else response = 'Example: "change text to Welcome"';
-            } else response = 'Select a text element.';
-        }
-        else if (lower.includes('background') || lower.includes('bg')) {
-            const colorMatch = cmd.match(/(#[0-9a-f]{3,6}|blue|red|green|yellow|purple|pink|gray|black|white)/i);
-            if (selected) {
-                const color = colorMatch ? colorMatch[0] : '#f0f0f0';
-                selected.addStyle({ 'background-color': color }); editor.store(); response = `✅ Background set.`;
-            } else response = 'Select an element.';
-        }
-        else if (lower.includes('modern')) {
-            editor.addStyle({
-                'body': { 'font-family': "'Inter', sans-serif", 'line-height': '1.6' },
-                'button': { 'border-radius': '40px', 'padding': '0.75rem 1.5rem', 'font-weight': '600' },
-                'h1,h2,h3': { 'font-weight': '700', 'letter-spacing': '-0.02em' }
-            }); response = '✨ Modern styling applied!';
-        }
-        else if (lower.includes('seo')) { seoModal.classList.remove('hidden'); response = '📊 SEO panel opened.'; }
-        else {
-            response = `Try: "add hero", "remove this", "change text to Hello", "upload image", "modern design".`;
-        }
-
-        if (response) showToast(response, 'AI');
-        chatInput.value = '';
-    }
-
-    // ========== CONTACT FORM ==========
-    function attachContactForm() {
-        const iframe = containerEl.querySelector('iframe');
-        if (!iframe) return;
-        const doc = iframe.contentDocument;
-        const form = doc.getElementById('xroga-contact-form');
-        if (form && !form.dataset.listener) {
-            form.dataset.listener = 'true';
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                showToast('📤 Sending... (demo)', 'Contact');
-                setTimeout(() => { showToast('✅ Message sent (demo)', 'Contact'); form.reset(); }, 1000);
+    // Device switcher – updated to handle black theme classes
+    viewModeBtns.forEach(btn => {
+        btn.onclick = () => {
+            const device = btn.dataset.device;
+            if (device === 'desktop') {
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+            } else if (device === 'tablet') {
+                iframe.style.width = '768px';
+                iframe.style.height = '100%';
+            } else if (device === 'mobile') {
+                iframe.style.width = '320px';
+                iframe.style.height = '100%';
+            }
+            // Update active styling
+            viewModeBtns.forEach(b => {
+                b.classList.remove('bg-black', 'text-white', 'shadow-sm');
+                b.classList.add('text-gray-400');
             });
-        }
-    }
+            btn.classList.add('bg-black', 'text-white', 'shadow-sm');
+            btn.classList.remove('text-gray-400');
+        };
+    });
 
-    // ========== CONTEXTUAL TOOLBAR ==========
-    function showToolbar(comp) {
-        const el = comp.getEl(); if (!el) return;
-        const rect = el.getBoundingClientRect();
-        contextToolbar.style.left = Math.max(10, rect.left + window.scrollX) + 'px';
-        contextToolbar.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-        contextToolbar.classList.remove('hidden');
+    // Undo/Redo
+    undoBtn.onclick = () => iframe.contentDocument.execCommand('undo');
+    redoBtn.onclick = () => iframe.contentDocument.execCommand('redo');
 
-        const isText = comp.is('text') || comp.is('heading') || comp.is('paragraph') || comp.is('button');
-        const isImage = comp.is('image');
-        let html = '';
-        if (isText) {
-            html = `
-                <div class="flex items-center gap-2 mb-2"><i data-lucide="type" class="w-4 h-4 text-indigo-400"></i><span class="text-xs font-semibold">Edit Text</span></div>
-                <textarea id="toolbar-text" class="w-full bg-white/20 rounded-lg p-2 text-sm mb-2" rows="2">${escapeHtml(comp.get('content')||'')}</textarea>
-                <div class="flex gap-2 mb-2">
-                    <button class="ai-rewrite flex-1 py-1.5 bg-indigo-500/30 rounded-lg text-xs">✨ Rewrite</button>
-                    <button class="ai-expand flex-1 py-1.5 bg-indigo-500/30 rounded-lg text-xs">📏 Expand</button>
-                    <button class="ai-shorten flex-1 py-1.5 bg-indigo-500/30 rounded-lg text-xs">✂️ Shorten</button>
-                </div>
-                <div class="flex items-center gap-2">
-                    <select id="toolbar-size" class="bg-white/20 rounded-lg px-2 py-1 text-xs"><option value="">Size</option><option value="12px">12</option><option value="14px">14</option><option value="16px">16</option><option value="20px">20</option><option value="24px">24</option><option value="32px">32</option></select>
-                    <input type="color" id="toolbar-color" class="w-8 h-8 rounded-lg border" value="${comp.getStyle()['color']||'#000000'}">
-                    <button class="apply-text flex-1 py-1.5 bg-green-500/50 rounded-lg text-xs">Apply</button>
-                </div>`;
-        } else if (isImage) {
-            html = `
-                <div class="flex items-center gap-2 mb-2"><i data-lucide="image" class="w-4 h-4 text-indigo-400"></i><span class="text-xs font-semibold">Image</span></div>
-                <button class="upload-img w-full py-2 bg-indigo-500/30 rounded-lg text-sm mb-2 flex items-center justify-center gap-1"><i data-lucide="upload" class="w-4 h-4"></i> Upload New</button>
-                <div class="mb-2"><label class="text-xs">URL</label><input id="img-url" class="w-full bg-white/20 rounded-lg p-2 text-sm mt-1" value="${escapeHtml(comp.getAttributes().src||'')}"></div>
-                <div class="mb-2"><label class="text-xs">Alt</label><input id="img-alt" class="w-full bg-white/20 rounded-lg p-2 text-sm mt-1" value="${escapeHtml(comp.getAttributes().alt||'')}"></div>
-                <button class="apply-img w-full py-1.5 bg-green-500/50 rounded-lg text-xs">Apply</button>`;
-        } else {
-            html = `<button class="change-bg w-full py-1.5 bg-indigo-500/30 rounded-lg text-xs">Change Background</button>`;
-        }
-        toolbarContent.innerHTML = html; lucide.createIcons();
-
-        if (isText) {
-            const ta = toolbarContent.querySelector('#toolbar-text');
-            toolbarContent.querySelector('.apply-text').onclick = () => {
-                comp.set('content', ta.value);
-                comp.addStyle({ 'font-size': toolbarContent.querySelector('#toolbar-size').value, 'color': toolbarContent.querySelector('#toolbar-color').value });
-                editor.store(); contextToolbar.classList.add('hidden');
-            };
-            toolbarContent.querySelector('.ai-rewrite').onclick = () => { comp.set('content', ta.value + ' ✨'); editor.store(); contextToolbar.classList.add('hidden'); };
-            toolbarContent.querySelector('.ai-expand').onclick = () => { comp.set('content', ta.value + ' — expanded.'); editor.store(); contextToolbar.classList.add('hidden'); };
-            toolbarContent.querySelector('.ai-shorten').onclick = () => { comp.set('content', ta.value.split(' ').slice(0,5).join(' ')+'…'); editor.store(); contextToolbar.classList.add('hidden'); };
-        } else if (isImage) {
-            toolbarContent.querySelector('.upload-img').onclick = () => { pendingImageComponent = comp; imageFileInput.click(); };
-            toolbarContent.querySelector('.apply-img').onclick = () => {
-                comp.addAttributes({ src: toolbarContent.querySelector('#img-url').value, alt: toolbarContent.querySelector('#img-alt').value });
-                editor.store(); contextToolbar.classList.add('hidden');
-            };
-        } else {
-            toolbarContent.querySelector('.change-bg').onclick = () => {
-                const c = prompt('Background color:'); if (c) { comp.addStyle({'background-color':c}); editor.store(); contextToolbar.classList.add('hidden'); }
-            };
-        }
-    }
-
-    // ========== SEO AUTO + MODAL ==========
+    // SEO Popover Logic
     function analyzeSEO() {
-        const txt = (containerEl.querySelector('iframe')?.contentDocument?.body?.innerText || '').slice(0,200);
+        const txt = (iframe.contentDocument?.body?.innerText || '').slice(0, 200);
         return {
-            title: `Xroga AI | ${txt.slice(0,50)}`,
-            desc: txt.slice(0,150),
-            keywords: txt.split(' ').slice(0,5).join(', ')
+            title: `Xroga AI | ${txt.slice(0, 50)}`,
+            desc: txt.slice(0, 150),
+            keywords: txt.split(' ').slice(0, 5).join(', ')
         };
     }
-    function updateSEOModal() {
+    function updateSEOPopover() {
         const s = analyzeSEO();
-        seoTitle.value = s.title; seoDesc.value = s.desc; seoKeywords.value = s.keywords; seoOgImage.value = 'https://picsum.photos/1200/630';
-        seoTitleCount.textContent = seoTitle.value.length + '/60'; seoDescCount.textContent = seoDesc.value.length + '/160';
+        seoTitle.value = s.title;
+        seoDesc.value = s.desc;
+        seoKeywords.value = s.keywords;
+        seoOgImage.value = 'https://picsum.photos/1200/630';
+        seoTitleCount.textContent = seoTitle.value.length + '/60';
+        seoDescCount.textContent = seoDesc.value.length + '/160';
     }
     seoTitle.oninput = () => seoTitleCount.textContent = seoTitle.value.length + '/60';
     seoDesc.oninput = () => seoDescCount.textContent = seoDesc.value.length + '/160';
-    autoOptimizeBtn.onclick = () => { updateSEOModal(); showToast('SEO auto‑optimized', 'AI'); };
-    applySeoBtn.onclick = () => { seoModal.classList.add('hidden'); showToast('SEO applied', 'Success'); };
-    seoBtn.onclick = () => { updateSEOModal(); seoModal.classList.remove('hidden'); };
-    closeSeoModal.onclick = () => seoModal.classList.add('hidden');
+    autoOptimizeBtn.onclick = () => { updateSEOPopover(); showToast('SEO auto‑optimized', 'AI'); };
+    applySeoBtn.onclick = () => { seoPopover.classList.add('hidden'); showToast('SEO applied', 'Success'); };
+    seoBtn.onclick = (e) => { e.stopPropagation(); updateSEOPopover(); seoPopover.classList.toggle('hidden'); };
+    document.addEventListener('click', (e) => { if (!seoBtn.contains(e.target) && !seoPopover.contains(e.target)) seoPopover.classList.add('hidden'); });
 
-    // ========== UPLOADS ==========
-    logoUploadBtn.onclick = () => logoFileInput.click();
-    logoFileInput.onchange = e => {
-        const f = e.target.files[0]; if (!f) return;
-        const r = new FileReader(); r.onload = ev => {
-            let logo = editor.getComponents().find(c => c.getAttributes().class === 'xroga-logo')[0];
-            if (!logo) logo = editor.addComponents({type:'image', attributes:{class:'xroga-logo', src:ev.target.result, style:'max-height:50px'}})[0];
-            else logo.addAttributes({src:ev.target.result});
-            editor.store(); showToast('Logo updated');
-        }; r.readAsDataURL(f); logoFileInput.value = '';
-    };
-    imageFileInput.onchange = e => {
-        const f = e.target.files[0]; if (!f || !pendingImageComponent) return;
-        const r = new FileReader(); r.onload = ev => {
-            pendingImageComponent.addAttributes({src:ev.target.result}); editor.store();
-            showToast('Image replaced'); pendingImageComponent = null;
-        }; r.readAsDataURL(f); imageFileInput.value = '';
-    };
-
-    // ========== SPARKLES ==========
-    function sparkle(el) {
-        const rect = el.getBoundingClientRect();
-        const doc = containerEl.querySelector('iframe')?.contentDocument || document;
-        doc.querySelectorAll('.sparkle-particle').forEach(s => s.remove());
-        for (let i=0;i<8;i++) {
-            const s = document.createElement('div'); s.className='sparkle-particle';
-            s.style.cssText = `position:absolute;width:6px;height:6px;background:radial-gradient(circle,#fff 0%,#a855f7 100%);border-radius:50%;pointer-events:none;z-index:1000;box-shadow:0 0 10px #a855f7;animation:sparkleFloat 1.5s forwards;`;
-            const a = (i/8)*Math.PI*2, r=30;
-            s.style.left = (rect.left+rect.width/2+Math.cos(a)*r)+'px';
-            s.style.top = (rect.top+rect.height/2+Math.sin(a)*r)+'px';
-            doc.body.appendChild(s); setTimeout(()=>s.remove(),1500);
-        }
-    }
-
-    // ========== EDITOR EVENTS ==========
-    editor.on('load', () => {
-        const doc = containerEl.querySelector('iframe')?.contentDocument;
-        if (doc) {
-            doc.head.insertAdjacentHTML('beforeend', `<style>
-                [data-gjs-type="text"]:hover, [data-gjs-type="heading"]:hover, [data-gjs-type="paragraph"]:hover,
-                [data-gjs-type="button"]:hover, [data-gjs-type="image"]:hover { outline: 2px dashed #a855f7 !important; outline-offset: 4px; cursor: pointer; }
-                @keyframes sparkleFloat { 0% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(0.5) translateY(-20px); } }
-            </style>`);
-        }
-        updateSEOModal();
-        showToast('SEO auto‑optimized. Click SEO to edit.', 'AI');
-    });
-    editor.on('component:selected', c => { selectedComponent = c; if(c.getEl()){ sparkle(c.getEl()); showToolbar(c); } });
-    editor.on('component:deselected', () => { contextToolbar.classList.add('hidden'); selectedComponent=null; });
-    editor.on('component:add', () => setTimeout(attachContactForm, 100));
-
-    modal.addEventListener('click', e => { if (!e.target.closest('#context-toolbar') && !e.target.closest('[data-gjs-type]')) contextToolbar.classList.add('hidden'); });
-
-    sendBtn.onclick = () => { const cmd = chatInput.value.trim(); if (cmd) processCommand(cmd); };
-    chatInput.onkeypress = e => { if (e.key==='Enter') sendBtn.click(); };
-
-    viewModeBtns.forEach(b => b.onclick = () => {
-        const d = b.dataset.device; editor.setDevice(d==='desktop'?'Desktop':d);
-        viewModeBtns.forEach(btn => btn.classList.remove('bg-white/20')); b.classList.add('bg-white/20');
-    });
-
-    undoBtn.onclick = () => editor.UndoManager.undo();
-    redoBtn.onclick = () => editor.UndoManager.redo();
-    previewBtn.onclick = () => editor.runCommand('core:preview');
-
+    // Save
     saveBtn.onclick = () => {
-        const html = editor.getHtml(), css = editor.getCss(), full = `<style>${css}</style>\n${html}`;
-        const pre = codeContainer.querySelector('.code-display'), area = codeContainer.querySelector('.code-edit-area');
-        pre.querySelector('code').textContent = full; if (area) area.value = full;
-        if (window.hljs) hljs.highlightElement(pre.querySelector('code'));
-        if (state.selectedChat) {
-            const msg = state.selectedChat.messages.find(m => m.messageId === messageDiv.dataset.messageId);
-            if (msg) msg.content = full; saveChats();
+        const html = iframe.contentDocument.documentElement.outerHTML;
+        const pre = codeContainer.querySelector('.code-display');
+        const area = codeContainer.querySelector('.code-edit-area');
+        if (pre) {
+            pre.querySelector('code').textContent = html;
+            if (window.hljs) hljs.highlightElement(pre.querySelector('code'));
         }
-        showToast('Saved', 'Success'); closeModal();
+        if (area) area.value = html;
+        if (typeof state !== 'undefined' && state.selectedChat) {
+            const msg = state.selectedChat.messages.find(m => m.messageId === messageDiv.dataset.messageId);
+            if (msg) msg.content = html;
+            if (typeof saveChats === 'function') saveChats();
+        }
+        showToast('Saved', 'Success');
     };
-    deployBtn.onclick = () => openDeployModal(editor.getHtml() + '<style>' + editor.getCss() + '</style>');
 
-    const closeModal = () => { modalContent.classList.add('scale-95','opacity-0'); setTimeout(()=>{modal.remove(); editor.destroy();},200); };
-    closeBtn.onclick = closeModal; modal.onclick = e => { if(e.target===modal) closeModal(); };
+    // Deploy
+    deployBtn.onclick = () => {
+        const html = iframe.contentDocument.documentElement.outerHTML;
+        if (typeof openDeployModal === 'function') openDeployModal(html);
+        else alert('Deploy: ' + html.slice(0, 100) + '…');
+    };
+
+    // Close on backdrop click
+    modal.onclick = e => {
+        if (e.target === modal) {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => modal.remove(), 200);
+        }
+    };
+
+    function showToast(msg, title = 'Info') {
+        if (typeof window.showToast === 'function') window.showToast(msg, title);
+        else alert(title + ': ' + msg);
+    }
 }
 
 function addUserMessage(content, saveToHistory = true) {
