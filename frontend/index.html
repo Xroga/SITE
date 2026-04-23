@@ -1003,10 +1003,95 @@
     -webkit-background-clip: text;
     background-clip: text;
   }
+  
+  @keyframes animStar {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-2000px); }
+}
+</style>
+
+
+<style>
+@keyframes rotateConstellation {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
+
+
+<script>
+  function generateStars(count) {
+    let shadows = [];
+    for (let i = 0; i < count; i++) {
+      const x = Math.floor(Math.random() * 2000);
+      const y = Math.floor(Math.random() * 2000);
+      shadows.push(`${x}px ${y}px #FFF`);
+    }
+    return shadows.join(',');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const smallLayer = document.getElementById('stars');
+    const medLayer   = document.getElementById('stars2');
+    const bigLayer   = document.getElementById('stars3');
+
+    if (smallLayer) {
+      // 700 tiny stars (width:1px height:1px)
+      smallLayer.style.width = '1px';
+      smallLayer.style.height = '1px';
+      smallLayer.style.background = 'transparent';
+      smallLayer.style.boxShadow = generateStars(700);
+      smallLayer.style.animation = 'animStar 50s linear infinite';
+      
+      // after element (second copy for seamless looping) – we'll handle with a duplicated box-shadow or a pseudo
+      // easiest: add a second copy of the shadow slightly offset? We can just repeat the layer trick.
+      // Alternatively, we can use the ::after pseudo via JS? Pseudo-elements can't be directly styled with JS.
+      // Classic approach: use two elements for each size. We'll simply duplicate the layer in HTML.
+    }
+    
+    // Instead of struggling with ::after, we'll duplicate the star divs for seamless looping.
+    // We'll modify HTML: add #stars-after, #stars2-after, #stars3-after as separate divs.
+  });
+</script>
+
+<div class="fixed inset-0 z-[1] pointer-events-none" id="space-dust"></div>
+
+<script>
+// Generates 30 floating particles with CSS custom properties for varied speed & drift
+(function() {
+  const dust = document.getElementById('space-dust');
+  let particles = '';
+  for (let i = 0; i < 30; i++) {
+    const size = Math.random() * 2 + 1;
+    const left = Math.random() * 100;
+    const delay = Math.random() * 10;
+    const duration = Math.random() * 15 + 10;
+    particles += `
+      <div style="position:absolute; left:${left}%; bottom:-10px;
+           width:${size}px; height:${size}px; background:rgba(255,255,255,0.8);
+           border-radius:50%; box-shadow:0 0 ${size*4}px rgba(255,255,255,0.5);
+           animation: dustFloat ${duration}s linear ${delay}s infinite;"></div>
+    `;
+  }
+  dust.innerHTML = particles;
+})();
+</script>
+
+<style>
+@keyframes dustFloat {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
+}
 </style>
 
 </head>
-<body class="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-950 text-gray-900 dark:text-gray-100 antialiased">
+<body class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 dark:from-gray-950 dark:via-slate-900 dark:to-indigo-950 text-gray-900 dark:text-gray-100 antialiased">
+
+
+
     <!-- Main Container with glass effect -->
     
         <!-- Sidebar Overlay -->
@@ -1638,16 +1723,29 @@
 </div>
 </div>
             
-<!-- XROGA AI · CHAT BAR v7 — HIDE/SHOW + THEME SYNC + 3‑PHASE ROCKET ANIMATION -->
+<!-- XROGA AI · CHAT BAR v7 — UPPER GAP FOR BACKGROUND VISIBILITY -->
 <style>
-  /* ----- SCOPED ROOT (no conflicts) ----- */
+  /* ----- SCOPED ROOT – zero document-flow footprint ----- */
   .xroga-chat-root {
-    all: initial;
+    position: static;
     display: block;
+    height: 0;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    overflow: visible;
+    font-size: 0; /* kills whitespace gap */
+    line-height: 0;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
+    background: transparent;
+    color: inherit;
+    float: none;
+    clear: none;
+    visibility: visible;
+    opacity: 1;
   }
   .xroga-chat-root *,
   .xroga-chat-root *::before,
@@ -1655,6 +1753,8 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-size: initial;
+    line-height: 1.5;
   }
 
   /* Fixed bottom bar */
@@ -1671,7 +1771,7 @@
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
   }
 
-  /* Hidden state – slide down & fade out */
+  /* Hidden state */
   .xroga-chat-root.chatbar-hidden .xroga-chat-bar {
     transform: translateX(-50%) translateY(200%);
     opacity: 0;
@@ -1684,7 +1784,9 @@
     backdrop-filter: blur(28px) saturate(200%);
     -webkit-backdrop-filter: blur(28px) saturate(200%);
     border-radius: 28px;
-    padding: 12px 16px;
+    /* ⭐ NEW: adjustable top gap via CSS variable */
+    --xroga-top-gap: 48px;   /* change this to any value you like */
+    padding: 0 16px 12px 16px; /* top remains 0, the spacer handles the gap */
     box-shadow: 
       0 20px 40px -8px rgba(0, 0, 0, 0.5),
       0 0 0 1px rgba(255, 255, 255, 0.08) inset,
@@ -1694,7 +1796,7 @@
     position: relative;
   }
 
-  /* Light theme overrides – triggered when html does NOT have .dark */
+  /* Light theme */
   .xroga-chat-root.light-mode .xroga-glass-panel {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(20px) saturate(150%);
@@ -1720,42 +1822,61 @@
     background: rgba(255, 255, 255, 0.65);
   }
 
-  /* Top actions bar – reduced bottom margin */
+  /* ⭐ SPACER – always visible, shows background through blur */
+  .xroga-top-gap-spacer {
+    height: var(--xroga-top-gap, 48px);
+    width: 100%;
+    flex-shrink: 0;
+    background: transparent;
+    pointer-events: none; /* so clicks pass through to the background if needed */
+  }
+
+  /* Top actions bar – collapses when empty */
   .xroga-top-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+    min-height: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  .xroga-top-actions.has-visible-children {
+    height: auto;
+    overflow: visible;
+    margin-bottom: 0;
   }
 
-  .xroga-left-actions {
-    display: flex;
-    gap: 8px;
-  }
-
+  .xroga-left-actions,
   .xroga-right-actions {
     display: flex;
     gap: 8px;
   }
+  .xroga-left-actions:empty,
+  .xroga-right-actions:empty,
+  .xroga-left-actions:not(:has(> :not([style*="display: none"]))),
+  .xroga-right-actions:not(:has(> :not([style*="display: none"]))) {
+    display: none;
+  }
 
-  /* Hide button – smaller text, compact */
+  /* Hide button */
   .xroga-hide-btn {
     background: rgba(255,255,255,0.08);
     border: none;
     color: white;
-    padding: 4px 10px;
+    padding: 2px 10px;
     border-radius: 40px;
     display: inline-flex;
     align-items: center;
     gap: 4px;
     font-size: 0.75rem;
     font-weight: 500;
+    line-height: 1.2;
     cursor: pointer;
     backdrop-filter: blur(4px);
     transition: all 0.2s;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     border: 0.5px solid rgba(255,255,255,0.1);
-    line-height: 1;
   }
   .xroga-chat-root.light-mode .xroga-hide-btn {
     background: rgba(0,0,0,0.05);
@@ -1799,13 +1920,12 @@
     align-items: flex-end;
     gap: 8px;
   }
-
   .xroga-input-wrapper {
     flex: 1;
     min-width: 0;
   }
 
-  /* Textarea styling */
+  /* Textarea */
   #chat-input {
     width: 100%;
     background: transparent;
@@ -1827,7 +1947,6 @@
   .xroga-chat-root.light-mode #chat-input {
     color: #0b1120;
   }
-
   #chat-input::placeholder {
     color: rgba(255, 255, 255, 0.7);
     font-weight: 350;
@@ -1895,7 +2014,7 @@
     background: linear-gradient(145deg, #3b82f6, #2563eb) !important;
   }
 
-  /* Mic listening state */
+  /* Mic listening */
   .xroga-mic.listening {
     background: #dc2626 !important;
     color: white;
@@ -1907,7 +2026,7 @@
     100% { box-shadow: 0 0 0 0 rgba(220,38,38,0), 0 0 0 1px rgba(255,255,255,0.2) inset; }
   }
 
-  /* Ripple effect */
+  /* Ripple */
   .xroga-ripple {
     position: absolute;
     border-radius: 50%;
@@ -1921,7 +2040,7 @@
     to { transform: scale(4); opacity: 0; }
   }
 
-  /* ----- REVEAL BUTTON (bottom centre, appears when chatbar hidden) ----- */
+  /* Reveal button */
   .xroga-reveal-btn {
     position: fixed;
     bottom: 20px;
@@ -1960,7 +2079,6 @@
   .xroga-reveal-btn:hover i {
     transform: translateY(-2px);
   }
-  /* Light mode for reveal button */
   .xroga-chat-root.light-mode .xroga-reveal-btn {
     background: rgba(255, 255, 255, 0.7);
     color: #0b1120;
@@ -1969,20 +2087,14 @@
   .xroga-chat-root.light-mode .xroga-reveal-btn:hover {
     background: rgba(255, 255, 255, 0.9);
   }
-
-  /* Show reveal button only when chatbar is hidden */
   .xroga-chat-root.chatbar-hidden .xroga-reveal-btn {
     opacity: 1;
     transform: translateX(-50%) scale(1) translateY(0);
     pointer-events: auto;
   }
 
-  /* ----- 3‑PHASE ROCKET ANIMATIONS ----- */
-  .xroga-send {
-    transition: none;
-  }
-
-  /* Phase 1: Ignition */
+  /* Rocket animations */
+  .xroga-send { transition: none; }
   .xroga-send.rocket-ignition {
     animation: xrogaRocketIgnition 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
   }
@@ -1994,8 +2106,6 @@
     80% { transform: scale(1) translateY(-2px); }
     100% { transform: scale(1) translateY(-8px); box-shadow: 0 12px 20px -5px #3b82f6; }
   }
-
-  /* Phase 2: Orbital */
   .xroga-send.rocket-orbital {
     animation: xrogaRocketOrbital 1.8s infinite ease-in-out;
     transform: translateY(-8px);
@@ -2005,8 +2115,6 @@
     0%, 100% { transform: translateY(-8px) scale(1); }
     50% { transform: translateY(-12px) scale(1.03); }
   }
-
-  /* Phase 3: Re‑Entry */
   .xroga-send.rocket-reentry {
     animation: xrogaRocketReentry 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
@@ -2017,14 +2125,15 @@
     100% { transform: translateY(0) scale(1); box-shadow: 0 0 0 #3b82f6; }
   }
 
-  /* Mobile adjustments */
+  /* Mobile */
   @media (max-width: 600px) {
     .xroga-chat-bar {
       width: calc(100% - 16px);
       bottom: 16px;
     }
     .xroga-glass-panel {
-      padding: 10px 12px;
+      --xroga-top-gap: 40px; /* slightly smaller on mobile */
+      padding: 0 12px 10px 12px;
       border-radius: 24px;
     }
     .xroga-btn {
@@ -2040,7 +2149,7 @@
       height: 34px;
     }
     .xroga-hide-btn {
-      padding: 4px 8px;
+      padding: 2px 8px;
       font-size: 0.7rem;
     }
     .xroga-reveal-btn {
@@ -2052,9 +2161,6 @@
     .xroga-reveal-btn i {
       font-size: 0.9rem;
     }
-    .xroga-top-actions {
-      margin-bottom: 4px;
-    }
   }
 
   @keyframes xrogaFadeUp {
@@ -2062,14 +2168,13 @@
     100% { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
-  /* Desktop – one row */
+  /* Desktop layout */
   .xroga-chat-root .xroga-flex-row {
     display: flex !important;
     flex-direction: row !important;
     align-items: flex-end !important;
     gap: 8px !important;
   }
-
   .xroga-chat-root .xroga-action-buttons {
     display: flex !important;
     flex-direction: row !important;
@@ -2116,7 +2221,7 @@
 </style>
 
 <div class="xroga-chat-root" id="xrogaRoot">
-  <!-- REVEAL BUTTON (bottom centre) -->
+  <!-- REVEAL BUTTON -->
   <div class="xroga-reveal-btn" id="xrogaRevealBtn">
     <i class="fas fa-chevron-up"></i>
     <span>Show chat</span>
@@ -2124,13 +2229,16 @@
 
   <div class="xroga-chat-bar">
     <div class="xroga-glass-panel">
-      <div class="xroga-top-actions">
+      <!-- ⭐ ALWAYS-VISIBLE TOP GAP – shows background responses through the blur -->
+      <div class="xroga-top-gap-spacer"></div>
+
+      <div class="xroga-top-actions" id="xrogaTopActions">
         <div class="xroga-left-actions">
           <button class="xroga-hide-btn" id="xrogaHideBtn" title="Hide chat bar">
             Hide ▾
           </button>
         </div>
-        <div class="xroga-right-actions">
+        <div class="xroga-right-actions" id="xrogaRightActions">
           <button class="xroga-minimize-btn" id="xrogaMinimizeBtn" title="Minimize/Expand" style="display: none;">
             <i class="fas fa-chevron-up"></i>
           </button>
@@ -2177,10 +2285,12 @@
       const minimizeBtn = document.getElementById('xrogaMinimizeBtn');
       const hideBtn = document.getElementById('xrogaHideBtn');
       const revealBtn = document.getElementById('xrogaRevealBtn');
+      const topActions = document.getElementById('xrogaTopActions');
+      const rightActions = document.getElementById('xrogaRightActions');
 
       if (!textarea) return;
 
-      // ----- THEME SYNC – watches html.dark class -----
+      // ----- THEME SYNC -----
       function syncTheme() {
         const isDark = document.documentElement.classList.contains('dark');
         if (isDark) {
@@ -2189,20 +2299,29 @@
           root.classList.add('light-mode');
         }
       }
-
       syncTheme();
       const htmlObserver = new MutationObserver(syncTheme);
       htmlObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
       // ----- HIDE / REVEAL -----
-      function hideChatBar() {
-        root.classList.add('chatbar-hidden');
-      }
-      function revealChatBar() {
-        root.classList.remove('chatbar-hidden');
-      }
+      function hideChatBar() { root.classList.add('chatbar-hidden'); }
+      function revealChatBar() { root.classList.remove('chatbar-hidden'); }
       if (hideBtn) hideBtn.addEventListener('click', hideChatBar);
       if (revealBtn) revealBtn.addEventListener('click', revealChatBar);
+
+      // ----- TOP ACTIONS VISIBILITY (unchanged) -----
+      function updateTopActionsVisibility() {
+        if (!topActions || !rightActions) return;
+        const minimizeVisible = minimizeBtn && minimizeBtn.style.display !== 'none';
+        const rightHasVisible = !!rightActions.querySelector('button:not([style*="display: none"])');
+        const leftHasVisible = hideBtn && hideBtn.style.display !== 'none';
+        if (leftHasVisible || rightHasVisible || minimizeVisible) {
+          topActions.classList.add('has-visible-children');
+        } else {
+          topActions.classList.remove('has-visible-children');
+        }
+      }
+      updateTopActionsVisibility();
 
       // ----- DYNAMIC PHRASES -----
       const phrases = [
@@ -2224,9 +2343,7 @@
       const MIN_ROWS = 6;
       const LINE_HEIGHT = 1.5 * 16;
 
-      function getMaxRows() {
-        return window.innerWidth <= 600 ? MOBILE_MAX_ROWS : DESKTOP_MAX_ROWS;
-      }
+      function getMaxRows() { return window.innerWidth <= 600 ? MOBILE_MAX_ROWS : DESKTOP_MAX_ROWS; }
 
       textarea.placeholder = phrases[0];
       phraseIndex = 1;
@@ -2237,12 +2354,10 @@
         }
         phraseIndex = (phraseIndex + 1) % phrases.length;
       }
-
       function startRotation() {
         if (interval) clearInterval(interval);
         interval = setInterval(rotatePlaceholder, 3200);
       }
-
       function pause() { paused = true; }
       function resume() {
         if (textarea.value.trim() === '' && document.activeElement !== textarea && !listening) paused = false;
@@ -2275,6 +2390,7 @@
         } else {
           minimizeBtn.style.display = 'none';
         }
+        updateTopActionsVisibility();
       }
 
       if (minimizeBtn) {
@@ -2293,11 +2409,7 @@
         });
       }
 
-      window.addEventListener('resize', () => {
-        autoResize();
-        updateMinimizeButtonVisibility();
-      });
-
+      window.addEventListener('resize', () => { autoResize(); updateMinimizeButtonVisibility(); });
       autoResize();
       startRotation();
 
@@ -2311,7 +2423,6 @@
         if (listeningTimer) clearTimeout(listeningTimer);
         listeningTimer = setTimeout(() => { if (listening) stopListening(true); }, 5000);
       }
-
       function stopListening(setRandomPhrase = true) {
         if (!micBtn) return;
         listening = false;
@@ -2324,19 +2435,11 @@
         }
         if (textarea.value.trim() === '' && document.activeElement !== textarea) paused = false;
       }
+      micBtn.addEventListener('click', (e) => { e.preventDefault(); listening ? stopListening(true) : startListening(); });
+      textarea.addEventListener('input', () => { if (listening && textarea.value.trim() !== '') stopListening(false); });
 
-      micBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        listening ? stopListening(true) : startListening();
-      });
-
-      textarea.addEventListener('input', () => {
-        if (listening && textarea.value.trim() !== '') stopListening(false);
-      });
-
-      // ----- SEND WITH 3‑PHASE ROCKET ANIMATION -----
+      // ----- SEND WITH ROCKET -----
       let isAnimating = false;
-
       function createRipple(btn, e) {
         const ripple = document.createElement('span');
         ripple.className = 'xroga-ripple';
@@ -2349,11 +2452,8 @@
         btn.appendChild(ripple);
         setTimeout(() => ripple.remove(), 600);
       }
-
       function triggerMainSendWithAnimation(e) {
-        if (!sendBtn) return;
-        if (isAnimating) return;
-        
+        if (!sendBtn || isAnimating) return;
         const msg = textarea.value.trim();
         if (!msg) {
           const suggestion = phrases[Math.floor(Math.random() * phrases.length)];
@@ -2361,10 +2461,7 @@
           phraseIndex = phrases.indexOf(suggestion) + 1;
           return;
         }
-
         isAnimating = true;
-
-        // Clear Xroga input
         console.log(`💬 Xroga AI · Sent: "${msg}"`);
         textarea.value = '';
         autoResize();
@@ -2375,77 +2472,48 @@
         setTimeout(() => textarea.style.boxShadow = '', 200);
         if (document.activeElement !== textarea) paused = false;
         if (listening) stopListening(false);
-
-        // Ripple effect
         if (e) createRipple(sendBtn, e);
 
-        // Phase 1: Ignition
         sendBtn.classList.add('rocket-ignition');
-        
         setTimeout(() => {
           sendBtn.classList.remove('rocket-ignition');
           sendBtn.classList.add('rocket-orbital');
-          
-          // Phase 2: Orbital (simulated processing – replace with real event)
           setTimeout(() => {
             sendBtn.classList.remove('rocket-orbital');
             sendBtn.classList.add('rocket-reentry');
-            
             setTimeout(() => {
               sendBtn.classList.remove('rocket-reentry');
               isAnimating = false;
             }, 500);
-            
           }, 2000);
-          
         }, 400);
 
-        // Send to main chat (does not block animation)
-        const mainInput = document.getElementById('main-chat-input') || 
-                          document.querySelector('#chat-input-main, [data-main-input]');
+        const mainInput = document.getElementById('main-chat-input') || document.querySelector('#chat-input-main, [data-main-input]');
         if (mainInput) {
           mainInput.value = msg;
           mainInput.dispatchEvent(new Event('input', { bubbles: true }));
           const mainSendBtn = document.getElementById('main-send-btn');
-          if (mainSendBtn) {
-            mainSendBtn.click();
-          } else {
-            mainInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-          }
+          if (mainSendBtn) mainSendBtn.click();
+          else mainInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
         } else {
           console.error('❌ Main input not found. Set its ID to "main-chat-input".');
         }
       }
-
-      if (sendBtn) {
-        sendBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          triggerMainSendWithAnimation(e);
-        });
-      }
-
+      if (sendBtn) sendBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); triggerMainSendWithAnimation(e); });
       textarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          triggerMainSendWithAnimation();
-        }
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); triggerMainSendWithAnimation(); }
       });
-
-      // Reset paused when clicking outside
       document.addEventListener('click', (e) => {
-        if (!e.target.closest('.xroga-chat-bar') && textarea.value.trim() === '' && !listening) {
-          paused = false;
-        }
+        if (!e.target.closest('.xroga-chat-bar') && textarea.value.trim() === '' && !listening) paused = false;
       });
 
-      console.log('✅ Xroga AI v7 · Ready (hide/show, theme sync, 3‑phase rocket)');
+      console.log('✅ Xroga AI v7 · Upper gap active – background responses visible through the bar');
     }
-
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initXroga);
     else initXroga();
   })();
 </script>
+
     
     <!-- Settings Modal (enhanced with auto-speak) -->
     <div id="settings-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
