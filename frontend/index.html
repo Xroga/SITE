@@ -383,7 +383,7 @@
             display: block !important;
         }
         
-        #chat-input {
+        #xroga-chat-input {
             font-size: 16px !important;
         }
     }
@@ -1098,9 +1098,9 @@
         <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 lg:hidden hidden"></div>
         
         <!-- Sidebar (glass already) -->
-        <aside id="sidebar" class="w-72 bg-white/30 dark:bg-gray-800/50 backdrop-blur-xl border-r border-white/30 dark:border-gray-700/30 flex flex-col h-full fixed lg:absolute lg:left-0 lg:top-0 lg:h-full z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <aside id="sidebar" class="w-72 bg-white dark:bg-gray-800/50 backdrop-blur-xl border-r border-gray-200 dark:border-gray-700/30 flex flex-col h-full fixed lg:absolute lg:left-0 lg:top-0 lg:h-full z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
             <!-- Header -->
-            <div class="p-4 md:p-6 border-b border-white/30 dark:border-gray-700/30">
+            <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700/30">
                 <div class="flex items-center gap-8 mb-9">
     <div class="relative logo-glow">
         <img src="https://i.postimg.cc/TPjDXhy8/Green-Minimalist-Summer-Big-Sale-Medium-Banner-7-removebg-preview.png" alt="Xroga AI" class="h-20 w-40">
@@ -1112,19 +1112,35 @@
 
                 
                 <!-- New Chat Button -->
-                <button id="new-chat" class="w-full gradient-btn py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-[0.98]">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
-                    <span class="font-semibold">New Chat</span>
-                </button>
+<button id="new-chat" class="w-full relative overflow-hidden py-3 px-4 rounded-xl flex items-center justify-center gap-2 
+            bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 
+            text-blue-600 dark:text-blue-300 font-semibold 
+            group transition-all duration-500 shadow-sm hover:shadow-md active:scale-[0.98]">
+    <!-- Sliding blue gradient overlay -->
+    <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-500 to-indigo-500 
+             -translate-x-full group-hover:translate-x-0 
+             transition-transform duration-500 ease-out pointer-events-none"></span>
+    
+    <i data-lucide="plus" class="w-5 h-5 relative z-10 group-hover:text-white transition-colors duration-500"></i>
+    <span class="relative z-10 group-hover:text-white transition-colors duration-500">New Chat</span>
+</button>
             </div>
             
             <!-- Chat History -->
             <div class="flex-1 overflow-y-auto p-4">
                 <!-- Search -->
-                <div class="relative mb-6">
-                    <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                    <input type="text" id="search-chats" placeholder="Search chats..." class="search-input w-full pl-10 pr-4 py-2.5 bg-white/30 dark:bg-gray-700/50 border border-white/30 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm backdrop-blur-sm">
-                </div>
+<div class="relative mb-6">
+    <i data-lucide="scan-search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-700 dark:text-gray-400"></i>
+    <input type="text" id="search-chats" placeholder="Search chats..." 
+           class="search-input w-full pl-10 pr-4 py-2.5 
+                  bg-gray-100 dark:bg-gray-700/50 
+                  border border-gray-200 dark:border-gray-600/50 
+                  rounded-xl 
+                  focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent 
+                  text-sm text-gray-900 dark:text-white 
+                  placeholder-gray-500 dark:placeholder-gray-400 
+                  backdrop-blur-sm">
+</div>
                 
               <!-- Code Chats Section (collapsible) -->
 <div id="code-chats-section" class="mb-6">
@@ -1153,30 +1169,30 @@
     <div id="deepthought-chats-list" class="space-y-1 mt-2"></div>
 </div>
             
-<!-- Advanced Productivity Sidebar -->
-<div class="p-4 border-t border-white/30 dark:border-gray-700/30 space-y-4">
+<!-- Advanced Productivity Sidebar (UPDATED: calendar + reminder UI) -->
+<div class="p-4 border-t border-gray-200 dark:border-gray-700/30 space-y-4">
     <!-- Smart Header (Time/Date, Workload, Timeline, Focus, Progress) -->
     <div class="flex flex-wrap items-center justify-between gap-2 px-1">
         <div class="flex items-center gap-3">
             <div class="flex flex-col">
                 <span id="current-time" class="text-2xl font-light tracking-tight text-pure-gold cursor-pointer hover:opacity-80 transition">--:--</span>
-                <span id="current-date" class="text-xs text-white/60 uppercase tracking-wider cursor-pointer hover:text-white/80 transition">---</span>
+                <span id="current-date" class="text-xs text-gray-500 dark:text-white/60 uppercase tracking-wider cursor-pointer">---</span>
             </div>
             <div id="workload-indicator" class="text-sm" title="Today's workload feasibility">⚪</div>
         </div>
         <div class="flex items-center gap-2">
-            <button id="timeline-toggle" class="p-1.5 rounded-lg bg-white/5 text-white/40 hover:bg-pure-gold/20 hover:text-pure-gold transition" title="Timeline View">
+            <button id="timeline-toggle" class="p-1.5 rounded-lg bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-white/40 hover:bg-pure-gold/20 hover:text-pure-gold transition" title="Timeline View (only future tasks)">
                 <i data-lucide="timeline" class="w-4 h-4"></i>
             </button>
             <button id="global-focus-btn" class="px-3 py-1.5 rounded-full bg-pure-gold/20 border border-pure-gold/40 text-pure-gold text-xs font-medium flex items-center gap-1 hover:bg-pure-gold/30 transition">
                 <i data-lucide="timer" class="w-3.5 h-3.5"></i> Focus
             </button>
             <div id="task-progress-container" class="w-16 sm:w-20">
-                <div class="flex justify-between text-xs text-white/40 mb-1">
+                <div class="flex justify-between text-xs text-gray-500 dark:text-white/40 mb-1">
                     <span>Today</span>
                     <span id="task-progress-text">0%</span>
                 </div>
-                <div class="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div class="h-1 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
                     <div id="task-progress-bar" class="h-full bg-pure-gold transition-all duration-500" style="width:0%"></div>
                 </div>
             </div>
@@ -1186,27 +1202,38 @@
     <!-- NLP Input with Voice -->
     <div class="relative">
         <input type="text" id="nlp-task-input" placeholder='Try "Submit report tomorrow 4pm" or "Call mom at 6pm"' 
-               class="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-3 pr-12 text-sm text-white placeholder-white/30 focus:outline-none focus:border-pure-gold/50 transition-all">
-        <button id="voice-task-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-white/5 hover:bg-pure-gold/20 text-pure-gold/70 transition-all">
+               class="w-full bg-gray-100 dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 pr-12 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:border-pure-gold/50 transition-all">
+        <button id="voice-task-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-pure-gold/20 text-pure-gold/70 transition-all">
             <i data-lucide="mic" class="w-4 h-4"></i>
         </button>
     </div>
     <div id="nlp-feedback" class="text-xs text-pure-gold/70 px-2 hidden"></div>
 
-    <!-- Deadline Preview & Confirm (hidden by default) -->
-    <div id="deadline-preview" class="hidden mt-2 p-3 rounded-xl bg-white/5 border border-white/10">
+    <!-- Deadline Preview & Confirm (includes reminder choice) -->
+    <div id="deadline-preview" class="hidden mt-2 p-3 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i data-lucide="calendar-clock" class="w-4 h-4 text-pure-gold"></i>
-                <span id="preview-deadline-text" class="text-sm text-white/80">Today, 6:00 PM</span>
+                <span id="preview-deadline-text" class="text-sm text-gray-900 dark:text-white/80">Today, 6:00 PM</span>
             </div>
             <button id="change-deadline-btn" class="text-xs text-pure-gold/70 hover:text-pure-gold">Change</button>
+        </div>
+        <!-- Reminder selector (NEW) -->
+        <div class="mt-3 flex items-center gap-2 flex-wrap">
+            <span class="text-xs text-white/50">⏰ Reminder:</span>
+            <select id="reminder-select" class="text-xs bg-black/30 border border-white/20 rounded-full px-2 py-1 text-white/80">
+                <option value="none">None</option>
+                <option value="on_time">At due time</option>
+                <option value="5min">5 minutes before</option>
+                <option value="15min">15 minutes before</option>
+                <option value="1hour">1 hour before</option>
+            </select>
         </div>
         <div class="flex gap-2 mt-3">
             <button id="confirm-add-task" class="flex-1 py-2 bg-pure-gold/20 border border-pure-gold/40 rounded-full text-pure-gold text-sm font-medium">
                 Add Task
             </button>
-            <button id="cancel-add-task" class="px-4 py-2 bg-white/5 rounded-full text-white/50 text-sm">Cancel</button>
+            <button id="cancel-add-task" class="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-full text-gray-500 dark:text-white/50 text-sm">Cancel</button>
         </div>
     </div>
 
@@ -1217,6 +1244,27 @@
 
     <!-- Task Container -->
     <div class="space-y-3 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar" id="tasks-container"></div>
+</div>
+
+<!-- Container for dynamic popups (alarms, early completion, reminders) -->
+<div id="custom-popup-root" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 items-end pointer-events-none">
+    <!-- actual popups will be appended here with pointer-events-auto -->
+</div>
+
+<!-- Hidden overlay for calendar picker (shown dynamically) -->
+<div id="calendar-overlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-gray-900/95 border border-pure-gold/40 rounded-2xl p-5 w-96 max-w-[90vw] shadow-2xl">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-pure-gold text-sm font-medium">Select Date</h3>
+            <button id="close-calendar-btn" class="text-white/50 hover:text-white">✕</button>
+        </div>
+        <div id="mini-calendar-grid" class="grid grid-cols-7 gap-1 text-center text-sm"></div>
+        <div class="mt-3">
+            <label class="text-white/60 text-xs">Time:</label>
+            <input type="time" id="calendar-time" class="w-full bg-black/40 border border-white/20 rounded-lg px-2 py-1 text-white text-sm mt-1">
+        </div>
+        <button id="calendar-confirm" class="mt-4 w-full py-2 bg-pure-gold/30 rounded-full text-pure-gold text-sm">Set Deadline</button>
+    </div>
 </div>
                 <!-- Theme Toggle (unchanged) -->
                 <button id="theme-toggle" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/50 transition-all duration-200 active:scale-[0.98]">
@@ -1620,7 +1668,7 @@
 <div class="grid grid-cols-4 md:grid-cols-4 gap-6 md:gap-8 lg:gap-10 w-full px-6 md:px-8 max-w-8xl mx-auto mt-8 md:mt-12">
   
   <!-- Website -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Build a website for '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Build a website for '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/40 dark:to-blue-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-sky-200 to-blue-200 dark:from-sky-800/50 dark:to-blue-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="globe" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-sky-700 dark:text-sky-300"></i>
@@ -1630,7 +1678,7 @@
   </div>
 
   <!-- Travel -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Plan a trip to '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Plan a trip to '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/40 dark:to-green-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-emerald-200 to-green-200 dark:from-emerald-800/50 dark:to-green-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="plane" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-emerald-700 dark:text-emerald-300"></i>
@@ -1640,7 +1688,7 @@
   </div>
 
   <!-- Productivity -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Give me productivity tips for '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Give me productivity tips for '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-amber-200 to-orange-200 dark:from-amber-800/50 dark:to-orange-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="zap" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-amber-700 dark:text-amber-300"></i>
@@ -1650,7 +1698,7 @@
   </div>
 
   <!-- Fix Code -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Fix this code: '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Fix this code: '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-950/40 dark:to-red-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-rose-200 to-red-200 dark:from-rose-800/50 dark:to-red-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="code" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-rose-700 dark:text-rose-300"></i>
@@ -1660,7 +1708,7 @@
   </div>
 
   <!-- Debug -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Help me debug: '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Help me debug: '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-950/40 dark:to-violet-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-purple-200 to-violet-200 dark:from-purple-800/50 dark:to-violet-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="bug" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-purple-700 dark:text-purple-300"></i>
@@ -1670,7 +1718,7 @@
   </div>
 
   <!-- Complex -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Solve this complex problem: '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Solve this complex problem: '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/40 dark:to-amber-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-yellow-200 to-amber-200 dark:from-yellow-800/50 dark:to-amber-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="brain" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-yellow-700 dark:text-yellow-300"></i>
@@ -1680,7 +1728,7 @@
   </div>
 
   <!-- Email -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Draft an email about '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Draft an email about '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-950/40 dark:to-rose-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-pink-200 to-rose-200 dark:from-pink-800/50 dark:to-rose-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="mail" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-pink-700 dark:text-pink-300"></i>
@@ -1690,7 +1738,7 @@
   </div>
 
   <!-- Copywriting -->
-  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('chat-input').value = 'Write copy for '; document.getElementById('chat-input').focus();">
+  <div class="group cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" onclick="document.getElementById('xroga-chat-input').value = 'Write copy for '; document.getElementById('xroga-chat-input').focus();">
     <div class="h-full rounded-3xl p-3 md:p-4 lg:p-5 flex flex-col items-center gap-2 lg:gap-3 shadow-[inset_2px_2px_6px_rgba(255,255,255,0.5),inset_-3px_-3px_8px_rgba(0,0,0,0.05),8px_8px_16px_rgba(0,0,0,0.06)] bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-950/40 backdrop-blur-sm border border-white/60 dark:border-white/10 transition-shadow duration-300 group-hover:shadow-[inset_1px_1px_4px_rgba(255,255,255,0.7),inset_-4px_-4px_10px_rgba(0,0,0,0.08),10px_10px_20px_rgba(0,0,0,0.1)]">
       <div class="p-2 lg:p-3 rounded-2xl bg-gradient-to-br from-indigo-200 to-blue-200 dark:from-indigo-800/50 dark:to-blue-800/50 shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.05)]">
         <i data-lucide="pencil" class="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-indigo-700 dark:text-indigo-300"></i>
@@ -1700,13 +1748,6 @@
   </div>
 
 </div>
-
-
-
-
-
-
-
 
                <!-- Typing Indicator -->
 <div id="typing-indicator" class="hidden absolute bottom-32 left-4 md:left-6">
@@ -1723,9 +1764,9 @@
 </div>
 </div>
             
-<!-- XROGA AI · CHAT BAR v7 — UPPER GAP FOR BACKGROUND VISIBILITY -->
+<!-- XROGA AI · CHAT BAR v66 — Full theme support for all elements -->
 <style>
-  /* ----- SCOPED ROOT – zero document-flow footprint ----- */
+  /* ----- SCOPED ROOT – minimal footprint ----- */
   .xroga-chat-root {
     position: static;
     display: block;
@@ -1735,17 +1776,12 @@
     padding: 0;
     border: none;
     overflow: visible;
-    font-size: 0; /* kills whitespace gap */
+    font-size: 0;
     line-height: 0;
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
     background: transparent;
-    color: inherit;
-    float: none;
-    clear: none;
-    visibility: visible;
-    opacity: 1;
   }
   .xroga-chat-root *,
   .xroga-chat-root *::before,
@@ -1754,26 +1790,23 @@
     margin: 0;
     padding: 0;
     font-size: initial;
-    line-height: 1.5;
+    line-height: 1.2;
   }
 
   .xroga-chat-bar {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 24px);
-  max-width: 920px;
-  z-index: 99999;
-  pointer-events: none;
-  animation: xrogaFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 16px);
+    max-width: 1000px;
+    z-index: 99999;
+    pointer-events: none;
+    padding-top: 8px;
+    animation: xrogaFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+  }
 
-  /* ⭐ NEW – transparent gap above the blurred panel */
-  padding-top: 8px;
-}
-
-  /* Hidden state */
   .xroga-chat-root.chatbar-hidden .xroga-chat-bar {
     transform: translateX(-50%) translateY(200%);
     opacity: 0;
@@ -1781,759 +1814,632 @@
   }
 
   .xroga-glass-panel {
-  pointer-events: auto;
-  background: rgba(10, 18, 30, 0.6);
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  border-radius: 28px;
-  --xroga-top-gap: 8px;
-  padding: 0 16px 12px 16px;
-  box-shadow: 
-    0 20px 40px -8px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
-    0 4px 12px rgba(0, 0, 0, 0.25);
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
-  transition: background 0.2s, box-shadow 0.3s;
-  position: relative;
-
-  /* ⭐ NEW – 8 px clear gap above the blurred bar */
-  margin-top: 48px;
+    pointer-events: auto;
+    background: rgba(10, 18, 30, 0.75);
+    backdrop-filter: blur(24px) saturate(200%);
+    border-radius: 24px;
+    padding: 6px 12px 6px 12px;
+    box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.2s;
+    margin-top: 48px;
 }
 
-  /* Light theme */
+
+  /* ----- LIGHT THEME (applied when .light-mode on root) ----- */
   .xroga-chat-root.light-mode .xroga-glass-panel {
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(20px) saturate(150%);
-    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05) inset;
+    background: rgba(240, 242, 255, 0.85);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.04) inset;
     border: 0.5px solid rgba(0,0,0,0.05);
   }
-  .xroga-chat-root.light-mode #chat-input,
-  .xroga-chat-root.light-mode .xroga-btn:not(.xroga-send) {
-    color: #1e1e2f;
+  /* Input & placeholder */
+  .xroga-chat-root.light-mode #xroga-chat-input {
+    color: #1a1a2e;
   }
-  .xroga-chat-root.light-mode .xroga-btn:not(.xroga-send) {
-    background: rgba(0,0,0,0.04);
+  .xroga-chat-root.light-mode #xroga-chat-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+  }
+  /* Web, Hide, Mic, Send buttons */
+  .xroga-chat-root.light-mode .xroga-web-btn,
+  .xroga-chat-root.light-mode .xroga-hide-btn,
+  .xroga-chat-root.light-mode .xroga-btn {
+    background: rgba(0,0,0,0.06);
+    color: #1a1a2e;
+  }
+  .xroga-chat-root.light-mode .xroga-web-btn.active {
+    background: #2563eb;
+    color: white;
   }
   .xroga-chat-root.light-mode .xroga-send {
     background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
     color: white !important;
   }
-
-  .xroga-glass-panel:hover {
-    background: rgba(15, 28, 45, 0.7);
+  /* Chips (default and hover) */
+  .xroga-chat-root.light-mode .bottom-chip {
+    background: rgba(0,0,0,0.08);
+    color: #1a1a2e;
+    border-color: rgba(0,0,0,0.15);
   }
-  .xroga-chat-root.light-mode .xroga-glass-panel:hover {
-    background: rgba(255, 255, 255, 0.65);
+  .xroga-chat-root.light-mode .bottom-chip:hover {
+    background: rgba(37,99,235,0.15);
+    border-color: #2563eb;
   }
-
-  /* ⭐ SPACER – always visible, shows background through blur */
-  .xroga-top-gap-spacer {
-    height: var(--xroga-top-gap, 48px);
-    width: 100%;
-    flex-shrink: 0;
-    background: transparent;
-    pointer-events: none; /* so clicks pass through to the background if needed */
-  }
-
-  /* Top actions bar – collapses when empty */
-  .xroga-top-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0;
-    min-height: 0;
-    height: 0;
-    overflow: hidden;
-  }
-  .xroga-top-actions.has-visible-children {
-    height: auto;
-    overflow: visible;
-    margin-bottom: 0;
-  }
-
-  .xroga-left-actions,
-  .xroga-right-actions {
-    display: flex;
-    gap: 8px;
-  }
-  .xroga-left-actions:empty,
-  .xroga-right-actions:empty,
-  .xroga-left-actions:not(:has(> :not([style*="display: none"]))),
-  .xroga-right-actions:not(:has(> :not([style*="display: none"]))) {
-    display: none;
-  }
-
-  /* Hide button */
-  .xroga-hide-btn {
-    background: rgba(255,255,255,0.08);
-    border: none;
+  .xroga-chat-root.light-mode .bottom-chip.selected {
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    border-color: #60a5fa;
     color: white;
-    padding: 2px 10px;
-    border-radius: 40px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    line-height: 1.2;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border: 0.5px solid rgba(255,255,255,0.1);
   }
-  .xroga-chat-root.light-mode .xroga-hide-btn {
-    background: rgba(0,0,0,0.05);
-    color: #1e1e2f;
+  /* Tooltips (light theme) */
+  .xroga-chat-root.light-mode .xroga-js-tooltip,
+  .xroga-chat-root.light-mode .web-tooltip {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1a1a2e;
     border-color: rgba(0,0,0,0.1);
   }
-  .xroga-hide-btn:hover {
-    background: rgba(255,255,255,0.18);
-    transform: scale(1.02);
-  }
+  /* Lucide icons inside chips inherit color from parent */
 
-  /* Minimize button */
-  .xroga-minimize-btn {
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: white;
-    width: 36px;
-    height: 36px;
-    border-radius: 40px;
+  /* Top bar – Web & Hide buttons (general) */
+  .xroga-top-bar {
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .xroga-web-btn, .xroga-hide-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    border-radius: 30px;
+    padding: 0px 4px;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
+    gap: 2px;
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: 0.15s;
+    color: #f0f0f0;
+    font-size: 0.45rem;
+    font-weight: 500;
+    line-height: 1;
+    height: auto;
+    min-height: 18px;
+    position: relative;
   }
-  .xroga-chat-root.light-mode .xroga-minimize-btn {
-    background: rgba(0,0,0,0.05);
-    color: #1e1e2f;
+  .xroga-web-btn i, .xroga-hide-btn i {
+    width: 8px;
+    height: 8px;
   }
-  .xroga-minimize-btn:hover {
-    background: rgba(255,255,255,0.2);
+  .xroga-web-btn:hover, .xroga-hide-btn:hover {
+    background: rgba(255,255,255,0.25);
     transform: scale(1.05);
   }
+  .xroga-web-btn.active {
+    background: #2563eb;
+    color: white;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.1), 0 0 0 1px rgba(37,99,235,0.5);
+  }
+  .xroga-web-btn {
+    animation: webPulse 2s infinite ease-in-out;
+  }
+  @keyframes webPulse {
+    0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5); }
+    70% { box-shadow: 0 0 0 4px rgba(37,99,235,0); }
+  }
 
-  /* Flex layout for input row */
+  /* Input row */
   .xroga-flex-row {
     display: flex;
-    align-items: flex-end;
-    gap: 8px;
+    flex-direction: row !important;
+    align-items: flex-start;
+    gap: 6px;
+    margin-bottom: 0;
   }
   .xroga-input-wrapper {
     flex: 1;
     min-width: 0;
   }
-
-  /* Textarea */
-  #chat-input {
+  #xroga-chat-input {
     width: 100%;
     background: transparent;
     border: none;
     outline: none;
-    font-size: 1rem;
-    padding: 8px 4px;
+    font-size: 0.85rem;
     color: white;
-    font-weight: 400;
     caret-color: #3b82f6;
-    resize: none;
-    overflow-y: auto;
-    line-height: 1.5;
     font-family: inherit;
-    transition: box-shadow 0.15s, height 0.1s ease;
-    min-height: 48px;
-    max-height: calc(1.5em * 18 + 16px);
+    padding: 2px 4px;
+    margin: 0;
+    resize: vertical;
+    overflow-y: auto;
+    line-height: 1.2;
+    height: calc(1.2em + 4px);
+    max-height: 150px;
+    box-sizing: border-box;
   }
-  .xroga-chat-root.light-mode #chat-input {
-    color: #0b1120;
-  }
-  #chat-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 350;
-  }
-  .xroga-chat-root.light-mode #chat-input::placeholder {
-    color: rgba(0,0,0,0.5);
+  #xroga-chat-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
   }
 
-  /* Buttons (mic & send) */
+  /* Mic & send buttons */
+  .xroga-action-buttons {
+    display: flex;
+    flex-direction: row !important;
+    gap: 6px;
+    flex-shrink: 0;
+  }
   .xroga-btn {
-    position: relative;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255,255,255,0.1);
     border: none;
-    width: 46px;
-    height: 46px;
-    border-radius: 40px;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 1.4rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+    transition: 0.15s;
     flex-shrink: 0;
-    overflow: hidden;
-  }
-  .xroga-chat-root.light-mode .xroga-btn:not(.xroga-send) {
-    background: rgba(0,0,0,0.05);
-    color: #1e1e2f;
-  }
-  .xroga-btn i {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-    position: relative;
-    z-index: 2;
-  }
-  .xroga-btn::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(115deg, transparent 0%, transparent 30%, rgba(255,255,255,0.2) 40%, rgba(255,255,255,0.4) 45%, rgba(255,255,255,0.2) 50%, transparent 60%, transparent 100%);
-    transform: translateX(-100%) rotate(25deg);
-    animation: xrogaShine 6s infinite ease-in-out;
-    pointer-events: none;
-    z-index: 1;
-  }
-  @keyframes xrogaShine {
-    0% { transform: translateX(-100%) rotate(25deg); }
-    20%, 100% { transform: translateX(100%) rotate(25deg); }
-  }
-  .xroga-btn:hover {
-    background: rgba(255, 255, 255, 0.18);
-    transform: scale(1.02);
   }
   .xroga-send {
     background: linear-gradient(145deg, #2563eb, #1d4ed8) !important;
-    color: white !important;
   }
-  .xroga-send:hover {
-    background: linear-gradient(145deg, #3b82f6, #2563eb) !important;
-  }
-
-  /* Mic listening */
   .xroga-mic.listening {
     background: #dc2626 !important;
-    color: white;
-    animation: xrogaMicPulse 1.2s infinite;
+    animation: xrogaMicPulse 1s infinite;
   }
   @keyframes xrogaMicPulse {
-    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.7), 0 0 0 1px rgba(255,255,255,0.2) inset; }
-    70% { box-shadow: 0 0 0 12px rgba(220,38,38,0), 0 0 0 1px rgba(255,255,255,0.3) inset; }
-    100% { box-shadow: 0 0 0 0 rgba(220,38,38,0), 0 0 0 1px rgba(255,255,255,0.2) inset; }
+    0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.5); }
+    70% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
   }
 
-  /* Ripple */
-  .xroga-ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.8);
-    transform: scale(0);
-    animation: xrogaRippleAnim 0.6s linear;
-    pointer-events: none;
-    z-index: 10;
+  /* Chips row */
+  .xroga-chips-row {
+    margin-top: 6px;
   }
-  @keyframes xrogaRippleAnim {
-    to { transform: scale(4); opacity: 0; }
+  .chips-scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .chips-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .bottom-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    padding: 6px 18px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #eee;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+  }
+  .bottom-chip i, .bottom-chip svg {
+    width: 18px;
+    height: 18px;
+  }
+  .bottom-chip:hover {
+    background: rgba(37,99,235,0.3);
+    transform: scale(1.02);
+    border-color: #2563eb;
+  }
+  .bottom-chip.selected {
+    background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+    border-color: #93c5fd;
+    color: white;
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.6), 0 4px 15px rgba(0,0,0,0.3);
+    transform: scale(0.97);
+  }
+  .bottom-chip.selected::after {
+    content: " ✓";
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 4px;
   }
 
   /* Reveal button */
   .xroga-reveal-btn {
     position: fixed;
-    bottom: 20px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%) scale(0.9) translateY(10px);
-    z-index: 100000;
-    background: rgba(10, 18, 30, 0.75);
+    background: rgba(10, 18, 30, 0.8);
     backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 40px;
-    padding: 8px 20px;
+    border-radius: 24px;
+    padding: 4px 12px;
     color: white;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     cursor: pointer;
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
-    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
     opacity: 0;
     pointer-events: none;
-    font-weight: 500;
-    font-size: 0.8rem;
-    border: 0.5px solid rgba(255,255,255,0.15);
-    white-space: nowrap;
-  }
-  .xroga-reveal-btn i {
-    font-size: 1rem;
-    transition: transform 0.2s;
-  }
-  .xroga-reveal-btn:hover {
-    background: rgba(20, 35, 55, 0.9);
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 16px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.2) inset;
-  }
-  .xroga-reveal-btn:hover i {
-    transform: translateY(-2px);
-  }
-  .xroga-chat-root.light-mode .xroga-reveal-btn {
-    background: rgba(255, 255, 255, 0.7);
-    color: #0b1120;
-    border-color: rgba(0,0,0,0.08);
-  }
-  .xroga-chat-root.light-mode .xroga-reveal-btn:hover {
-    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.25s;
+    font-size: 0.7rem;
+    z-index: 100000;
   }
   .xroga-chat-root.chatbar-hidden .xroga-reveal-btn {
     opacity: 1;
     transform: translateX(-50%) scale(1) translateY(0);
     pointer-events: auto;
   }
-
-  /* Rocket animations */
-  .xroga-send { transition: none; }
-  .xroga-send.rocket-ignition {
-    animation: xrogaRocketIgnition 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-  }
-  @keyframes xrogaRocketIgnition {
-    0% { transform: scale(1) translateY(0); }
-    20% { transform: scale(1.1) translateY(-2px) rotate(2deg); }
-    40% { transform: scale(0.95) translateY(0) rotate(-1deg); }
-    60% { transform: scale(1.05) translateY(-4px) rotate(1deg); }
-    80% { transform: scale(1) translateY(-2px); }
-    100% { transform: scale(1) translateY(-8px); box-shadow: 0 12px 20px -5px #3b82f6; }
-  }
-  .xroga-send.rocket-orbital {
-    animation: xrogaRocketOrbital 1.8s infinite ease-in-out;
-    transform: translateY(-8px);
-    box-shadow: 0 12px 20px -5px #3b82f6;
-  }
-  @keyframes xrogaRocketOrbital {
-    0%, 100% { transform: translateY(-8px) scale(1); }
-    50% { transform: translateY(-12px) scale(1.03); }
-  }
-  .xroga-send.rocket-reentry {
-    animation: xrogaRocketReentry 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-  @keyframes xrogaRocketReentry {
-    0% { transform: translateY(-8px) scale(1); box-shadow: 0 12px 20px -5px #3b82f6; }
-    60% { transform: translateY(2px) scale(0.98); box-shadow: 0 4px 10px -3px #2563eb; }
-    80% { transform: translateY(-1px) scale(1.01); }
-    100% { transform: translateY(0) scale(1); box-shadow: 0 0 0 #3b82f6; }
+  .xroga-chat-root.light-mode .xroga-reveal-btn {
+    background: rgba(240, 242, 255, 0.9);
+    color: #1a1a2e;
   }
 
-  /* Mobile */
-  @media (max-width: 600px) {
-    .xroga-chat-bar {
-      width: calc(100% - 16px);
-      bottom: 16px;
-    }
-    .xroga-glass-panel {
-      --xroga-top-gap: 6px; /* slightly smaller on mobile */
-      padding: 0 12px 10px 12px;
-      border-radius: 24px;
-    }
-    .xroga-btn {
-      width: 44px;
-      height: 44px;
-    }
-    #chat-input {
-      max-height: calc(1.5em * 13 + 16px);
-      font-size: 0.95rem;
-    }
-    .xroga-minimize-btn {
-      width: 34px;
-      height: 34px;
-    }
-    .xroga-hide-btn {
-      padding: 2px 8px;
-      font-size: 0.7rem;
-    }
-    .xroga-reveal-btn {
-      bottom: 16px;
-      padding: 6px 16px;
-      font-size: 0.75rem;
-      gap: 4px;
-    }
-    .xroga-reveal-btn i {
-      font-size: 0.9rem;
-    }
+  /* Animations */
+  .rocket-ignition { animation: rocketIgnite 0.25s ease; }
+  @keyframes rocketIgnite {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1) translateY(-2px); }
+    100% { transform: scale(1); }
   }
-
+  .chip-click { animation: chipClickAnim 0.12s ease-out; }
+  @keyframes chipClickAnim {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.94); background: linear-gradient(145deg, #3b82f6, #1d4ed8); color: white; }
+    100% { transform: scale(1); }
+  }
   @keyframes xrogaFadeUp {
-    0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
     100% { opacity: 1; transform: translateX(-50%) translateY(0); }
   }
 
-  /* Desktop layout */
-  .xroga-chat-root .xroga-flex-row {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: flex-end !important;
-    gap: 8px !important;
-  }
-  .xroga-chat-root .xroga-action-buttons {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 8px !important;
-    flex-shrink: 0;
-  }
-
+  /* Mobile adjustments */
   @media (max-width: 600px) {
-    .xroga-chat-root .xroga-flex-row {
-      display: grid !important;
-      grid-template-columns: 1fr auto;
-      align-items: start;
-      gap: 8px;
-    }
-    .xroga-chat-root .xroga-input-wrapper {
-      grid-column: 1;
-      grid-row: 1;
-      align-self: end;
-    }
-    .xroga-chat-root .xroga-action-buttons {
-      grid-column: 2;
-      grid-row: 1;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 10px !important;
-      align-self: start !important;
-      justify-self: end !important;
-      align-items: flex-end !important;
-      width: fit-content !important;
-      min-width: min-content !important;
-    }
-    .xroga-chat-root .xroga-btn {
-      margin: 0 !important;
-      width: 36px !important;
-      height: 36px !important;
-      font-size: 1.1rem !important;
-    }
-    #chat-input {
-      min-height: 52px !important;
-      max-height: calc(1.5em * 12 + 16px);
-      padding: 8px 4px !important;
-    }
+    .xroga-chat-bar { width: calc(100% - 12px); bottom: 8px; }
+    .xroga-glass-panel { padding: 4px 8px 4px 8px; }
+    .bottom-chip { padding: 2px 10px; font-size: 0.7rem; gap: 5px; }
+    .bottom-chip i, .bottom-chip svg { width: 12px; height: 12px; }
+    .xroga-btn { width: 28px; height: 28px; font-size: 0.8rem; }
+    .xroga-action-buttons { gap: 4px; }
+    #xroga-chat-input { font-size: 0.8rem; padding: 1px 4px; height: calc(1.2em + 2px); }
+    .xroga-web-btn, .xroga-hide-btn { padding: 0px 3px; font-size: 0.4rem; gap: 1px; }
+    .xroga-web-btn i, .xroga-hide-btn i { width: 6px; height: 6px; }
+    .chips-scroll { gap: 5px; padding: 4px 0; }
   }
 </style>
 
 <div class="xroga-chat-root" id="xrogaRoot">
-  <!-- REVEAL BUTTON -->
   <div class="xroga-reveal-btn" id="xrogaRevealBtn">
-    <i class="fas fa-chevron-up"></i>
+    <i data-lucide="chevron-up" style="width: 10px; height: 10px;"></i>
     <span>Show chat</span>
   </div>
-
-  <div class="xroga-chat-bar">
+  <div class="xroga-chat-bar" id="xrogaChatBar">
     <div class="xroga-glass-panel">
-      <!-- ⭐ ALWAYS-VISIBLE TOP GAP – shows background responses through the blur -->
-      <div class="xroga-top-gap-spacer"></div>
-
-      <div class="xroga-top-actions" id="xrogaTopActions">
-        <div class="xroga-left-actions">
-          <button class="xroga-hide-btn" id="xrogaHideBtn" title="Hide chat bar">
-            Hide ▾
+        <div class="xroga-top-gap-spacer"></div>
+      <div class="xroga-top-bar">
+        <button class="xroga-web-btn" id="webSearchBtn">
+          <i data-lucide="globe"></i>
+          <span>Web</span>
+        </button>
+        <button class="xroga-hide-btn" id="xrogaHideBtn">
+          <i data-lucide="chevron-down"></i>
+          <span>Hide</span>
+        </button>
+      </div>
+      <div class="xroga-flex-row">
+    <div class="xroga-input-wrapper">
+        <textarea id="xroga-chat-input" placeholder="website, ecommerce, hotel..." rows="1"></textarea>
+    </div>
+        <div class="xroga-action-buttons">
+          <button class="xroga-btn xroga-mic" id="xrogaMicBtn">
+            <i class="fas fa-microphone"></i>
           </button>
-        </div>
-        <div class="xroga-right-actions" id="xrogaRightActions">
-          <button class="xroga-minimize-btn" id="xrogaMinimizeBtn" title="Minimize/Expand" style="display: none;">
-            <i class="fas fa-chevron-up"></i>
+          <button class="xroga-btn xroga-send" id="xroga-send-btn">
+            <i class="fa fa-rocket"></i>
           </button>
         </div>
       </div>
-
-      <div class="xroga-flex-row">
-        <div class="xroga-input-wrapper">
-          <textarea id="chat-input" placeholder="website portfolios, ecommerce, landing pages..."></textarea>
-        </div>
-        <div class="xroga-action-buttons">
-          <button class="xroga-btn xroga-mic" id="xrogaMicBtn" aria-label="Voice input">
-            <i class="fas fa-microphone"></i>
-          </button>
-          <button class="xroga-btn xroga-send" id="send-btn" aria-label="Send message">
-            <i class="fa fa-rocket" aria-hidden="true"></i>
-          </button>
+      <div class="xroga-chips-row">
+        <div class="chips-scroll" id="chipsScroll">
+          <div class="bottom-chip" data-model-id="code-expert" data-tip="🌐 Website + SEO + hosting + domains">
+            <i data-lucide="globe"></i><span>Build</span>
+          </div>
+          <div class="bottom-chip" data-model-id="fast-creative" data-tip="🎨 Image gen, social scheduling, POD, resale">
+            <i data-lucide="image"></i><span>Image</span>
+          </div>
+          <div class="bottom-chip" data-model-id="deep-thought" data-tip="🔬 Deep research, web search, citations, legal">
+            <i data-lucide="brain"></i><span>Research</span>
+          </div>
+          <div class="bottom-chip" data-model-id="travel-concierge" data-tip="✈️ Flights, hotels, cars – best prices, 5‑10%">
+            <i data-lucide="plane"></i><span>Travel</span>
+          </div>
+          <div class="bottom-chip" data-model-id="shop-confidence" data-tip="🛡️ Ethical shopping & boycott alerts, 2,500+ brands">
+            <i data-lucide="shield-check"></i><span>Shop/Boycott</span>
+          </div>
+          <div class="bottom-chip" data-model-id="muslim-islamic" data-tip="☪️ Quran, hadith, prayer times, Qibla, scanner">
+            <i data-lucide="moon-star"></i><span>Islamic</span>
+          </div>
+          <div class="bottom-chip" data-model-id="fast-creative" data-tip="⚡ Fast creative chat, brainstorming">
+            <i data-lucide="zap"></i><span>Fast</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Font Awesome -->
-<script>
-  (function loadFA() {
-    if (!document.querySelector('link[href*="font-awesome"]')) {
-      var link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
-      document.head.appendChild(link);
-    }
-  })();
-</script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
   (function() {
     "use strict";
-    function initXroga() {
-      const root = document.getElementById('xrogaRoot');
-      const textarea = document.getElementById('chat-input');
-      const micBtn = document.getElementById('xrogaMicBtn');
-      const sendBtn = document.getElementById('send-btn');
-      const minimizeBtn = document.getElementById('xrogaMinimizeBtn');
-      const hideBtn = document.getElementById('xrogaHideBtn');
-      const revealBtn = document.getElementById('xrogaRevealBtn');
-      const topActions = document.getElementById('xrogaTopActions');
-      const rightActions = document.getElementById('xrogaRightActions');
+    const root = document.getElementById('xrogaRoot');
+    const textarea = document.getElementById('xroga-chat-input');
+    const micBtn = document.getElementById('xrogaMicBtn');
+    const sendBtn = document.getElementById('xroga-send-btn');
+    const hideBtn = document.getElementById('xrogaHideBtn');
+    const revealBtn = document.getElementById('xrogaRevealBtn');
+    const webBtn = document.getElementById('webSearchBtn');
 
-      if (!textarea) return;
+    // Theme sync – uses document.documentElement's 'dark' class
+    function syncTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) root.classList.remove('light-mode');
+      else root.classList.add('light-mode');
+    }
+    syncTheme();
+    new MutationObserver(syncTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
-      // ----- THEME SYNC -----
-      function syncTheme() {
-        const isDark = document.documentElement.classList.contains('dark');
-        if (isDark) {
-          root.classList.remove('light-mode');
-        } else {
-          root.classList.add('light-mode');
-        }
-      }
-      syncTheme();
-      const htmlObserver = new MutationObserver(syncTheme);
-      htmlObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // Hide entire chat bar (main hide button)
+    function hideChatBar() { root.classList.add('chatbar-hidden'); }
+    function revealChatBar() { root.classList.remove('chatbar-hidden'); }
+    if (hideBtn) hideBtn.addEventListener('click', hideChatBar);
+    if (revealBtn) revealBtn.addEventListener('click', revealChatBar);
 
-      // ----- HIDE / REVEAL -----
-      function hideChatBar() { root.classList.add('chatbar-hidden'); }
-      function revealChatBar() { root.classList.remove('chatbar-hidden'); }
-      if (hideBtn) hideBtn.addEventListener('click', hideChatBar);
-      if (revealBtn) revealBtn.addEventListener('click', revealChatBar);
+    // Textarea auto‑grow
+    function autoGrow() {
+      if (textarea.value.trim() === '') textarea.style.height = '';
+      else { textarea.style.height = 'auto'; const newHeight = Math.min(textarea.scrollHeight, 150); textarea.style.height = newHeight + 'px'; }
+    }
+    textarea.addEventListener('input', autoGrow);
+    autoGrow();
 
-      // ----- TOP ACTIONS VISIBILITY (unchanged) -----
-      function updateTopActionsVisibility() {
-        if (!topActions || !rightActions) return;
-        const minimizeVisible = minimizeBtn && minimizeBtn.style.display !== 'none';
-        const rightHasVisible = !!rightActions.querySelector('button:not([style*="display: none"])');
-        const leftHasVisible = hideBtn && hideBtn.style.display !== 'none';
-        if (leftHasVisible || rightHasVisible || minimizeVisible) {
-          topActions.classList.add('has-visible-children');
-        } else {
-          topActions.classList.remove('has-visible-children');
-        }
-      }
-      updateTopActionsVisibility();
-
-      // ----- DYNAMIC PHRASES -----
-      const phrases = [
-        "website portfolios, ecommerce, landing pages, bookings websites and more you want",
-        "lightning creative chats daily",
-        "deep chats",
-        "shopping at affordable prices at 2500+ brands with boycotted alerts",
-        "travel at affordable airlines, flights, booking hotels and rent cars",
-        "seek islamic knowledge hadith, quran and more and ask islamic query"
-      ];
-      let phraseIndex = 0;
-      let interval = null;
-      let paused = false;
-      let listening = false;
-      let listeningTimer = null;
-      let isMinimized = false;
-      const DESKTOP_MAX_ROWS = 18;
-      const MOBILE_MAX_ROWS = 13;
-      const MIN_ROWS = 6;
-      const LINE_HEIGHT = 1.5 * 16;
-
-      function getMaxRows() { return window.innerWidth <= 600 ? MOBILE_MAX_ROWS : DESKTOP_MAX_ROWS; }
-
-      textarea.placeholder = phrases[0];
-      phraseIndex = 1;
-
-      function rotatePlaceholder() {
-        if (!paused && textarea.value.trim() === '' && !listening) {
-          textarea.placeholder = phrases[phraseIndex];
-        }
+    // Dynamic placeholder
+    const phrases = ["website, ecommerce, hotel...", "creative chat", "deep research", "shop & boycott", "travel deals", "quran & hadith"];
+    let phraseIndex = 1, paused = false, listening = false;
+    let interval = setInterval(() => {
+      if (!paused && textarea.value.trim() === '' && document.activeElement !== textarea && !listening) {
+        textarea.placeholder = phrases[phraseIndex];
         phraseIndex = (phraseIndex + 1) % phrases.length;
       }
-      function startRotation() {
-        if (interval) clearInterval(interval);
-        interval = setInterval(rotatePlaceholder, 3200);
-      }
-      function pause() { paused = true; }
-      function resume() {
-        if (textarea.value.trim() === '' && document.activeElement !== textarea && !listening) paused = false;
-        else paused = true;
-      }
+    }, 3200);
+    textarea.addEventListener('focus', () => paused = true);
+    textarea.addEventListener('blur', () => { if (textarea.value.trim() === '') paused = false; });
 
-      textarea.addEventListener('focus', pause);
-      textarea.addEventListener('blur', resume);
-      textarea.addEventListener('input', function() {
-        paused = (textarea.value.trim() !== '');
-        autoResize();
-        updateMinimizeButtonVisibility();
+    // Voice mock
+    if (micBtn) {
+      micBtn.addEventListener('click', () => {
+        listening = !listening;
+        if (listening) { micBtn.classList.add('listening'); textarea.placeholder = "🎤 Listening..."; paused = true; }
+        else { micBtn.classList.remove('listening'); textarea.placeholder = phrases[0]; if (textarea.value.trim() === '') paused = false; }
       });
-
-      function autoResize() {
-        textarea.style.height = 'auto';
-        const maxRows = isMinimized ? MIN_ROWS : getMaxRows();
-        const maxHeight = LINE_HEIGHT * maxRows + 16;
-        let newHeight = Math.min(textarea.scrollHeight, maxHeight);
-        textarea.style.height = newHeight + 'px';
-      }
-
-      function updateMinimizeButtonVisibility() {
-        if (!minimizeBtn) return;
-        const currentRows = Math.floor(textarea.scrollHeight / LINE_HEIGHT);
-        if (currentRows >= MIN_ROWS && !isMinimized) {
-          minimizeBtn.style.display = 'flex';
-        } else if (isMinimized) {
-          minimizeBtn.style.display = 'flex';
-        } else {
-          minimizeBtn.style.display = 'none';
-        }
-        updateTopActionsVisibility();
-      }
-
-      if (minimizeBtn) {
-        minimizeBtn.addEventListener('click', function() {
-          isMinimized = !isMinimized;
-          const icon = minimizeBtn.querySelector('i');
-          if (isMinimized) {
-            icon.className = 'fas fa-chevron-down';
-            minimizeBtn.title = 'Expand';
-          } else {
-            icon.className = 'fas fa-chevron-up';
-            minimizeBtn.title = 'Minimize';
-          }
-          autoResize();
-          updateMinimizeButtonVisibility();
-        });
-      }
-
-      window.addEventListener('resize', () => { autoResize(); updateMinimizeButtonVisibility(); });
-      autoResize();
-      startRotation();
-
-      // ----- MIC -----
-      function startListening() {
-        if (!micBtn) return;
-        listening = true;
-        paused = true;
-        micBtn.classList.add('listening');
-        textarea.placeholder = '🎤 Listening... speak now';
-        if (listeningTimer) clearTimeout(listeningTimer);
-        listeningTimer = setTimeout(() => { if (listening) stopListening(true); }, 5000);
-      }
-      function stopListening(setRandomPhrase = true) {
-        if (!micBtn) return;
-        listening = false;
-        micBtn.classList.remove('listening');
-        if (listeningTimer) { clearTimeout(listeningTimer); listeningTimer = null; }
-        if (setRandomPhrase && textarea.value.trim() === '') {
-          const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-          textarea.placeholder = randomPhrase;
-          phraseIndex = phrases.indexOf(randomPhrase) + 1;
-        }
-        if (textarea.value.trim() === '' && document.activeElement !== textarea) paused = false;
-      }
-      micBtn.addEventListener('click', (e) => { e.preventDefault(); listening ? stopListening(true) : startListening(); });
-      textarea.addEventListener('input', () => { if (listening && textarea.value.trim() !== '') stopListening(false); });
-
-      // ----- SEND WITH ROCKET -----
-      let isAnimating = false;
-      function createRipple(btn, e) {
-        const ripple = document.createElement('span');
-        ripple.className = 'xroga-ripple';
-        const rect = btn.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-        ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-        btn.style.position = 'relative';
-        btn.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 600);
-      }
-      function triggerMainSendWithAnimation(e) {
-        if (!sendBtn || isAnimating) return;
-        const msg = textarea.value.trim();
-        if (!msg) {
-          const suggestion = phrases[Math.floor(Math.random() * phrases.length)];
-          textarea.placeholder = suggestion;
-          phraseIndex = phrases.indexOf(suggestion) + 1;
-          return;
-        }
-        isAnimating = true;
-        console.log(`💬 Xroga AI · Sent: "${msg}"`);
-        textarea.value = '';
-        autoResize();
-        const fresh = phrases[Math.floor(Math.random() * phrases.length)];
-        textarea.placeholder = fresh;
-        phraseIndex = phrases.indexOf(fresh) + 1;
-        textarea.style.boxShadow = '0 0 0 2px #3b82f6';
-        setTimeout(() => textarea.style.boxShadow = '', 200);
-        if (document.activeElement !== textarea) paused = false;
-        if (listening) stopListening(false);
-        if (e) createRipple(sendBtn, e);
-
-        sendBtn.classList.add('rocket-ignition');
-        setTimeout(() => {
-          sendBtn.classList.remove('rocket-ignition');
-          sendBtn.classList.add('rocket-orbital');
-          setTimeout(() => {
-            sendBtn.classList.remove('rocket-orbital');
-            sendBtn.classList.add('rocket-reentry');
-            setTimeout(() => {
-              sendBtn.classList.remove('rocket-reentry');
-              isAnimating = false;
-            }, 500);
-          }, 2000);
-        }, 400);
-
-        const mainInput = document.getElementById('main-chat-input') || document.querySelector('#chat-input-main, [data-main-input]');
-        if (mainInput) {
-          mainInput.value = msg;
-          mainInput.dispatchEvent(new Event('input', { bubbles: true }));
-          const mainSendBtn = document.getElementById('main-send-btn');
-          if (mainSendBtn) mainSendBtn.click();
-          else mainInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-        } else {
-          console.error('❌ Main input not found. Set its ID to "main-chat-input".');
-        }
-      }
-      if (sendBtn) sendBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); triggerMainSendWithAnimation(e); });
-      textarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); triggerMainSendWithAnimation(); }
-      });
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.xroga-chat-bar') && textarea.value.trim() === '' && !listening) paused = false;
-      });
-
-      console.log('✅ Xroga AI v7 · Upper gap active – background responses visible through the bar');
     }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initXroga);
-    else initXroga();
-  })();
-  
-(function() {
-  function applyChatPadding() {
-    const chatBar = document.querySelector('.xroga-chat-bar');
-    const msgContainer = document.querySelector('#chat-messages');
-    if (!chatBar || !msgContainer) return;
 
-    // ⬇️ Change this to 8 for a slim gap (or 4 for super‑tight)
-    const extra = 8; // same on all screen sizes (no need for media query)
-    msgContainer.style.paddingBottom = (chatBar.offsetHeight + extra) + 'px';
+    // Send rocket
+    let isAnimating = false;
+    function triggerMainSendWithAnimation(e) {
+  if (!sendBtn || isAnimating) return;
+  const msg = textarea.value.trim();
+  if (!msg) { 
+       const suggestion = phrases[Math.floor(Math.random() * phrases.length)];
+    textarea.placeholder = suggestion;
+    phraseIndex = phrases.indexOf(suggestion) + 1;
+    return;
   }
-
-  window.addEventListener('load', applyChatPadding);
-  window.addEventListener('resize', applyChatPadding);
-  setTimeout(applyChatPadding, 300);
-})();
-</script>
+      isAnimating = true;
+  console.log(`💬 Xroga AI · Sent: "${msg}"`);
+  textarea.value = '';
+  autoResize();
+  const fresh = phrases[Math.floor(Math.random() * phrases.length)];
+  textarea.placeholder = fresh;
+  phraseIndex = phrases.indexOf(fresh) + 1;
+  textarea.style.boxShadow = '0 0 0 2px #3b82f6';
+  setTimeout(() => textarea.style.boxShadow = '', 200);
+  if (document.activeElement !== textarea) paused = false;
+  if (listening) stopListening(false);
+  if (e) createRipple(sendBtn, e);
+    if (sendBtn) { sendBtn.addEventListener('click', triggerSend); textarea.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); triggerSend(); } }); }
     
+      // Rocket animation
+  sendBtn.classList.add('rocket-ignition');
+  setTimeout(() => {
+    sendBtn.classList.remove('rocket-ignition');
+    sendBtn.classList.add('rocket-orbital');
+    setTimeout(() => {
+      sendBtn.classList.remove('rocket-orbital');
+      sendBtn.classList.add('rocket-reentry');
+      setTimeout(() => {
+        sendBtn.classList.remove('rocket-reentry');
+        isAnimating = false;
+      }, 500);
+    }, 2000);
+  }, 400);
+  
+  
+  // ⭐ FIXED FORWARDING: use the main chat’s actual IDs
+  const mainInput = document.getElementById('xroga-chat-input');      // main chat input
+  const mainSendBtn = document.getElementById('xroga-send-btn');      // main chat send button
+
+  if (mainInput) {
+    // Set the value (works for both <input> and <textarea>)
+    mainInput.value = msg;
+    // Simulate an input event so any listener on the main input fires
+    mainInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    if (mainSendBtn) {
+      mainSendBtn.click();
+    } else {
+      // Fallback: simulate Enter key on the main input
+      mainInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    }
+  } else {
+    console.error('❌ Main chat input (# o tf ound. Check that your main chat has an element with id="xroga-chat-input".');
+  }
+}
+
+    // Web button toggle
+    let webActive = false;
+    if (webBtn) {
+      webBtn.addEventListener('click', () => {
+        webActive = !webActive;
+        if (webActive) { webBtn.classList.add('active'); console.log('Web search mode ON'); }
+        else { webBtn.classList.remove('active'); console.log('Web search mode OFF'); }
+        webBtn.style.transform = 'scale(0.95)'; setTimeout(() => { if (webBtn) webBtn.style.transform = ''; }, 120);
+      });
+    }
+
+    // Model switching functions (dragable system)
+    function setModel(model, modelName) {
+      if (window.xroga && window.xroga.state) {
+        window.xroga.state.currentMode = model;
+        localStorage.setItem('currentMode', model);
+      } else localStorage.setItem('currentMode', model);
+      if (window.xroga && typeof window.xroga.expandSectionForMode === 'function') window.xroga.expandSectionForMode(model);
+      if (typeof window.updateModeReminder === 'function') window.updateModeReminder();
+      if (typeof window.switchUIMode === 'function') window.switchUIMode(model);
+      if (model !== 'travel-concierge' && window.xroga && typeof window.xroga.createNewChat === 'function') window.xroga.createNewChat();
+      console.log(`[Model] Switched to: ${modelName || model}`);
+    }
+
+    function getModelDetails(modelId) {
+      const map = {
+        'code-expert': { name: 'Code Expert', color: '#3b82f6' },
+        'fast-creative': { name: 'Fast & Creative', color: '#fbbf24' },
+        'deep-thought': { name: 'Deep Thought', color: '#34d399' },
+        'travel-concierge': { name: 'Travel Concierge', color: '#10b981' },
+        'muslim-islamic': { name: 'Muslim Islamic', color: '#d4af37' },
+        'shop-confidence': { name: 'Shop with Confidence', color: '#22d3ee' }
+      };
+      return map[modelId] || { name: modelId, color: '#ffffff' };
+    }
+
+    function updateModelSelectorUI(modelId) {
+      const details = getModelDetails(modelId);
+      const btnIcon = document.getElementById('btnIcon');
+      const btnName = document.getElementById('btnName');
+      if (btnIcon) {
+        if (modelId === 'code-expert') btnIcon.className = 'fa-sharp fa-solid fa-code';
+        else if (modelId === 'fast-creative') btnIcon.className = 'fa-solid fa-paint-brush';
+        else if (modelId === 'deep-thought') btnIcon.className = 'fa-book';
+        else if (modelId === 'travel-concierge') btnIcon.className = 'fa-plane';
+        else if (modelId === 'shop-confidence') btnIcon.className = 'fa-shopping-cart';
+        else if (modelId === 'muslim-islamic') btnIcon.className = 'fa-star-and-crescent';
+        btnIcon.style.color = details.color;
+      }
+      if (btnName) btnName.innerText = details.name;
+    }
+
+    // Chips: visible selection before model switch
+    let currentSelectedChip = null;
+    const chips = document.querySelectorAll('.bottom-chip');
+
+    function onChipClick(e) {
+      const chip = e.currentTarget;
+      const modelId = chip.getAttribute('data-model-id');
+      if (!modelId) return;
+
+      // Immediate visual selection
+      if (currentSelectedChip) currentSelectedChip.classList.remove('selected');
+      chip.classList.add('selected');
+      currentSelectedChip = chip;
+      chip.classList.add('chip-click');
+      setTimeout(() => chip.classList.remove('chip-click'), 150);
+
+      // After a tiny delay, perform model switch
+      setTimeout(() => {
+        const details = getModelDetails(modelId);
+        setModel(modelId, details.name);
+        updateModelSelectorUI(modelId);
+      }, 80);
+    }
+    chips.forEach(chip => chip.addEventListener('click', onChipClick));
+    // No chip selected on load
+
+    // Tooltips for chips (JS – with light theme support)
+    let activeTooltip = null;
+    function showTooltip(chip) {
+      if (activeTooltip) activeTooltip.remove();
+      const tipText = chip.getAttribute('data-tip');
+      if (!tipText) return;
+      const tooltip = document.createElement('div');
+      tooltip.className = 'xroga-js-tooltip';
+      tooltip.textContent = tipText;
+      tooltip.style.position = 'fixed';
+      tooltip.style.background = '#11111e';
+      tooltip.style.backdropFilter = 'blur(12px)';
+      tooltip.style.color = '#f0f0ff';
+      tooltip.style.border = '0.5px solid rgba(255,255,255,0.2)';
+      tooltip.style.borderRadius = '12px';
+      tooltip.style.padding = '3px 8px';
+      tooltip.style.fontSize = '0.65rem';
+      tooltip.style.fontWeight = '500';
+      tooltip.style.whiteSpace = 'nowrap';
+      tooltip.style.zIndex = '9999999';
+      tooltip.style.boxShadow = '0 2px 12px rgba(0,0,0,0.4)';
+      tooltip.style.pointerEvents = 'none';
+      tooltip.style.fontFamily = 'system-ui, sans-serif';
+      // Apply light theme class if needed (CSS will handle colors)
+      if (root.classList.contains('light-mode')) {
+        tooltip.style.background = '#ffffff';
+        tooltip.style.color = '#1a1a2e';
+        tooltip.style.borderColor = 'rgba(0,0,0,0.1)';
+      }
+      document.body.appendChild(tooltip);
+      const chipRect = chip.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+      let top = chipRect.top - tooltipRect.height - 8;
+      if (top < 4) top = 4;
+      let left = chipRect.left + chipRect.width / 2;
+      const halfWidth = tooltipRect.width / 2;
+      const minLeft = halfWidth;
+      const maxLeft = window.innerWidth - halfWidth;
+      left = Math.min(maxLeft, Math.max(minLeft, left));
+      tooltip.style.top = top + 'px';
+      tooltip.style.left = left + 'px';
+      tooltip.style.transform = 'translateX(-50%)';
+      activeTooltip = tooltip;
+    }
+    function hideTooltip() { if (activeTooltip) { activeTooltip.remove(); activeTooltip = null; } }
+    chips.forEach(chip => { chip.addEventListener('mouseenter', () => showTooltip(chip)); chip.addEventListener('mouseleave', hideTooltip); });
+    window.addEventListener('scroll', hideTooltip);
+    window.addEventListener('resize', hideTooltip);
+
+    // Lucide icons
+    lucide.createIcons();
+
+     // ⭐ OUTSIDE UPPER GAP – pushes messages above the bar
+    function applyOutsideGap() {
+      const chatBar = document.querySelector('.xroga-chat-bar');
+      const msgContainer = document.querySelector('#chat-messages');
+      if (chatBar && msgContainer) {
+        msgContainer.style.paddingBottom = (chatBar.offsetHeight + 2) + 'px';
+      }
+    }
+    window.addEventListener('load', applyOutsideGap);
+    window.addEventListener('resize', applyOutsideGap);
+    setTimeout(applyOutsideGap, 300);
+    setTimeout(applyOutsideGap, 1000);
+    new MutationObserver(applyOutsideGap).observe(document.body, { childList: true, subtree: true });
+  })();
+</script>
+
     <!-- Settings Modal (enhanced with auto-speak) -->
     <div id="settings-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
         <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl animate-fade-in border border-white/30 dark:border-gray-700/30">
@@ -2633,8 +2539,8 @@
             sidebarOverlay: document.getElementById('sidebar-overlay'),
             mobileMenuBtn: document.getElementById('mobile-menu-btn'),
             searchChats: document.getElementById('search-chats'),
-            chatInput: document.getElementById('chat-input'),
-            sendBtn: document.getElementById('send-btn'),
+            chatInput: document.getElementById('xroga-chat-input'),
+            sendBtn: document.getElementById('xroga-send-btn'),
             chatMessages: document.getElementById('chat-messages'),
             typingIndicator: document.getElementById('typing-indicator'),
             chatContainer: document.getElementById('chat-container'),
@@ -5379,7 +5285,7 @@ setTimeout(() => {
     document.querySelectorAll('.suggestion-card').forEach(card => {
       card.addEventListener('click', () => {
         const prompt = card.dataset.prompt;
-        const chatInput = document.getElementById('chat-input');
+        const chatInput = document.getElementById('xroga-chat-input');
         if (chatInput) {
           chatInput.value = prompt;
           chatInput.focus();
@@ -5423,7 +5329,7 @@ function renderWelcomeScreen() {
     <div class="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700 -z-10"></div>
   </div>
   
-        <div class="welcome-prompt-box" onclick="document.getElementById('chat-input').focus();">
+        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
           <div class="prompt-text">
             <i data-lucide="${initialPrompt.icon}" class="w-5 h-5"></i>
             <span>${initialPrompt.text}</span>
@@ -5448,7 +5354,7 @@ function renderWelcomeScreen() {
   document.querySelectorAll('.suggestion-card').forEach(card => {
     card.addEventListener('click', () => {
       const prompt = card.dataset.prompt;
-      const chatInput = document.getElementById('chat-input');
+      const chatInput = document.getElementById('xroga-chat-input');
       if (chatInput) {
         chatInput.value = prompt;
         chatInput.focus();
@@ -6779,13 +6685,13 @@ async function regenerateAIMessage(aiMessageDiv) {
             elements.voiceBtn?.addEventListener('click', () => { if (state.isRecording) recognition.stop(); else recognition.start(); });
         }
 
-// ===================== LUXURY TASK SYSTEM (FULL) =====================
-// Extend global state
+// ===================== LUXURY TASK SYSTEM (COMPLETE) =====================
 if (!state.tasks) state.tasks = JSON.parse(localStorage.getItem('xroga-tasks-advanced')) || [];
-state.timelineView = false;
+state.timelineView = state.timelineView || false;
 state.taskHistory = JSON.parse(localStorage.getItem('xroga-task-history')) || { dailyCompletions: [] };
 
-let pendingTaskDraft = null; // { title, priority, dueDate }
+let pendingTaskDraft = null;
+let reminderTimers = new Map(); // store timeouts by task id
 
 // ---------- Helpers ----------
 function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
@@ -6794,7 +6700,172 @@ function saveHistory() { localStorage.setItem('xroga-task-history', JSON.stringi
 function formatDueDate(iso) { const d=new Date(iso); return d.toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
 function formatDueDateFull(iso) { const d=new Date(iso); return d.toLocaleString([],{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
 
-// ---------- NLP Parser ----------
+// ---------- Real Calendar (mini month grid) ----------
+let calendarCallback = null;
+function showRealCalendar(currentDate, callback) {
+    calendarCallback = callback;
+    const overlay = document.getElementById('calendar-overlay');
+    const grid = document.getElementById('mini-calendar-grid');
+    const timeInput = document.getElementById('calendar-time');
+    const now = new Date(currentDate || new Date());
+    let year = now.getFullYear();
+    let month = now.getMonth();
+    let selectedDate = new Date(year, month, now.getDate());
+    
+    function renderCalendar() {
+        const firstDay = new Date(year, month, 1);
+        const startDay = firstDay.getDay();
+        const daysInMonth = new Date(year, month+1, 0).getDate();
+        grid.innerHTML = '';
+        const weekdays = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+        weekdays.forEach(d => { grid.innerHTML += `<div class="text-white/40 text-xs">${d}</div>`; });
+        for (let i=0; i<startDay; i++) grid.innerHTML += `<div></div>`;
+        for (let d=1; d<=daysInMonth; d++) {
+            const isSelected = (selectedDate.getDate() === d && selectedDate.getMonth() === month && selectedDate.getFullYear() === year);
+            grid.innerHTML += `<div class="cursor-pointer hover:bg-pure-gold/20 rounded-full p-1 ${isSelected ? 'bg-pure-gold/40 text-white' : 'text-white/80'}" data-day="${d}">${d}</div>`;
+        }
+        document.querySelectorAll('[data-day]').forEach(el => {
+            el.onclick = () => {
+                selectedDate = new Date(year, month, parseInt(el.dataset.day));
+                renderCalendar();
+            };
+        });
+    }
+    renderCalendar();
+    
+    // month navigation
+    const navDiv = document.createElement('div');
+    navDiv.className = 'flex justify-between items-center mb-2';
+    navDiv.innerHTML = `<button id="prev-month" class="text-white/60 text-xs">◀</button><span class="text-white text-sm">${new Date(year, month).toLocaleString('default', {month:'long', year:'numeric'})}</span><button id="next-month" class="text-white/60 text-xs">▶</button>`;
+    grid.parentNode.insertBefore(navDiv, grid);
+    document.getElementById('prev-month').onclick = () => { month--; if(month<0){ month=11; year--; } renderCalendar(); navDiv.querySelector('span').textContent = new Date(year, month).toLocaleString('default', {month:'long', year:'numeric'}); };
+    document.getElementById('next-month').onclick = () => { month++; if(month>11){ month=0; year++; } renderCalendar(); navDiv.querySelector('span').textContent = new Date(year, month).toLocaleString('default', {month:'long', year:'numeric'}); };
+    
+    // set time to current hour if not set
+    if (!timeInput.value) {
+        const h = now.getHours().toString().padStart(2,'0');
+        const m = now.getMinutes().toString().padStart(2,'0');
+        timeInput.value = `${h}:${m}`;
+    }
+    overlay.classList.remove('hidden');
+    document.getElementById('calendar-confirm').onclick = () => {
+        const [hours, minutes] = timeInput.value.split(':');
+        const finalDate = new Date(year, month, selectedDate.getDate(), parseInt(hours), parseInt(minutes));
+        if (finalDate < new Date()) {
+            showFloatingMessage("❌ Cannot pick past date/time", "red-400");
+            return;
+        }
+        overlay.classList.add('hidden');
+        callback(finalDate.toISOString());
+        navDiv.remove(); // cleanup to avoid duplicates later
+    };
+    document.getElementById('close-calendar-btn').onclick = () => {
+        overlay.classList.add('hidden');
+        navDiv.remove();
+    };
+}
+
+// ---------- Deadline Picker using real calendar ----------
+function showExplicitDeadlinePicker(callback) {
+    showRealCalendar(new Date(), callback);
+}
+
+function getDefaultDeadline() { const d=new Date(); d.setHours(18,0,0,0); return d.toISOString(); }
+
+// ---------- Reminder scheduling (background timer) ----------
+function scheduleReminder(task, reminderOffsetMinutes) {
+    if (reminderOffsetMinutes === 'none' || !task.dueDate) return;
+    let remindAt = new Date(task.dueDate);
+    if (reminderOffsetMinutes === 'on_time') {
+        // remind exactly at due time
+    } else if (reminderOffsetMinutes === '5min') remindAt.setMinutes(remindAt.getMinutes() - 5);
+    else if (reminderOffsetMinutes === '15min') remindAt.setMinutes(remindAt.getMinutes() - 15);
+    else if (reminderOffsetMinutes === '1hour') remindAt.setHours(remindAt.getHours() - 1);
+    else return;
+    
+    const now = new Date();
+    if (remindAt <= now) return; // past, skip
+    const delay = remindAt.getTime() - now.getTime();
+    const timeoutId = setTimeout(() => {
+        playRingtone();
+        showAlarmPopup(task, true); // reminder flag
+    }, delay);
+    reminderTimers.set(task.id, timeoutId);
+}
+
+function clearReminder(taskId) {
+    if (reminderTimers.has(taskId)) {
+        clearTimeout(reminderTimers.get(taskId));
+        reminderTimers.delete(taskId);
+    }
+}
+
+// ---------- Show Deadline Confirmation with reminder dropdown ----------
+function showDeadlineConfirmation(parsed) {
+    pendingTaskDraft = { 
+        title: parsed.title, 
+        priority: parsed.priority, 
+        dueDate: parsed.dueDate || getDefaultDeadline(),
+        reminder: 'on_time'  // default reminder at due time
+    };
+    document.getElementById('preview-deadline-text').textContent = formatDueDateFull(pendingTaskDraft.dueDate);
+    document.getElementById('deadline-preview').classList.remove('hidden');
+    document.getElementById('add-nlp-task-btn').classList.add('hidden');
+    document.getElementById('nlp-feedback').classList.add('hidden');
+    // set reminder selector value
+    const remSelect = document.getElementById('reminder-select');
+    if (remSelect) remSelect.value = pendingTaskDraft.reminder;
+}
+
+function hideDeadlinePreview() {
+    document.getElementById('deadline-preview').classList.add('hidden');
+    document.getElementById('add-nlp-task-btn').classList.remove('hidden');
+    pendingTaskDraft = null;
+}
+
+// ---------- Add Task with reminder ----------
+function triggerAddTaskFlow() {
+    const input = document.getElementById('nlp-task-input');
+    const text = input.value.trim();
+    if (!text) return;
+    const parsed = parseNaturalLanguage(text);
+    showDeadlineConfirmation(parsed);
+    input.value = '';
+}
+function confirmAddTask() {
+    if (!pendingTaskDraft) return;
+    const reminderValue = document.getElementById('reminder-select').value;
+    const newTask = {
+        id: Date.now() + Math.random(),
+        title: pendingTaskDraft.title,
+        completed: false,
+        dueDate: pendingTaskDraft.dueDate,
+        priority: pendingTaskDraft.priority,
+        subtasks: [],
+        reminder: reminderValue,
+        alarmed: false,
+        createdAt: new Date().toISOString()
+    };
+    state.tasks.push(newTask);
+    saveTasks();
+    renderAdvancedTasks();
+    // schedule reminder if needed
+    scheduleReminder(newTask, reminderValue);
+    hideDeadlinePreview();
+    const fb = document.getElementById('nlp-feedback');
+    fb.classList.remove('hidden');
+    let reminderText = '';
+    if (reminderValue === 'on_time') reminderText = 'at due time';
+    else if (reminderValue === '5min') reminderText = '5 minutes before';
+    else if (reminderValue === '15min') reminderText = '15 minutes before';
+    else if (reminderValue === '1hour') reminderText = '1 hour before';
+    else reminderText = 'No reminder';
+    fb.innerHTML = `✨ Task created: "${newTask.title}" (Reminder: ${reminderText})`;
+    setTimeout(() => fb.classList.add('hidden'), 3000);
+    showFloatingMessage(`✅ Task added! ${reminderText !== 'No reminder' ? 'We will remind you ' + reminderText : ''}`, "pure-gold");
+}
+
+// ---------- NLP Parser (unchanged) ----------
 function parseNaturalLanguage(input) {
     const lower = input.toLowerCase();
     let dueDate = null, priority = 'medium', title = input;
@@ -6808,68 +6879,7 @@ function parseNaturalLanguage(input) {
     return { title, dueDate: dueDate?dueDate.toISOString():null, priority };
 }
 
-// ---------- Deadline Picker ----------
-function getDefaultDeadline() { const d=new Date(); d.setHours(18,0,0,0); return d.toISOString(); }
-function showExplicitDeadlinePicker(callback) {
-    const overlay=document.createElement('div'); overlay.className='focus-overlay';
-    overlay.innerHTML=`<div class="mini-calendar p-5 w-72"><h4 class="text-pure-gold text-sm mb-3">Set Due Date & Time</h4>
-        <input type="datetime-local" id="deadline-input" class="w-full bg-black/30 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
-        <div class="flex gap-2 mt-4"><button id="save-deadline" class="flex-1 py-2 bg-pure-gold/30 rounded-full text-pure-gold text-xs">Save</button>
-        <button id="close-picker" class="px-3 py-2 bg-red-500/20 rounded-full text-red-300 text-xs">Cancel</button></div></div>`;
-    document.body.appendChild(overlay);
-    const input=overlay.querySelector('#deadline-input');
-    overlay.querySelector('#save-deadline').onclick=()=>{ callback(input.value?new Date(input.value).toISOString():getDefaultDeadline()); overlay.remove(); };
-    overlay.querySelector('#close-picker').onclick=()=>overlay.remove();
-    overlay.onclick=e=>{ if(e.target===overlay)overlay.remove(); };
-}
-
-// ---------- Show Deadline Confirmation ----------
-function showDeadlineConfirmation(parsed) {
-    pendingTaskDraft = { title: parsed.title, priority: parsed.priority, dueDate: parsed.dueDate || getDefaultDeadline() };
-    document.getElementById('preview-deadline-text').textContent = formatDueDateFull(pendingTaskDraft.dueDate);
-    document.getElementById('deadline-preview').classList.remove('hidden');
-    document.getElementById('add-nlp-task-btn').classList.add('hidden');
-    document.getElementById('nlp-feedback').classList.add('hidden');
-}
-function hideDeadlinePreview() {
-    document.getElementById('deadline-preview').classList.add('hidden');
-    document.getElementById('add-nlp-task-btn').classList.remove('hidden');
-    pendingTaskDraft = null;
-}
-
-// ---------- Add Task (triggered by NLP or manual) ----------
-function triggerAddTaskFlow() {
-    const input = document.getElementById('nlp-task-input');
-    const text = input.value.trim();
-    if (!text) return;
-    const parsed = parseNaturalLanguage(text);
-    showDeadlineConfirmation(parsed);
-    input.value = '';
-}
-function confirmAddTask() {
-    if (!pendingTaskDraft) return;
-    const newTask = {
-        id: Date.now() + Math.random(),
-        title: pendingTaskDraft.title,
-        completed: false,
-        dueDate: pendingTaskDraft.dueDate,
-        priority: pendingTaskDraft.priority,
-        subtasks: [],
-        focusActive: false,
-        reminderSet: false,
-        createdAt: new Date().toISOString()
-    };
-    state.tasks.push(newTask);
-    saveTasks();
-    renderAdvancedTasks();
-    hideDeadlinePreview();
-    const fb = document.getElementById('nlp-feedback');
-    fb.classList.remove('hidden');
-    fb.innerHTML = `✨ Task created: "${newTask.title}"`;
-    setTimeout(() => fb.classList.add('hidden'), 3000);
-}
-
-// ---------- Group Tasks ----------
+// ---------- Group & Progress (unchanged) ----------
 function groupTasks(tasks) {
     const now=new Date(), today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
     const overdue=[], todayTasks=[], upcoming=[], completed=[];
@@ -6881,8 +6891,6 @@ function groupTasks(tasks) {
     });
     return {overdue, today:todayTasks, upcoming, completed};
 }
-
-// ---------- Workload & Progress ----------
 function getTodayTasks(){ const today=new Date().toDateString(); return state.tasks.filter(t=>t.dueDate&&new Date(t.dueDate).toDateString()===today&&!t.completed); }
 function getAverageDailyCompletion(){ const h=state.taskHistory.dailyCompletions; if(!h.length)return 0; return h.reduce((a,c)=>a+c.completedCount,0)/h.length; }
 function updateWorkloadIndicator(){
@@ -6898,112 +6906,310 @@ function updateProgressBar(){
 }
 function recordCompletion(taskId, completed){ if(!completed)return; const today=new Date().toDateString(); let h=state.taskHistory; let e=h.dailyCompletions.find(d=>d.date===today); if(e)e.completedCount++; else h.dailyCompletions.push({date:today,completedCount:1}); h.dailyCompletions=h.dailyCompletions.slice(-30); saveHistory(); updateWorkloadIndicator(); }
 
-// ---------- Completion Validation ----------
+// ---------- Early Completion Popup (fixed overflow) ----------
+function showEarlyCompletionPopup(task, callback) {
+    const root = document.getElementById('custom-popup-root');
+    const popup = document.createElement('div');
+    popup.className = 'pointer-events-auto glass-card p-4 rounded-xl backdrop-blur-2xl bg-black/80 border border-pure-gold/40 shadow-2xl w-72 max-w-[85vw] animate-slide-up';
+    popup.innerHTML = `
+        <div class="text-sm text-white/90 mb-2">⚠️ "${escapeHtml(task.title)}" is due at ${formatDueDateFull(task.dueDate)}.</div>
+        <div class="text-xs text-white/60 mb-3">Mark as completed early?</div>
+        <div class="flex gap-2 justify-end">
+            <button class="confirm-early px-3 py-1.5 bg-pure-gold/30 text-pure-gold text-xs rounded-full">Yes, complete</button>
+            <button class="cancel-early px-3 py-1.5 bg-white/10 text-white/70 text-xs rounded-full">No</button>
+        </div>
+    `;
+    root.appendChild(popup);
+    popup.querySelector('.confirm-early').onclick = () => {
+        callback(true);
+        popup.remove();
+    };
+    popup.querySelector('.cancel-early').onclick = () => {
+        callback(false);
+        popup.remove();
+    };
+    setTimeout(() => popup.remove(), 10000);
+}
+
 function handleTaskCheckbox(task, checked) {
     if (checked) {
         const now = new Date();
         const due = task.dueDate ? new Date(task.dueDate) : null;
         if (due && due > now) {
-            if (!confirm(`This task is due ${formatDueDateFull(task.dueDate)}. Mark as completed early?`)) {
-                return false; // don't check it
-            }
+            showEarlyCompletionPopup(task, (confirmed) => {
+                if (confirmed) {
+                    task.completed = true;
+                    recordCompletion(task.id, true);
+                    clearReminder(task.id);
+                    saveTasks();
+                    renderAdvancedTasks();
+                    showFloatingMessage("🎉 Well played! Task completed early.", "pure-gold");
+                } else {
+                    const cb = document.querySelector(`.task-checkbox[data-id="${task.id}"]`);
+                    if (cb) cb.checked = false;
+                }
+            });
+            return false;
+        } else {
+            task.completed = true;
+            recordCompletion(task.id, true);
+            clearReminder(task.id);
+            saveTasks();
+            renderAdvancedTasks();
+            return true;
         }
-        task.completed = true;
-        recordCompletion(task.id, true);
     } else {
         task.completed = false;
+        saveTasks();
+        renderAdvancedTasks();
+        return true;
     }
-    saveTasks();
-    renderAdvancedTasks();
-    return true;
 }
 
-// ---------- Render Tasks ----------
+// ---------- Alarm System ----------
+let audioCtx = null;
+let alarmCheckInterval = null;
+function initAudioContext() {
+    if (audioCtx) return audioCtx;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+}
+function unlockAudioOnInteraction() {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    document.removeEventListener('click', unlockAudioOnInteraction);
+    document.removeEventListener('touchstart', unlockAudioOnInteraction);
+}
+document.addEventListener('click', unlockAudioOnInteraction);
+document.addEventListener('touchstart', unlockAudioOnInteraction);
+
+function playRingtone() {
+    try {
+        const ctx = initAudioContext();
+        if (ctx.state === 'suspended') return;
+        const now = ctx.currentTime;
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.frequency.value = 880;
+        gain1.gain.setValueAtTime(0.2, now);
+        gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+        osc1.start();
+        osc1.stop(now + 0.7);
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.frequency.value = 660;
+        gain2.gain.setValueAtTime(0.18, now + 0.2);
+        gain2.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+        osc2.start(now + 0.2);
+        osc2.stop(now + 0.9);
+    } catch(e) { console.warn(e); }
+}
+
+function showAlarmPopup(task, isReminder = false) {
+    const root = document.getElementById('custom-popup-root');
+    const popup = document.createElement('div');
+    popup.className = 'pointer-events-auto glass-card p-4 rounded-xl backdrop-blur-2xl bg-black/80 border-l-4 border-pure-gold shadow-2xl w-72 max-w-[85vw] animate-slide-up';
+    const title = isReminder ? "⏰ REMINDER" : "⚠️ TASK DUE NOW";
+    popup.innerHTML = `
+        <div class="flex items-start gap-2">
+            <i data-lucide="bell-ring" class="w-5 h-5 text-pure-gold mt-0.5"></i>
+            <div>
+                <div class="text-pure-gold text-sm font-bold">${title}</div>
+                <div class="text-white/90 text-xs mt-1">${escapeHtml(task.title)}</div>
+                <div class="text-white/40 text-[10px] mt-0.5">Due: ${formatDueDateFull(task.dueDate)}</div>
+                <div class="flex gap-2 mt-3">
+                    <button class="dismiss-alarm bg-pure-gold/30 text-pure-gold text-xs px-3 py-1 rounded-full">Dismiss</button>
+                    <button class="snooze-alarm bg-white/10 text-white/70 text-xs px-3 py-1 rounded-full">Snooze 5m</button>
+                </div>
+            </div>
+        </div>
+    `;
+    root.appendChild(popup);
+    lucide.createIcons();
+    popup.querySelector('.dismiss-alarm').onclick = () => popup.remove();
+    popup.querySelector('.snooze-alarm').onclick = () => {
+        popup.remove();
+        setTimeout(() => showAlarmPopup(task, isReminder), 300000);
+    };
+    setTimeout(() => popup.remove(), 15000);
+}
+
+function checkDueAlarms() {
+    const now = new Date();
+    state.tasks.forEach(task => {
+        if (task.completed) return;
+        if (!task.dueDate) return;
+        const due = new Date(task.dueDate);
+        if (due <= now && !task.alarmed) {
+            task.alarmed = true;
+            saveTasks();
+            playRingtone();
+            showAlarmPopup(task, false);
+        }
+        if (due > now && task.alarmed === true) {
+            task.alarmed = false;
+            saveTasks();
+        }
+    });
+}
+function startAlarmWatcher() {
+    if (alarmCheckInterval) clearInterval(alarmCheckInterval);
+    alarmCheckInterval = setInterval(checkDueAlarms, 30000);
+}
+
+// ---------- Pomodoro Focus Mode (unchanged but uses global ringtone) ----------
+function startFocusMode(taskId) {
+    const task = taskId ? state.tasks.find(t=>t.id==taskId) : null;
+    const overlay = document.createElement('div'); overlay.className='focus-overlay';
+    let phase = 'work';
+    let timeLeft = 25 * 60;
+    let paused = false;
+    let timerInterval = null;
+    const breakDuration = 5 * 60;
+
+    function updateDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        const dispStr = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        const phaseEl = document.getElementById('focus-phase-text');
+        if(phaseEl) phaseEl.textContent = phase === 'work' ? '⚡ DEEP WORK (25 min)' : '🍃 RENEWAL BREAK (5 min)';
+        const timerEl = document.getElementById('focus-timer-display');
+        if(timerEl) timerEl.textContent = dispStr;
+    }
+    function playChime() {
+        playRingtone();
+        const msg = phase === 'work' ? 'Work session complete! Take a 5-min break.' : 'Break finished. Ready for next focus round?';
+        showFloatingMessage(msg, "pure-gold");
+    }
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!paused && timeLeft > 0) {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft === 0) {
+                    clearInterval(timerInterval);
+                    playChime();
+                    if (phase === 'work') {
+                        phase = 'break';
+                        timeLeft = breakDuration;
+                        updateDisplay();
+                        startTimer();
+                    } else {
+                        phase = 'completed';
+                        const phaseEl = document.getElementById('focus-phase-text');
+                        if(phaseEl) phaseEl.textContent = '✨ Cycle complete! ✨';
+                        if (timerInterval) clearInterval(timerInterval);
+                        const stopBtn = document.getElementById('focus-stop');
+                        if(stopBtn) stopBtn.textContent = 'Close';
+                        paused = true;
+                    }
+                }
+            }
+        }, 1000);
+    }
+    overlay.innerHTML = `
+        <div class="focus-timer text-center">
+            <p class="text-pure-gold text-sm font-medium" id="focus-phase-text">⚡ DEEP WORK (25 min)</p>
+            ${task ? `<p class="text-white text-xl font-medium mb-2">${escapeHtml(task.title)}</p>` : '<p class="text-white/60 text-sm mb-2">pomodoro flow</p>'}
+            <div class="text-5xl font-mono font-bold text-white tracking-wider my-5" id="focus-timer-display">25:00</div>
+            <div class="flex gap-4 justify-center">
+                <button id="focus-pause" class="px-5 py-2 rounded-full bg-white/10 text-white/80 text-sm">⏸ Pause</button>
+                <button id="focus-stop" class="px-5 py-2 rounded-full bg-red-500/30 text-red-200 text-sm">⏹ Stop</button>
+            </div>
+            <p class="text-[11px] text-white/30 mt-4">🇯🇵 Kaizen: 25min intense focus + 5min reset</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    updateDisplay();
+    startTimer();
+    overlay.querySelector('#focus-pause').onclick = () => {
+        paused = !paused;
+        overlay.querySelector('#focus-pause').textContent = paused ? '▶ Resume' : '⏸ Pause';
+    };
+    overlay.querySelector('#focus-stop').onclick = () => {
+        if (timerInterval) clearInterval(timerInterval);
+        overlay.remove();
+    };
+}
+
+// ---------- Render Tasks (structured, no overflow) ----------
 function renderAdvancedTasks() {
     const container = document.getElementById('tasks-container');
     if (!container) return;
-    const groups = groupTasks(state.tasks);
-    let html = '';
-
-    const renderTask = (task, isSubtask=false) => {
-        const priorityClass = `priority-${task.priority}`;
-        const completedClass = task.completed ? 'completed' : '';
-        const timeStr = task.dueDate ? new Date(task.dueDate).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-        return `
-            <div class="task-item flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5 ${priorityClass} ${completedClass} ${state.timelineView?'timeline-task':''}" data-task-id="${task.id}">
-                ${state.timelineView?'<div class="timeline-dot"></div>':''}
-                <input type="checkbox" class="task-checkbox mt-1" ${task.completed?'checked':''} data-id="${task.id}">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2"><span class="task-text text-sm text-white/90">${escapeHtml(task.title)}</span>${state.timelineView&&timeStr?`<span class="text-xs text-pure-gold/70 ml-auto">${timeStr}</span>`:''}</div>
-                    ${!state.timelineView&&task.dueDate?`<div class="text-xs text-white/40 flex items-center gap-1 mt-0.5"><i data-lucide="clock" class="w-3 h-3"></i> ${formatDueDate(task.dueDate)}</div>`:''}
-                </div>
-                <div class="flex items-center gap-1">
-                    <button class="deadline-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Set Due Date"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
-                    <button class="focus-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Focus (25min)"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>
-                    <button class="reminder-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Remind Me"><i data-lucide="bell" class="w-3.5 h-3.5"></i></button>
-                    <button class="subtask-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Add Subtask"><i data-lucide="list-plus" class="w-3.5 h-3.5"></i></button>
-                    <button class="delete-task-btn p-1.5 rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-400" data-id="${task.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                </div>
-            </div>
-            ${task.subtasks?.length?task.subtasks.map(sub=>renderTask(sub,true)).join(''):''}
-        `;
-    };
-
+    let tasksToRender = state.tasks;
     if (state.timelineView) {
-        const all = state.tasks.filter(t=>!t.completed).sort((a,b)=>a.dueDate&&b.dueDate?new Date(a.dueDate)-new Date(b.dueDate):a.dueDate? -1:1);
-        html = `<div class="space-y-1">${all.map(t=>renderTask(t)).join('')}</div>`;
+        const now = new Date();
+        tasksToRender = state.tasks.filter(t => !t.completed && t.dueDate && new Date(t.dueDate) >= now)
+            .sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate));
+        if (tasksToRender.length === 0) {
+            container.innerHTML = '<div class="text-center text-white/40 text-sm py-4">✨ No future tasks scheduled</div>';
+            return;
+        }
+        const html = `<div class="space-y-1">${tasksToRender.map(t => renderTaskItem(t, true)).join('')}</div>`;
+        container.innerHTML = html;
     } else {
+        const groups = groupTasks(state.tasks);
+        let html = '';
         const cfg=[{key:'overdue',label:'⚠️ Overdue',color:'text-red-400'},{key:'today',label:'📅 Today',color:'text-pure-gold'},{key:'upcoming',label:'📌 Upcoming',color:'text-blue-300'},{key:'completed',label:'✅ Completed',color:'text-white/40'}];
         cfg.forEach(c=>{ const tasks=groups[c.key]; if(!tasks.length)return; const gid=`group-${c.key}`;
-            html+=`<div class="task-group"><div class="task-group-header flex items-center justify-between cursor-pointer" data-group="${c.key}"><span class="${c.color} text-xs font-medium">${c.label} (${tasks.length})</span><i data-lucide="chevron-down" class="w-4 h-4 text-white/40 group-chevron"></i></div><div id="${gid}" class="group-content space-y-1 mt-1">${tasks.map(t=>renderTask(t)).join('')}</div></div>`;
+            html+=`<div class="task-group"><div class="task-group-header flex items-center justify-between cursor-pointer" data-group="${c.key}"><span class="${c.color} text-xs font-medium">${c.label} (${tasks.length})</span><i data-lucide="chevron-down" class="w-4 h-4 text-white/40 group-chevron"></i></div><div id="${gid}" class="group-content space-y-1 mt-1">${tasks.map(t=>renderTaskItem(t, false)).join('')}</div></div>`;
         });
+        container.innerHTML = html || '<div class="text-center text-gold/30 py-6 text-sm">✨ Add your first task</div>';
     }
-    container.innerHTML = html || '<div class="text-center text-white/30 py-6 text-sm">✨ Add your first task</div>';
     lucide.createIcons();
     attachTaskEventListeners();
     updateProgressBar();
     updateWorkloadIndicator();
 }
 
-// ---------- Event Listeners ----------
+function renderTaskItem(task, isTimeline = false) {
+    const priorityClass = `priority-${task.priority}`;
+    const completedClass = task.completed ? 'completed' : '';
+    const timeStr = task.dueDate ? new Date(task.dueDate).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    return `
+        <div class="task-item flex items-start gap-2 p-2 rounded-lg bg-white/5 border border-white/5 ${priorityClass} ${completedClass}" data-task-id="${task.id}">
+            ${isTimeline ? '<div class="timeline-dot mt-1.5"></div>' : ''}
+            <input type="checkbox" class="task-checkbox mt-1 shrink-0" ${task.completed?'checked':''} data-id="${task.id}">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap"><span class="task-text text-sm text-white/90 break-words">${escapeHtml(task.title)}</span>${isTimeline&&timeStr?`<span class="text-xs text-pure-gold/70 ml-auto shrink-0">${timeStr}</span>`:''}</div>
+                ${!isTimeline&&task.dueDate?`<div class="text-xs text-white/40 flex items-center gap-1 mt-0.5"><i data-lucide="clock" class="w-3 h-3 shrink-0"></i> <span class="truncate">${formatDueDate(task.dueDate)}</span></div>`:''}
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+                <button class="deadline-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Set Due Date"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
+                <button class="focus-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Pomodoro Focus"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>
+                <button class="reminder-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Remind Me"><i data-lucide="bell" class="w-3.5 h-3.5"></i></button>
+                <button class="subtask-btn p-1.5 rounded-lg hover:bg-pure-gold/20 text-pure-gold/60" data-id="${task.id}" title="Add Subtask"><i data-lucide="list-plus" class="w-3.5 h-3.5"></i></button>
+                <button class="delete-task-btn p-1.5 rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-400" data-id="${task.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+        </div>
+        ${task.subtasks?.length?task.subtasks.map(sub=>renderTaskItem(sub, isTimeline)).join(''):''}
+    `;
+}
+
 function attachTaskEventListeners() {
     document.querySelectorAll('.task-checkbox').forEach(cb=>{ cb.onchange=e=>{
         const id=e.target.dataset.id; const task=state.tasks.find(t=>t.id==id);
         if(task){ e.target.checked = handleTaskCheckbox(task, e.target.checked); }
     };});
-    document.querySelectorAll('.deadline-btn').forEach(b=>b.onclick=e=>{ showExplicitDeadlinePicker(date=>{ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t){ t.dueDate=date; saveTasks(); renderAdvancedTasks(); } }); });
+    document.querySelectorAll('.deadline-btn').forEach(b=>b.onclick=e=>{ showExplicitDeadlinePicker(date=>{ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t){ t.dueDate=date; t.alarmed=false; clearReminder(t.id); scheduleReminder(t, t.reminder); saveTasks(); renderAdvancedTasks(); } }); });
     document.querySelectorAll('.focus-btn').forEach(b=>b.onclick=e=>startFocusMode(b.dataset.id));
-    document.querySelectorAll('.reminder-btn').forEach(b=>b.onclick=e=>{ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t)showReminderPopup('⏰ Reminder',`Don't forget: ${t.title}`); });
+    document.querySelectorAll('.reminder-btn').forEach(b=>b.onclick=e=>{ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t) { if(t.reminder && t.reminder !== 'none') showAlarmPopup(t, true); else showFloatingMessage("No reminder set for this task.", "white/50"); } });
     document.querySelectorAll('.subtask-btn').forEach(b=>b.onclick=e=>{ const text=prompt('Subtask:'); if(text){ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t){ if(!t.subtasks)t.subtasks=[]; t.subtasks.push({id:Date.now(),title:text,completed:false,priority:'medium'}); saveTasks(); renderAdvancedTasks(); } } });
-    document.querySelectorAll('.delete-task-btn').forEach(b=>b.onclick=e=>{ state.tasks=state.tasks.filter(t=>t.id!=b.dataset.id); saveTasks(); renderAdvancedTasks(); });
-    document.querySelectorAll('.task-group-header').forEach(h=>h.onclick=()=>{ const g=h.dataset.group, c=document.getElementById(`group-${g}`), ch=h.querySelector('.group-chevron'); if(c){c.classList.toggle('hidden'); ch.style.transform=c.classList.contains('hidden')?'rotate(-90deg)':'';} });
+    document.querySelectorAll('.delete-task-btn').forEach(b=>b.onclick=e=>{ const t=state.tasks.find(t=>t.id==b.dataset.id); if(t) clearReminder(t.id); state.tasks=state.tasks.filter(t=>t.id!=b.dataset.id); saveTasks(); renderAdvancedTasks(); });
+    document.querySelectorAll('.task-group-header').forEach(h=>h.onclick=()=>{ const g=h.dataset.group, c=document.getElementById(`group-${g}`), ch=h.querySelector('.group-chevron'); if(c){c.classList.toggle('hidden'); if(ch) ch.style.transform=c.classList.contains('hidden')?'rotate(-90deg)':'rotate(0deg)';} });
 }
 
-// ---------- Focus Mode ----------
-function startFocusMode(taskId) {
-    const task = taskId ? state.tasks.find(t=>t.id==taskId) : null;
-    const overlay=document.createElement('div'); overlay.className='focus-overlay';
-    overlay.innerHTML=`<div class="focus-timer text-center"><p class="text-pure-gold text-sm mb-2">${task?'Focusing on':'Deep Work'}</p><p class="text-white text-xl font-medium mb-4">${task?task.title:'Stay focused'}</p><div class="text-4xl font-mono text-white" id="focus-timer-display">25:00</div><div class="flex gap-3 mt-6"><button id="focus-pause" class="px-4 py-2 rounded-full bg-white/10 text-white/80">Pause</button><button id="focus-stop" class="px-4 py-2 rounded-full bg-red-500/20 text-red-300">Stop</button></div></div>`;
-    document.body.appendChild(overlay);
-    let left=1500, paused=false, timer, disp=overlay.querySelector('#focus-timer-display');
-    const upd=()=>{ const m=Math.floor(left/60).toString().padStart(2,'0'), s=(left%60).toString().padStart(2,'0'); disp.textContent=`${m}:${s}`; };
-    timer=setInterval(()=>{ if(!paused){ left--; upd(); if(left<=0){ clearInterval(timer); overlay.remove(); showReminderPopup('✅ Focus Done','Great job! Take a break.'); } } },1000);
-    overlay.querySelector('#focus-pause').onclick=()=>{ paused=!paused; overlay.querySelector('#focus-pause').textContent=paused?'Resume':'Pause'; };
-    overlay.querySelector('#focus-stop').onclick=()=>{ clearInterval(timer); overlay.remove(); };
+function showFloatingMessage(msg, colorClass) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `fixed bottom-24 right-6 z-50 bg-black/80 border border-${colorClass}/50 text-${colorClass} text-xs px-3 py-2 rounded-full backdrop-blur-md animate-slide-up pointer-events-auto`;
+    msgDiv.textContent = msg;
+    document.body.appendChild(msgDiv);
+    setTimeout(() => msgDiv.remove(), 3000);
 }
-
-// ---------- Reminder Popup ----------
-function showReminderPopup(title,msg){
-    const p=document.createElement('div'); p.className='fixed bottom-6 right-6 z-50 glass-card p-5 rounded-2xl backdrop-blur-2xl bg-white/5 border border-pure-gold/30 shadow-2xl max-w-sm animate-slide-up';
-    p.innerHTML=`<h4 class="text-pure-gold font-medium mb-1">${title}</h4><p class="text-white/80 text-sm mb-4">${msg}</p><div class="flex gap-2 justify-end"><button class="snooze-btn px-3 py-1.5 rounded-full bg-white/10 text-white/70 text-xs">Snooze 5m</button><button class="done-btn px-3 py-1.5 rounded-full bg-pure-gold/30 text-pure-gold text-xs">Done</button></div>`;
-    document.body.appendChild(p);
-    p.querySelector('.done-btn').onclick=()=>p.remove();
-    p.querySelector('.snooze-btn').onclick=()=>{ p.remove(); setTimeout(()=>showReminderPopup(title,msg),300000); };
-}
-
-// ---------- Stopwatch & Calendar ----------
-function showStopwatch(){ /* same as before */ }
-function showMiniCalendar(){ /* same as before */ }
 
 // ---------- Clock ----------
 function updateClock(){ const n=new Date(); document.getElementById('current-time').textContent=n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); document.getElementById('current-date').textContent=n.toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'}); }
@@ -7014,13 +7220,17 @@ function initTaskSystem(){
     document.getElementById('add-nlp-task-btn').onclick = triggerAddTaskFlow;
     document.getElementById('confirm-add-task').onclick = confirmAddTask;
     document.getElementById('cancel-add-task').onclick = hideDeadlinePreview;
-    document.getElementById('change-deadline-btn').onclick = ()=>showExplicitDeadlinePicker(d=>{ if(pendingTaskDraft)pendingTaskDraft.dueDate=d; document.getElementById('preview-deadline-text').textContent=formatDueDateFull(d); });
+    document.getElementById('change-deadline-btn').onclick = ()=>showExplicitDeadlinePicker(d=>{ if(pendingTaskDraft) { pendingTaskDraft.dueDate=d; document.getElementById('preview-deadline-text').textContent=formatDueDateFull(d); } });
     document.getElementById('voice-task-btn').onclick = ()=>{ if('webkitSpeechRecognition' in window){ const r=new webkitSpeechRecognition(); r.onresult=e=>document.getElementById('nlp-task-input').value=e.results[0][0].transcript; r.start(); } };
     document.getElementById('timeline-toggle').onclick = ()=>{ state.timelineView=!state.timelineView; renderAdvancedTasks(); };
     document.getElementById('global-focus-btn').onclick = ()=>startFocusMode(null);
-    document.getElementById('current-time').onclick = showStopwatch;
-    document.getElementById('current-date').onclick = showMiniCalendar;
+    document.getElementById('current-time').onclick = ()=>showFloatingMessage("⏱️ Use Pomodoro Focus for timing.", "pure-gold");
+    document.getElementById('current-date').onclick = ()=>showFloatingMessage("📅 Click 'Change' to open the calendar.", "pure-gold");
+    // reschedule reminders on load
+    state.tasks.forEach(task => { if(task.reminder && task.reminder !== 'none' && !task.completed) scheduleReminder(task, task.reminder); });
     renderAdvancedTasks();
+    startAlarmWatcher();
+    checkDueAlarms();
 }
 document.addEventListener('DOMContentLoaded', initTaskSystem);
 
@@ -8193,7 +8403,7 @@ window.xroga = {
         ];
 
         // ---------- Create dropdown element ----------
-        const input = document.getElementById('chat-input');
+        const input = document.getElementById('xroga-chat-input');
         if (!input) return;
 
         const existingBox = document.getElementById('suggestion-box');
@@ -8856,6 +9066,50 @@ window.xroga = {
           padding: 0.15rem 0.6rem;
         }
       }
+      
+      /* ---------- Desktop compact size (≥769px) ---------- */
+@media (min-width: 769px) {
+  .selector-btn {
+    padding: 0.3rem 0.7rem 0.3rem 0.5rem;
+    gap: 0.35rem;
+  }
+  .drag-handle {
+    font-size: 0.9rem;
+  }
+  .btn-icon {
+    font-size: 1.4rem;
+  }
+  .minimized .btn-icon {
+    font-size: 1.5rem;
+  }
+  .btn-name {
+    font-size: 0.85rem;
+  }
+  .minimize-toggle {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+  .model-dropdown {
+    min-width: 220px;
+    max-height: 180px;  /* 4 items */
+  }
+  .model-option {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  .option-icon {
+    font-size: 1.5rem;
+    width: 2rem;
+  }
+  .option-emoji {
+    font-size: 1.4rem;
+  }
+  .drag-hint {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.7rem;
+  }
+}
     </style>
 
     <!-- font awesome icons (already loaded) -->
