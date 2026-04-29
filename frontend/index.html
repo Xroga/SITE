@@ -2,36 +2,36 @@
 <html lang="en" class="dark">
 <head>
 
-<!-- Primary Meta Tags -->
-<meta name="description" content="Website + auto seo deploy, Create Images, Fast & deep AI conversations, Web search Explore. travel deals, Islamic Q&A, affordable shop 2500+ brand - boycott alerts.">
-<meta name="keywords" content="Xroga AI, AI assistant, code expert, creative AI, deep thought, Islamic AI, Quran, Hadith, halal haram, travel booking, cheap flights, hotel deals, car rental, boycott checker, ethical shopping, brand alerts, productivity, trip planner">
-<meta name="author" content="Xroga AI">
+<!— Default meta tags (used when no ?feature= parameter) —>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="robots" content="index, follow">
+<meta name="author" content="Xroga AI">
 <link rel="canonical" href="https://xroga.com/">
+<link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
 
-<!-- Open Graph / Facebook -->
+<!— These will be overwritten by JavaScript —>
+<title>Xroga AI · See Magic</title>
+<meta name="description" content="Website + auto seo deploy, Create Images, Fast & deep AI conversations, Web search Explore. travel deals, Islamic Q&A, affordable shop 2500+ brand - boycott alerts.">
+<meta name="keywords" content="Xroga AI, AI assistant, code expert, creative AI, deep thought, Islamic AI, Quran, Hadith, halal haram, travel booking, cheap flights, hotel deals, car rental, boycott checker, ethical shopping, brand alerts, productivity, trip planner">
+
+<!-- Open Graph / Facebook (default) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://xroga.com/">
 <meta property="og:title" content="Xroga AI – See Magic">
 <meta property="og:description" content="Website build. done. & deploy, Create, Explore & Learn. travel deals, Islamic Q&A, ethical shopping with boycott alerts, and deep AI conversations – all in one place.">
 <meta property="og:image" content="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
 
-<!-- Twitter -->
+<!-- Twitter (default) -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://xroga.com/">
 <meta name="twitter:title" content="Xroga AI – See Magic">
 <meta name="twitter:description" content="Code, Create, Explore & Learn. Islamic guidance, travel planning, ethical shopping, and AI chat – all in Xroga AI.">
 <meta name="twitter:image" content="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
 
-<!-- Favicon – Xroga AI Logo -->
-<link rel="icon" type="image/png" sizes="32x32" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
-<link rel="icon" type="image/png" sizes="16x16" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
-<link rel="apple-touch-icon" sizes="180x180" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
-<link rel="shortcut icon" href="https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png">
-
-<!-- Structured Data (JSON-LD) – Updated with all features -->
-<script type="application/ld+json">
+<!-- Default JSON-LD -->
+<script type="application/ld+json" id="main-jsonld">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -40,15 +40,8 @@
   "applicationCategory": "AI Assistant",
   "operatingSystem": "All",
   "url": "https://xroga.com/",
-  "author": {
-    "@type": "Organization",
-    "name": "Xroga AI"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
+  "author": { "@type": "Organization", "name": "Xroga AI" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "screenshot": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
   "keywords": "AI chat, code assistant, creative AI, deep thought, Islamic AI, Quran, Hadith, halal haram, travel booking, cheap flights, hotel deals, car rental, boycott checker, ethical shopping, brand alerts, productivity, trip planner",
   "featureList": [
@@ -57,12 +50,128 @@
     "Deep Thought Mode – in-depth analysis and reasoning",
     "Islamic Learning – Quran, Hadith, daily Islamic topics, Halal/Haram guidance",
     "Travel Planner – Book flights, hotels, and cars at affordable prices",
-    "Ethical Shopping – Browse 1000+ brands with real-time boycott alerts",
-    "Voice input and output",
-    "Task management",
-    "General discussion and random topics"
+    "Ethical Shopping – Browse 2500+ brands with real-time boycott alerts",
+    "Voice input and output", "Task management", "General discussion"
   ]
 }
+</script>
+
+<!-- Dynamic SEO updater based on ?feature= parameter -->
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const feature = params.get('feature');  // e.g., 'boycott', 'islamic', 'travel', 'ai'
+
+  // If no feature parameter, do nothing (keep defaults)
+  if (!feature) return;
+
+  // Define SEO for each feature
+  const seoMap = {
+    ai: {
+      title: "AI Modes: Code, Creative & Deep Thought – Xroga AI",
+      description: "Switch between Code Expert, Lightning Creative, and Deep Thought modes. AI that builds websites, creates images, and thinks deeply – all on Xroga.",
+      ogTitle: "Xroga AI – All AI Modes in One Place",
+      ogDesc: "Code, create, and reason deeply with Xroga's AI modes. Fast, creative, and intelligent.",
+      twitterTitle: "Xroga AI Modes",
+      twitterDesc: "Experience Code Expert, Creative & Deep Thought AI.",
+      jsonld: {
+        name: "Xroga AI – AI Modes",
+        description: "Multiple AI modes: Code Expert, Lightning Creative, Deep Thought. Build websites, generate images, solve complex problems.",
+        featureList: ["Code Expert Mode", "Lightning & Creative Mode", "Deep Thought Mode", "Image Creation", "Web Search"]
+      }
+    },
+    islamic: {
+      title: "Islamic Q&A – Quran, Hadith, Halal/Haram Guidance | Xroga AI",
+      description: "Ask Islamic questions, get answers from Quran and Hadith. Daily Islamic topics, halal/haram guidance, and prayer reminders.",
+      ogTitle: "Islamic Learning & Q&A – Xroga AI",
+      ogDesc: "Your AI assistant for Islamic knowledge: Quran, Hadith, fatwa-style answers, and daily spiritual reminders.",
+      twitterTitle: "Islamic Q&A on Xroga AI",
+      twitterDesc: "Learn Islam with AI – Quran, Hadith, halal/haram.",
+      jsonld: {
+        name: "Xroga AI – Islamic Q&A",
+        description: "Islamic learning platform with AI: Quranic answers, Hadith explanations, halal/haram checks, and daily Islamic topics.",
+        featureList: ["Quran & Hadith Search", "Halal/Haram Guidance", "Daily Islamic Topics", "Prayer Time Reminders"]
+      }
+    },
+    travel: {
+      title: "Travel Deals: Cheap Flights, Hotels & Car Rental – Xroga Travel",
+      description: "Find affordable flights, hotel deals, and car rentals. AI-powered travel planner with real-time price comparison.",
+      ogTitle: "Xroga Travel – Best Deals on Flights, Hotels & Cars",
+      ogDesc: "Save money on your next trip. Xroga Travel AI finds cheap flights, hotels, and rental cars instantly.",
+      twitterTitle: "Xroga Travel Deals",
+      twitterDesc: "Affordable flights, hotels & car rentals – AI finds the best prices.",
+      jsonld: {
+        name: "Xroga Travel",
+        description: "Travel booking AI: cheap flights, hotel deals, car rental comparison. Trip planner included.",
+        featureList: ["Flight Search", "Hotel Deals", "Car Rental", "Trip Planner", "Price Alerts"]
+      }
+    },
+    boycott: {
+      title: "Boycott Alerts & Affordable Ethical Shopping – 2500+ Brands | Xroga",
+      description: "Real-time boycott alerts for 2500+ brands. Shop ethical alternatives at affordable prices. Updated daily with Islamic principles.",
+      ogTitle: "Ethical Shopping with Boycott Alerts – Xroga",
+      ogDesc: "Know which brands to boycott. Find affordable, ethical alternatives. Real-time alerts for 2500+ companies.",
+      twitterTitle: "Boycott Alerts & Ethical Shop",
+      twitterDesc: "Shop with conscience. Real-time boycott alerts and affordable alternatives.",
+      jsonld: {
+        name: "Xroga Boycott Alerts & Ethical Shop",
+        description: " boycott checker for 2500+ brands. Islamic ethical shopping guide with affordable alternatives.",
+        featureList: ["Real-time Boycott Alerts", "2500+ Brands Monitored", "Ethical Alternatives", "Affordable Prices", "Daily Updates"]
+      }
+    }
+  };
+
+  const data = seoMap[feature];
+  if (!data) return;
+
+  // Update <title>
+  document.title = data.title;
+
+  // Update meta description
+  let metaDesc = document.querySelector('meta[name="description"]');
+  if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = "description"; document.head.appendChild(metaDesc); }
+  metaDesc.content = data.description;
+
+  // Update keywords (optional: keep generic or override)
+  // We'll keep original keywords, but can also add feature-specific
+  let metaKeywords = document.querySelector('meta[name="keywords"]');
+  if (metaKeywords && feature === 'boycott') {
+    metaKeywords.content = "boycott alerts, ethical shopping, brand boycott, halal shopping, affordable products, Xroga boycott";
+  } else if (metaKeywords && feature === 'islamic') {
+    metaKeywords.content = "Islamic Q&A, Quran, Hadith, halal haram, Islamic AI, Muslim assistant";
+  } else if (metaKeywords && feature === 'travel') {
+    metaKeywords.content = "cheap flights, hotel deals, car rental, travel deals, trip planner, affordable travel";
+  }
+
+  // Update Open Graph
+  let ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) ogTitle.content = data.ogTitle;
+  let ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.content = data.ogDesc;
+
+  // Update Twitter
+  let twTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twTitle) twTitle.content = data.twitterTitle;
+  let twDesc = document.querySelector('meta[name="twitter:description"]');
+  if (twDesc) twDesc.content = data.twitterDesc;
+
+  // Update JSON-LD
+  const defaultJsonLd = JSON.parse(document.getElementById('main-jsonld').innerText);
+  const newJsonLd = { ...defaultJsonLd, ...data.jsonld };
+  newJsonLd.url = "https://xroga.com/?feature=" + feature;
+  // Update @type appropriately
+  if (feature === 'boycott') newJsonLd["@type"] = "Shopping";
+  else if (feature === 'travel') newJsonLd["@type"] = "TravelAction";
+  else if (feature === 'islamic') newJsonLd["@type"] = "EducationalOrganization";
+  else newJsonLd["@type"] = "WebApplication";
+
+  const jsonldScript = document.getElementById('main-jsonld');
+  jsonldScript.innerText = JSON.stringify(newJsonLd, null, 2);
+
+  // Optional: update canonical to include ?feature (to avoid duplicate content)
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.href = "https://xroga.com/?feature=" + feature;
+})();
 </script>
  <!-- Core GrapesJS (required) -->
 <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
