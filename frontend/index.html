@@ -1195,7 +1195,335 @@
   100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
 }
 </style>
+<style>
+/* ========== IMAGE GENERATION (UIVerse by adamgiebl) ========== */
+.image-loader {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  background: #f4f4f4;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+.image-loader:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  transform: rotate(45deg) translate(30%, 40%);
+  background: #2e86de;
+  box-shadow: 32px -34px 0 5px #0097e6;
+  animation: slide 2s infinite ease-in-out alternate;
+}
+.image-loader:after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0097e6;
+  transform: rotate(0deg);
+  transform-origin: 35px 145px;
+  animation: rotate 2s infinite ease-in-out;
+}
+@keyframes slide {
+  0%, 100% { bottom: -35px; }
+  25%, 75% { bottom: -2px; }
+  20%, 80% { bottom: 2px; }
+}
+@keyframes rotate {
+  0%   { transform: rotate(-15deg); }
+  25%, 75% { transform: rotate(0deg); }
+  100% { transform: rotate(25deg); }
+}
+.dark .image-loader {
+  background: #1e293b;
+}
 
+/* ========== CHAT LOADER (spinning Lucide icon) ========== */
+.chat-loader-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+.chat-loader-icon i {
+  width: 48px;
+  height: 48px;
+  color: #7c3aed;
+  animation: spin 1.5s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+<style>
+/* ========== IMAGE GENERATION (UIVerse by adamgiebl) ========== */
+@keyframes cardPop {
+  0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.image-result-card {
+  max-width: 360px;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+  border: 1px solid #f1f5f9;
+  animation: cardPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.dark .image-result-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+/* Format pills above image */
+.format-bar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+}
+.dark .format-bar { background: #1a2332; }
+.format-btn {
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.format-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* Image container */
+.image-preview-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f1f5f9;
+  cursor: pointer;
+  overflow: hidden;
+}
+.dark .image-preview-wrapper { background: #0f172a; }
+.image-preview-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.image-preview-wrapper:hover img { transform: scale(1.04); }
+
+/* Glass action bar on top of image */
+.image-actions-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.5);
+  transition: background 0.3s;
+}
+.dark .image-actions-bar {
+  background: rgba(15,23,42,0.75);
+  border-color: rgba(255,255,255,0.1);
+}
+.action-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.9);
+  color: #1e293b;
+  transition: all 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.dark .action-icon-btn {
+  background: rgba(30,41,59,0.9);
+  color: #e2e8f0;
+}
+.action-icon-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.dark .action-icon-btn:hover { background: #334155; }
+.primary-action {
+  background: #2563eb !important;
+  color: white !important;
+}
+.primary-action:hover { background: #1d4ed8 !important; }
+.print-action {
+  background: rgba(124,58,237,0.9) !important;
+  color: white !important;
+}
+.print-action:hover { background: #7c3aed !important; }
+
+/* Schedule modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-box {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+.dark .modal-box {
+  background: #1e293b;
+}
+.modal-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.platform-grid label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+.schedule-datetime {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+.dark .schedule-datetime {
+  background: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+.schedule-datetime::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+}
+
+/* Popup editor (reuse or keep separate) */
+.image-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem;
+}
+.image-popup {
+  background: white;
+  border-radius: 24px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 2rem;
+  position: relative;
+}
+.dark .image-popup {
+  background: #1e293b;
+}
+.popup-image-container {
+  max-height: 60vh;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.popup-image-container img {
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+.popup-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.popup-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.2s;
+}
+.dark .popup-btn {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+.popup-btn:hover {
+  background: #e2e8f0;
+}
+.dark .popup-btn:hover {
+  background: #475569;
+}
+.popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(0,0,0,0.1);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+}</style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 dark:from-gray-950 dark:via-slate-900 dark:to-indigo-950 text-gray-900 dark:text-gray-100 antialiased">
 
@@ -5584,6 +5912,47 @@ renderWelcomeScreen();
 }
         // ===================== AI API CALL =====================
        // ===================== NEW callAI using Gemini API directly =====================
+async function generateImage(prompt) {
+    const openaiKey = localStorage.getItem('openaiKey');
+    if (!openaiKey) {
+        // No API key → return a realistic placeholder image so the full UI still works
+        return {
+            imageUrl: 'https://picsum.photos/1024/1024?random=' + Date.now(),
+            isPlaceholder: true
+        };
+    }
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/images/generations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${openaiKey}`
+            },
+            body: JSON.stringify({
+                model: "dall-e-3",
+                prompt: prompt,
+                n: 1,
+                size: "1024x1024",
+                quality: "standard"
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            return { error: `❌ Image generation failed: ${err.error?.message || response.status}` };
+        }
+
+        const data = await response.json();
+        const imageUrl = data.data?.[0]?.url;
+        if (!imageUrl) return { error: "No image returned." };
+
+        return { imageUrl, isPlaceholder: false };
+    } catch (e) {
+        return { error: `Network error: ${e.message}` };
+    }
+}
+
 async function callAI(prompt, mode, files = []) {
     // Get the user's Gemini API key from localStorage (set by the bottom script)
     const apiKey = localStorage.getItem('geminiKey');
@@ -6132,108 +6501,6 @@ container.querySelector('.ai-edit-drag').onclick = () => {
             });
         }
 
-        // ===================== SEND MESSAGE (CODE EXPERT ANIMATION + CODE BLOCK) =====================
-async function sendMessage() {
-    const message = elements.chatInput.value.trim();
-    if (!message || state.isTyping) return;
-
-    // 🆕 HANDLE TRAVEL & ISLAMIC MODES
-    if (state.currentMode === 'travel-concierge') {
-        const searchInput = document.getElementById('travelSearchInput');
-        if (searchInput) searchInput.value = message;
-        const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'flights';
-        if (typeof fetchAndRenderResults === 'function') fetchAndRenderResults(activeTab);
-        elements.chatInput.value = '';
-        if (state.selectedChat) {
-            if (!state.selectedChat.messages) state.selectedChat.messages = [];
-            state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-            saveChats();
-        }
-        return;
-    }
-
-    if (state.currentMode === 'muslim-islamic') {
-        // Pass message to Islamic dashboard (e.g., search Quran, get hadith)
-        const islamicInput = document.getElementById('islamicSearchInput');
-        if (islamicInput) islamicInput.value = message;
-        // Trigger dashboard action (e.g., fetch prayer times, ayat, hadith)
-        if (typeof handleIslamicQuery === 'function') handleIslamicQuery(message);
-        elements.chatInput.value = '';
-        if (state.selectedChat) {
-            if (!state.selectedChat.messages) state.selectedChat.messages = [];
-            state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-            saveChats();
-        }
-        return;
-    }
-    
-    if (state.currentMode === 'shop-confidence') {
-    const shopInput = document.getElementById('shopSearchInput');
-    if (shopInput) shopInput.value = message;
-    if (typeof handleShopSearch === 'function') handleShopSearch(message);
-    elements.chatInput.value = '';
-    if (state.selectedChat) {
-        if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
-        saveChats();
-    }
-    return;
-}
-
-    // Hide main header if visible
-    if (elements.mainHeader && !elements.mainHeader.classList.contains('hidden')) {
-        elements.mainHeader.classList.add('hidden');
-        if (elements.topicsToggleContainer) elements.topicsToggleContainer.classList.remove('hidden');
-    }
-
-    // Create new chat if none exists
-    if (!state.selectedChat) {
-        const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-        let type = 'lightening';   // default
-        if (state.currentMode === 'code-expert') type = 'code';
-        else if (state.currentMode === 'deep-thought') type = 'deep-thought';
-        // For 'lightening' mode, type stays 'lightening'
-        addChatToHistory(title, [], type);
-    }
-
-    // Add user message to UI and history
-    addUserMessage(message);
-    elements.chatInput.value = '';
-
-    // Clear file upload preview
-    if (elements.fileUploadPreview) {
-        elements.fileUploadPreview.classList.add('hidden');
-        elements.fileUploadPreview.innerHTML = '';
-    }
-    state.uploadedFiles = [];
-
-    // Show typing indicator
-    state.isTyping = true;
-    elements.typingIndicator.classList.remove('hidden');
-
-    // Get AI response
-    const aiResponse = await callAI(message, state.currentMode);
-
-    // Hide typing indicator
-    state.isTyping = false;
-    elements.typingIndicator.classList.add('hidden');
-
-    await delay(100);
-
-    // Display response (code expert uses animated code block)
-    if (state.currentMode === 'code-expert') {
-        await revealCodeResponse(aiResponse);
-    } else {
-        addAIMessage(aiResponse);
-    }
-
-    // Auto‑title the chat after first exchange (2 messages total)
-    if (state.selectedChat && state.selectedChat.messages.length === 2) {
-        state.selectedChat.title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-        saveChats();
-        loadChatHistory(elements.searchChats?.value || '');
-    }
-}
 
 function openCustomVisualEditor(initialCode, messageDiv, codeContainer) {
     const existing = document.getElementById('custom-editor-modal');
@@ -6474,147 +6741,17 @@ function showToast(msg, title = 'Info', type = 'info') {  // type can be 'info',
 }
 }
 
-function addUserMessage(content, saveToHistory = true) {
-    // In travel mode or muslim islamic mode, do not render chat bubbles
-    if (state.currentMode === 'travel-concierge' || state.currentMode === 'muslim-islamic') {
-        if (state.currentMode === 'muslim-islamic') {
-            // Optionally update Islamic dashboard search/query field
-            const islamicInput = document.getElementById('islamicSearchInput');
-            if (islamicInput) islamicInput.value = content;
-        }
-        if (saveToHistory && state.selectedChat) {
-            if (!state.selectedChat.messages) state.selectedChat.messages = [];
-            state.selectedChat.messages.push({ role: 'user', content, timestamp: new Date().toISOString() });
-            saveChats();
-        }
-        return;
-    }
 
-}
         // ===================== ORIGINAL FUNCTIONS (keep for non-code modes) =====================
-        function addUserMessage(content, saveToHistory = true) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-enter flex gap-4 max-w-3xl ml-auto';
-            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            messageDiv.dataset.messageId = messageId;
-            const timestamp = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-            const safeHtml = DOMPurify.sanitize(marked.parse(content));
-            messageDiv.innerHTML = `
-                <div class="flex-1 order-2"><div class="user-message p-4 shadow-lg relative group"><div class="message-content">${safeHtml}</div><div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100"><button class="edit-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="pencil" class="w-4 h-4"></i></button><button class="copy-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="copy" class="w-4 h-4"></i></button></div></div><div class="text-right mt-2 text-xs text-gray-500">${timestamp}</div></div>
-                <div class="flex-shrink-0 order-1"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center shadow-lg"><i data-lucide="user" class="w-5 h-5 text-white"></i></div></div>
-            `;
-            elements.chatMessages.appendChild(messageDiv);
-            lucide.createIcons();
-            messageDiv.querySelector('.edit-msg').onclick = () => startEditing(messageDiv, true, content);
-            messageDiv.querySelector('.copy-msg').onclick = () => { navigator.clipboard.writeText(content); showToast('Copied!'); };
-            if (saveToHistory && state.selectedChat) {
-                if (!state.selectedChat.messages) state.selectedChat.messages = [];
-                state.selectedChat.messages.push({ role: 'user', content, timestamp: new Date().toISOString(), messageId });
-                saveChats();
-            }
-            scrollToBottom();
-            return messageDiv;
-        }
-
-        function addAIMessage(content, saveToHistory = true) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-enter flex gap-4 max-w-3xl';
-            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            messageDiv.dataset.messageId = messageId;
-            const safeHtml = DOMPurify.sanitize(marked.parse(content));
-            messageDiv.innerHTML = `
-                <div class="flex-shrink-0"><div class="w-10 h-10 rounded-full overflow-hidden shadow-lg"><img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" class="w-full h-full object-cover"></div></div>
-                <div class="flex-1"><div class="ai-message p-5 rounded-2xl shadow-sm relative group"><div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg">Xroga AI</span><span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}</span></div><div class="prose dark:prose-invert message-content">${safeHtml}</div><div class="flex gap-3 mt-4 pt-4 border-t"><button class="copy-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="copy" class="w-4 h-4"></i></button><button class="regenerate-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button><button class="speak-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="volume-2" class="w-4 h-4"></i></button><button class="edit-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="pencil" class="w-4 h-4"></i></button></div></div></div>
-            `;
-            elements.chatMessages.appendChild(messageDiv);
-            lucide.createIcons();
-            messageDiv.querySelector('.copy-btn').onclick = () => { navigator.clipboard.writeText(content); showToast('Copied!'); };
-            messageDiv.querySelector('.regenerate-btn').onclick = () => regenerateAIMessage(messageDiv);
-            messageDiv.querySelector('.speak-btn').onclick = () => speakText(content);
-            messageDiv.querySelector('.edit-btn').onclick = () => startEditing(messageDiv, false, content);
-            if (saveToHistory && state.selectedChat) {
-                if (!state.selectedChat.messages) state.selectedChat.messages = [];
-                state.selectedChat.messages.push({ role: 'assistant', content, timestamp: new Date().toISOString(), messageId });
-                saveChats();
-            }
-            scrollToBottom();
-            if (state.autoSpeak) speakText(content);
-            return messageDiv;
-        }
-
-        function startEditing(messageDiv, isUser, originalContent) {
-            const contentDiv = messageDiv.querySelector('.message-content');
-            const textarea = document.createElement('textarea');
-            textarea.value = contentDiv.innerText;
-            textarea.className = 'w-full p-2 bg-white/20 dark:bg-gray-700/50 rounded-lg resize-y min-h-[100px]';
-            const saveBtn = document.createElement('button');
-            saveBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
-            saveBtn.className = 'p-2 bg-green-500/30 rounded-lg';
-            const cancelBtn = document.createElement('button');
-            cancelBtn.innerHTML = '<i data-lucide="x" class="w-4 h-4"></i>';
-            cancelBtn.className = 'p-2 bg-red-500/30 rounded-lg';
-            const controls = document.createElement('div');
-            controls.className = 'flex gap-2 mt-2';
-            controls.appendChild(saveBtn);
-            controls.appendChild(cancelBtn);
-            contentDiv.style.display = 'none';
-            contentDiv.parentNode.insertBefore(textarea, contentDiv.nextSibling);
-            contentDiv.parentNode.insertBefore(controls, textarea.nextSibling);
-            lucide.createIcons();
-            const cleanup = () => { textarea.remove(); controls.remove(); contentDiv.style.display = 'block'; };
-            saveBtn.onclick = () => {
-                const newContent = textarea.value.trim();
-                if (newContent && newContent !== originalContent) {
-                    if (isUser) contentDiv.innerText = newContent;
-                    else contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newContent));
-                    const msgId = messageDiv.dataset.messageId;
-                    if (state.selectedChat) {
-                        const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
-                        if (msg) msg.content = newContent;
-                        saveChats();
-                    }
-                    showToast('Message updated');
-                }
-                cleanup();
-            };
-            cancelBtn.onclick = cleanup;
-        }
-
-        async function regenerateAIMessage(aiMessageDiv) {
-            const allMessages = Array.from(elements.chatMessages.children);
-            const idx = allMessages.indexOf(aiMessageDiv);
-            let userMsg = null;
-            for (let i=idx-1; i>=0; i--) {
-                if (allMessages[i].querySelector('.user-message')) {
-                    userMsg = allMessages[i].querySelector('.message-content').innerText;
-                    break;
-                }
-            }
-            if (!userMsg) { showToast('Cannot find original message', 'Error'); return; }
-            state.isTyping = true;
-            elements.typingIndicator.classList.remove('hidden');
-            const newResponse = await callAI(userMsg, state.currentMode);
-            state.isTyping = false;
-            elements.typingIndicator.classList.add('hidden');
-            const contentDiv = aiMessageDiv.querySelector('.message-content');
-            contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newResponse));
-            const msgId = aiMessageDiv.dataset.messageId;
-            if (state.selectedChat) {
-                const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
-                if (msg) msg.content = newResponse;
-                saveChats();
-            }
-            showToast('Regenerated');
-        }
-        
-        // ===================== ORIGINAL FUNCTIONS (updated for Travel Mode) =====================
+/* ===================== USER MESSAGE ===================== */
 function addUserMessage(content, saveToHistory = true) {
-    // 🆕 In travel mode, do not render chat bubbles; dashboard handles input
     if (state.currentMode === 'travel-concierge') {
-        // Optionally still save to history if you want travel queries recorded
         if (saveToHistory && state.selectedChat) {
             if (!state.selectedChat.messages) state.selectedChat.messages = [];
-            state.selectedChat.messages.push({ role: 'user', content, timestamp: new Date().toISOString() });
+            state.selectedChat.messages.push({
+                role: 'user', content,
+                timestamp: new Date().toISOString()
+            });
             saveChats();
         }
         return;
@@ -6626,30 +6763,306 @@ function addUserMessage(content, saveToHistory = true) {
     messageDiv.dataset.messageId = messageId;
     const timestamp = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
     const safeHtml = DOMPurify.sanitize(marked.parse(content));
+
     messageDiv.innerHTML = `
-        <div class="flex-1 order-2"><div class="user-message p-4 shadow-lg relative group"><div class="message-content">${safeHtml}</div><div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100"><button class="edit-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="pencil" class="w-4 h-4"></i></button><button class="copy-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="copy" class="w-4 h-4"></i></button></div></div><div class="text-right mt-2 text-xs text-gray-500">${timestamp}</div></div>
-        <div class="flex-shrink-0 order-1"><div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center shadow-lg"><i data-lucide="user" class="w-5 h-5 text-white"></i></div></div>
+        <div class="flex-1 order-2">
+            <div class="user-message p-4 shadow-lg relative group">
+                <div class="message-content">${safeHtml}</div>
+                <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100">
+                    <button class="edit-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                    <button class="copy-msg p-1.5 rounded-lg bg-white/20"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+            <div class="text-right mt-2 text-xs text-gray-500">${timestamp}</div>
+        </div>
+        <div class="flex-shrink-0 order-1">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center shadow-lg">
+                <i data-lucide="user" class="w-5 h-5 text-white"></i>
+            </div>
+        </div>
     `;
     elements.chatMessages.appendChild(messageDiv);
     lucide.createIcons();
     messageDiv.querySelector('.edit-msg').onclick = () => startEditing(messageDiv, true, content);
-    messageDiv.querySelector('.copy-msg').onclick = () => { navigator.clipboard.writeText(content); showToast('Copied!'); };
+    messageDiv.querySelector('.copy-msg').onclick = () => {
+        navigator.clipboard.writeText(content);
+        showToast('Copied!');
+    };
     if (saveToHistory && state.selectedChat) {
         if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({ role: 'user', content, timestamp: new Date().toISOString(), messageId });
+        state.selectedChat.messages.push({
+            role: 'user', content,
+            timestamp: new Date().toISOString(),
+            messageId
+        });
         saveChats();
     }
     scrollToBottom();
     return messageDiv;
 }
 
+    // image generation ouput result
+function displayImageResult(imageUrl, prompt, isPlaceholder = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message-enter flex gap-4 max-w-3xl';
+    const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    messageDiv.dataset.messageId = messageId;
+
+    const formatOptions = [
+        { label: 'Square', ratio: '1/1' },
+        { label: 'Mobile', ratio: '9/16' },
+        { label: 'Thumb.', ratio: '16/9' },
+        { label: 'Post', ratio: '4/5' }
+    ];
+
+    const socialPlatforms = ['YouTube', 'Facebook', 'Instagram', 'X (Twitter)', 'LinkedIn', 'Pinterest'];
+
+    messageDiv.innerHTML = `
+        <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg">
+                <img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div class="flex-1">
+            <div class="ai-message p-0 rounded-2xl shadow-sm overflow-hidden">
+                <div class="image-result-card">
+                    ${isPlaceholder ? `<div class="text-xs text-amber-600 bg-amber-50 px-3 py-1 text-center">✨ Demo – add API key for real AI</div>` : ''}
+                    
+                    <!-- Format pills -->
+                    <div class="format-bar">
+                        ${formatOptions.map(f => `<button class="format-btn" data-ratio="${f.ratio}">${f.label}</button>`).join('')}
+                    </div>
+                    
+                    <!-- Image + floating actions -->
+                    <div class="image-preview-wrapper" id="img-preview-${messageId}">
+                        <img src="${imageUrl}" alt="AI Art" />
+                        <!-- Glass bar over image -->
+                        <div class="image-actions-bar">
+                            <a href="${imageUrl}" download="xroga-art.png" class="action-icon-btn primary-action">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> DL
+                            </a>
+                            <button class="action-icon-btn share-btn">
+                                <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share
+                            </button>
+                            <button class="action-icon-btn auto-post-btn">
+                                <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> Post
+                            </button>
+                            <button class="action-icon-btn print-btn print-action">
+                                <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Sell
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    elements.chatMessages.appendChild(messageDiv);
+    lucide.createIcons();
+
+    // Format switcher
+    const imgWrapper = messageDiv.querySelector('.image-preview-wrapper');
+    const formatBtns = messageDiv.querySelectorAll('.format-btn');
+    formatBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            formatBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            imgWrapper.style.aspectRatio = btn.dataset.ratio;
+        });
+    });
+    formatBtns[0].classList.add('active'); // Square default
+
+    // Share button
+    messageDiv.querySelector('.share-btn').onclick = () => {
+        if (navigator.share) {
+            navigator.share({ title: 'AI Art', url: imageUrl }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(imageUrl);
+            showToast('Link copied to clipboard');
+        }
+    };
+
+    // Image click opens full editor
+    imgWrapper.addEventListener('click', (e) => {
+        // Prevent if a button was clicked
+        if (e.target.closest('button, a')) return;
+        openImagePopup(imageUrl);
+    });
+
+    // Auto Post modal (compact)
+    messageDiv.querySelector('.auto-post-btn').onclick = (e) => {
+        e.stopPropagation();
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = `
+            <div class="modal-box">
+                <div class="modal-title">Schedule Post</div>
+                <div class="platform-grid">
+                    ${socialPlatforms.map(p => `<label><input type="checkbox" value="${p}" class="sched-check"> ${p}</label>`).join('')}
+                </div>
+                <input type="datetime-local" class="schedule-datetime" style="width:100%;padding:0.5rem;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:1rem;" />
+                <div class="modal-actions">
+                    <button class="btn-sm btn-outline cancel-sched">Cancel</button>
+                    <button class="btn-sm btn-primary confirm-sched">Schedule</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        const closeModal = () => overlay.remove();
+        overlay.querySelector('.cancel-sched').onclick = closeModal;
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+        overlay.querySelector('.confirm-sched').onclick = () => {
+            const selected = Array.from(overlay.querySelectorAll('.sched-check:checked')).map(cb => cb.value);
+            const date = overlay.querySelector('.schedule-datetime').value;
+            if (!selected.length || !date) {
+                showToast('Please select a platform and date', 'Error');
+                return;
+            }
+            showToast(`✅ Scheduled to ${selected.join(', ')} on ${new Date(date).toLocaleString()}`);
+            closeModal();
+        };
+    };
+
+    // Print on Demand
+    messageDiv.querySelector('.print-btn').onclick = (e) => {
+        e.stopPropagation();
+        window.open(`https://www.printful.com/custom?image=${encodeURIComponent(imageUrl)}`, '_blank');
+    };
+
+    // Save to history
+    if (state.selectedChat) {
+        if (!state.selectedChat.messages) state.selectedChat.messages = [];
+        state.selectedChat.messages.push({
+            role: 'assistant',
+            content: `![Generated Image](${imageUrl})`,
+            timestamp: new Date().toISOString(),
+            messageId
+        });
+        saveChats();
+    }
+    scrollToBottom();
+}
+
+// share images 
+function shareImage(imageUrl) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'AI generated image',
+            url: imageUrl
+        }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(imageUrl);
+        showToast('Link copied to clipboard');
+    }
+}
+    // image crop edit
+function openImagePopup(imageUrl) {
+    // Remove any existing popup
+    const existing = document.querySelector('.image-popup-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'image-popup-overlay';
+    overlay.innerHTML = `
+        <div class="image-popup">
+            <button class="popup-close">&times;</button>
+            <div class="popup-image-container">
+                <img src="${imageUrl}" id="popup-img" />
+            </div>
+            <div class="popup-controls">
+                <button class="popup-btn" id="flip-h"><i data-lucide="flip-horizontal"></i> Flip H</button>
+                <button class="popup-btn" id="flip-v"><i data-lucide="flip-vertical"></i> Flip V</button>
+                <button class="popup-btn" id="rotate-right"><i data-lucide="rotate-cw"></i> Rotate</button>
+                <button class="popup-btn" id="crop-btn"><i data-lucide="crop"></i> Crop (coming soon)</button>
+                <button class="popup-btn btn-download" id="popup-download"><i data-lucide="download"></i> Download</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    lucide.createIcons();
+
+    const img = overlay.querySelector('#popup-img');
+    let scaleX = 1, scaleY = 1, rotation = 0;
+
+    const updateTransform = () => {
+        img.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) rotate(${rotation}deg)`;
+    };
+
+    overlay.querySelector('#flip-h').onclick = () => {
+        scaleX *= -1;
+        updateTransform();
+    };
+    overlay.querySelector('#flip-v').onclick = () => {
+        scaleY *= -1;
+        updateTransform();
+    };
+    overlay.querySelector('#rotate-right').onclick = () => {
+        rotation += 90;
+        updateTransform();
+    };
+    overlay.querySelector('#crop-btn').onclick = () => {
+        showToast('Crop feature will be available soon', 'Info');
+    };
+    overlay.querySelector('#popup-download').onclick = () => {
+        const a = document.createElement('a');
+        a.href = imageUrl;
+        a.download = 'xroga-edited.png';
+        a.click();
+    };
+    overlay.querySelector('.popup-close').onclick = () => overlay.remove();
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+}
+
+/* ===================== LOADING MESSAGE ===================== */
+function addLoadingMessage(type = 'chat') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message-enter flex gap-4 max-w-3xl';
+    messageDiv.id = 'loading-animation';
+
+    const isImageGen = (type === 'image');
+    // Image → adamgiebl loader, Chat → spinning Lucide icon
+    const animationHTML = isImageGen
+        ? `<div class="image-loader"></div>`
+        : `<div class="chat-loader-icon"><i data-lucide="loader-2"></i></div>`;
+
+    messageDiv.innerHTML = `
+        <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg">
+                <img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div class="flex-1">
+            <div class="ai-message p-5 rounded-2xl shadow-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="font-bold text-lg">Xroga AI</span>
+                    <span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">
+                        ${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}
+                    </span>
+                </div>
+                <div class="flex justify-center items-center py-6">
+                    ${animationHTML}
+                </div>
+            </div>
+        </div>
+    `;
+
+    elements.chatMessages.appendChild(messageDiv);
+    lucide.createIcons();    // render the Lucide icon when used
+    scrollToBottom();
+    return messageDiv;
+}
+
+/* ===================== AI MESSAGE ===================== */
 function addAIMessage(content, saveToHistory = true) {
-    // 🆕 In travel mode, do not render chat bubbles
     if (state.currentMode === 'travel-concierge') {
-        // Optionally save the AI response to history (if any)
         if (saveToHistory && state.selectedChat) {
             if (!state.selectedChat.messages) state.selectedChat.messages = [];
-            state.selectedChat.messages.push({ role: 'assistant', content, timestamp: new Date().toISOString() });
+            state.selectedChat.messages.push({
+                role: 'assistant', content,
+                timestamp: new Date().toISOString()
+            });
             saveChats();
         }
         return;
@@ -6660,19 +7073,47 @@ function addAIMessage(content, saveToHistory = true) {
     const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     messageDiv.dataset.messageId = messageId;
     const safeHtml = DOMPurify.sanitize(marked.parse(content));
+
     messageDiv.innerHTML = `
-        <div class="flex-shrink-0"><div class="w-10 h-10 rounded-full overflow-hidden shadow-lg"><img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" class="w-full h-full object-cover"></div></div>
-        <div class="flex-1"><div class="ai-message p-5 rounded-2xl shadow-sm relative group"><div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg">Xroga AI</span><span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}</span></div><div class="prose dark:prose-invert message-content">${safeHtml}</div><div class="flex gap-3 mt-4 pt-4 border-t"><button class="copy-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="copy" class="w-4 h-4"></i></button><button class="regenerate-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button><button class="speak-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="volume-2" class="w-4 h-4"></i></button><button class="edit-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="pencil" class="w-4 h-4"></i></button></div></div></div>
+        <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg">
+                <img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div class="flex-1">
+            <div class="ai-message p-5 rounded-2xl shadow-sm relative group">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="font-bold text-lg">Xroga AI</span>
+                    <span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">
+                        ${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}
+                    </span>
+                </div>
+                <div class="prose dark:prose-invert message-content">${safeHtml}</div>
+                <div class="flex gap-3 mt-4 pt-4 border-t">
+                    <button class="copy-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    <button class="regenerate-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                    <button class="speak-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="volume-2" class="w-4 h-4"></i></button>
+                    <button class="edit-btn p-2 rounded-lg hover:bg-white/10"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
     `;
     elements.chatMessages.appendChild(messageDiv);
     lucide.createIcons();
-    messageDiv.querySelector('.copy-btn').onclick = () => { navigator.clipboard.writeText(content); showToast('Copied!'); };
+    messageDiv.querySelector('.copy-btn').onclick = () => {
+        navigator.clipboard.writeText(content);
+        showToast('Copied!');
+    };
     messageDiv.querySelector('.regenerate-btn').onclick = () => regenerateAIMessage(messageDiv);
     messageDiv.querySelector('.speak-btn').onclick = () => speakText(content);
     messageDiv.querySelector('.edit-btn').onclick = () => startEditing(messageDiv, false, content);
     if (saveToHistory && state.selectedChat) {
         if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({ role: 'assistant', content, timestamp: new Date().toISOString(), messageId });
+        state.selectedChat.messages.push({
+            role: 'assistant', content,
+            timestamp: new Date().toISOString(),
+            messageId
+        });
         saveChats();
     }
     scrollToBottom();
@@ -6680,8 +7121,8 @@ function addAIMessage(content, saveToHistory = true) {
     return messageDiv;
 }
 
+/* ===================== EDIT MESSAGE ===================== */
 function startEditing(messageDiv, isUser, originalContent) {
-    // Editing is not supported in travel mode (should not be reachable)
     if (state.currentMode === 'travel-concierge') return;
 
     const contentDiv = messageDiv.querySelector('.message-content');
@@ -6702,7 +7143,11 @@ function startEditing(messageDiv, isUser, originalContent) {
     contentDiv.parentNode.insertBefore(textarea, contentDiv.nextSibling);
     contentDiv.parentNode.insertBefore(controls, textarea.nextSibling);
     lucide.createIcons();
-    const cleanup = () => { textarea.remove(); controls.remove(); contentDiv.style.display = 'block'; };
+    const cleanup = () => {
+        textarea.remove();
+        controls.remove();
+        contentDiv.style.display = 'block';
+    };
     saveBtn.onclick = () => {
         const newContent = textarea.value.trim();
         if (newContent && newContent !== originalContent) {
@@ -6721,34 +7166,176 @@ function startEditing(messageDiv, isUser, originalContent) {
     cancelBtn.onclick = cleanup;
 }
 
+/* ===================== REGENERATE AI MESSAGE ===================== */
 async function regenerateAIMessage(aiMessageDiv) {
-    // Regeneration not applicable in travel mode
     if (state.currentMode === 'travel-concierge') return;
 
     const allMessages = Array.from(elements.chatMessages.children);
     const idx = allMessages.indexOf(aiMessageDiv);
     let userMsg = null;
-    for (let i=idx-1; i>=0; i--) {
+    for (let i = idx - 1; i >= 0; i--) {
         if (allMessages[i].querySelector('.user-message')) {
             userMsg = allMessages[i].querySelector('.message-content').innerText;
             break;
         }
     }
-    if (!userMsg) { showToast('Cannot find original message', 'Error'); return; }
-    state.isTyping = true;
-    elements.typingIndicator.classList.remove('hidden');
-    const newResponse = await callAI(userMsg, state.currentMode);
-    state.isTyping = false;
-    elements.typingIndicator.classList.add('hidden');
-    const contentDiv = aiMessageDiv.querySelector('.message-content');
-    contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newResponse));
-    const msgId = aiMessageDiv.dataset.messageId;
-    if (state.selectedChat) {
-        const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
-        if (msg) msg.content = newResponse;
-        saveChats();
+    if (!userMsg) {
+        showToast('Cannot find original message', 'Error');
+        return;
     }
-    showToast('Regenerated');
+
+    state.isTyping = true;
+    const loadingEl = addLoadingMessage('chat');
+
+    try {
+        const newResponse = await callAI(userMsg, state.currentMode);
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+        const contentDiv = aiMessageDiv.querySelector('.message-content');
+        contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newResponse));
+        const msgId = aiMessageDiv.dataset.messageId;
+        if (state.selectedChat) {
+            const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
+            if (msg) msg.content = newResponse;
+            saveChats();
+        }
+        showToast('Regenerated');
+    } catch (error) {
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+        showToast('Regeneration failed', 'Error');
+    } finally {
+        state.isTyping = false;
+    }
+}
+
+/* ===================== SEND MESSAGE ===================== */
+async function sendMessage() {
+    const message = elements.chatInput.value.trim();
+    if (!message || state.isTyping) return;
+
+    // ========== MODES WITH INSTANT REDIRECT (no loader) ==========
+    if (state.currentMode === 'travel-concierge') {
+        const searchInput = document.getElementById('travelSearchInput');
+        if (searchInput) searchInput.value = message;
+        const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab || 'flights';
+        if (typeof fetchAndRenderResults === 'function') fetchAndRenderResults(activeTab);
+        elements.chatInput.value = '';
+        if (state.selectedChat) {
+            if (!state.selectedChat.messages) state.selectedChat.messages = [];
+            state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
+            saveChats();
+        }
+        return;
+    }
+
+    if (state.currentMode === 'muslim-islamic') {
+        const islamicInput = document.getElementById('islamicSearchInput');
+        if (islamicInput) islamicInput.value = message;
+        if (typeof handleIslamicQuery === 'function') handleIslamicQuery(message);
+        elements.chatInput.value = '';
+        if (state.selectedChat) {
+            if (!state.selectedChat.messages) state.selectedChat.messages = [];
+            state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
+            saveChats();
+        }
+        return;
+    }
+
+    if (state.currentMode === 'shop-confidence') {
+        const shopInput = document.getElementById('shopSearchInput');
+        if (shopInput) shopInput.value = message;
+        if (typeof handleShopSearch === 'function') handleShopSearch(message);
+        elements.chatInput.value = '';
+        if (state.selectedChat) {
+            if (!state.selectedChat.messages) state.selectedChat.messages = [];
+            state.selectedChat.messages.push({ role: 'user', content: message, timestamp: new Date().toISOString() });
+            saveChats();
+        }
+        return;
+    }
+
+    // ========== STANDARD CHAT / CODE EXPERT ==========
+    if (elements.mainHeader && !elements.mainHeader.classList.contains('hidden')) {
+        elements.mainHeader.classList.add('hidden');
+        if (elements.topicsToggleContainer) elements.topicsToggleContainer.classList.remove('hidden');
+    }
+
+    if (!state.selectedChat) {
+        const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+        let type = 'lightening';
+        if (state.currentMode === 'code-expert') type = 'code';
+        else if (state.currentMode === 'deep-thought') type = 'deep-thought';
+        addChatToHistory(title, [], type);
+    }
+
+    // Add user message to UI
+    addUserMessage(message);
+    elements.chatInput.value = '';
+
+    // Clear file upload preview
+    if (elements.fileUploadPreview) {
+        elements.fileUploadPreview.classList.add('hidden');
+        elements.fileUploadPreview.innerHTML = '';
+    }
+    state.uploadedFiles = [];
+
+    // Detect image generation request (only in Lightning or Deep Thought mode)
+    const isImageGen = (state.currentMode === 'lightening' || state.currentMode === 'deep-thought') &&
+        /generate\s*(an?\s*)?image|create\s*(an?\s*)?image|draw|illustrate/i.test(message);
+
+    // Show the correct loader for 3 seconds minimum
+    state.isTyping = true;
+    const loadingEl = addLoadingMessage(isImageGen ? 'image' : 'chat');
+
+    try {
+        let aiResponse;
+
+        if (isImageGen) {
+            // ---- IMAGE GENERATION ----
+            const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+            const result = await generateImage(message);
+
+            if (result.error) {
+                // If image generation fails, show error as text
+                await minDelay; // still wait the 3 seconds
+                aiResponse = result.error;
+            } else {
+                // Success: remove loader & show the special image card
+                await minDelay;
+                if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+                displayImageResult(result.imageUrl, message);
+                state.isTyping = false;
+                return; // no text message needed
+            }
+        } else {
+            // ---- NORMAL TEXT AI ----
+            const aiPromise = callAI(message, state.currentMode);
+            const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+            const [resp] = await Promise.all([aiPromise, minDelay]);
+            aiResponse = resp;
+        }
+
+        // Remove loader (only if still present – for text responses or image errors)
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+
+        // Display the text response (or code-expert reveal)
+        if (state.currentMode === 'code-expert') {
+            await revealCodeResponse(aiResponse);
+        } else {
+            addAIMessage(aiResponse);
+        }
+
+        // Auto‑title the chat after first exchange
+        if (state.selectedChat && state.selectedChat.messages.length === 2) {
+            state.selectedChat.title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+            saveChats();
+            loadChatHistory(elements.searchChats?.value || '');
+        }
+    } catch (error) {
+        if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+        showToast('Something went wrong', 'Error');
+    } finally {
+        state.isTyping = false;
+    }
 }
         
         // ===================== SIDEBAR =====================
