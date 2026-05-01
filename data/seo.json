@@ -1,0 +1,75 @@
+{
+  "default": {
+    "title": "Xroga AI · See Magic",
+    "description": "Website + auto seo deploy, Create Images, Fast & deep AI conversations...",
+    "keywords": "Xroga AI, AI assistant, ...",
+    "ogTitle": "Xroga AI – See Magic",
+    "ogDesc": "Website build. done. & deploy, Create, Explore & Learn...",
+    "ogImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "twitterTitle": "Xroga AI – See Magic",
+    "twitterDesc": "Code, Create, Explore & Learn...",
+    "twitterImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "jsonld": {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Xroga AI",
+      "description": "...",
+      "applicationCategory": "AI Assistant",
+      "operatingSystem": "All",
+      "url": "https://xroga.com/",
+      "author": { "@type": "Organization", "name": "Xroga AI" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "screenshot": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+      "keywords": "...",
+      "featureList": ["..."]
+    }
+  },
+  "ai": {
+    "title": "AI Modes: Code, Creative & Deep Thought – Xroga AI",
+    "description": "Switch between Code Expert, Lightning Creative...",
+    "keywords": "...",
+    "ogTitle": "Xroga AI – All AI Modes in One Place",
+    "ogDesc": "...",
+    "ogImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "twitterTitle": "Xroga AI Modes",
+    "twitterDesc": "...",
+    "twitterImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "jsonld": { "name": "Xroga AI – AI Modes", "description": "..." }
+  },
+  "islamic": {
+    "title": "Islamic Q&A – Quran, Hadith, Halal/Haram Guidance | Xroga AI",
+    "description": "Ask Islamic questions, get answers from Quran and Hadith...",
+    "keywords": "...",
+    "ogTitle": "Islamic Learning & Q&A – Xroga AI",
+    "ogDesc": "...",
+    "ogImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "twitterTitle": "Islamic Q&A on Xroga AI",
+    "twitterDesc": "...",
+    "twitterImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "jsonld": { "name": "Xroga AI – Islamic Q&A", "description": "..." }
+  },
+  "travel": {
+    "title": "Travel Deals: Cheap Flights, Hotels & Car Rental – Xroga Travel",
+    "description": "Find affordable flights, hotel deals, and car rentals...",
+    "keywords": "...",
+    "ogTitle": "Xroga Travel – Best Deals on Flights, Hotels & Cars",
+    "ogDesc": "...",
+    "ogImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "twitterTitle": "Xroga Travel Deals",
+    "twitterDesc": "...",
+    "twitterImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "jsonld": { "name": "Xroga Travel", "description": "..." }
+  },
+  "boycott": {
+    "title": "Boycott Alerts & Affordable Ethical Shopping – 2500+ Brands | Xroga",
+    "description": "Real-time boycott alerts for 2500+ brands...",
+    "keywords": "...",
+    "ogTitle": "Ethical Shopping with Boycott Alerts – Xroga",
+    "ogDesc": "...",
+    "ogImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "twitterTitle": "Boycott Alerts & Ethical Shop",
+    "twitterDesc": "...",
+    "twitterImage": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    "jsonld": { "name": "Xroga Boycott Alerts & Ethical Shop", "description": "..." }
+  }
+}
