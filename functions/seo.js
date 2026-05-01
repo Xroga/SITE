@@ -11,28 +11,72 @@ const seoData = {
     twitterTitle: "Xroga AI – See Magic",
     twitterDesc: "Code, Create, Explore & Learn. Islamic guidance, travel planning, ethical shopping, and AI chat – all in Xroga AI.",
     twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
-    jsonld: {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Xroga AI",
-      "description": "Xroga AI – Build Websites Code Expert, Create Images Fast + Creative daily, Deep Thinker, Islamic Learning, found (flights, hotels, cars), & affordable ethical shopping with 2500+ brand boycott alerts.",
-      "applicationCategory": "AI Assistant",
-      "operatingSystem": "All",
-      "url": "https://xroga.com/",
-      "author": { "@type": "Organization", "name": "Xroga AI" },
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "screenshot": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
-      "keywords": "AI chat, code assistant, creative AI, deep thought, Islamic AI, Quran, Hadith, halal haram, travel booking, cheap flights, hotel deals, car rental, boycott checker, ethical shopping, brand alerts, productivity, trip planner",
-      "featureList": [
-        "Code Expert Mode – AI-powered coding help",
-        "Lightning & Creative Mode – fast, imaginative responses",
-        "Deep Thought Mode – in-depth analysis and reasoning",
-        "Islamic Learning – Quran, Hadith, daily Islamic topics, Halal/Haram guidance",
-        "Travel Planner – Book flights, hotels, and cars at affordable prices",
-        "Ethical Shopping – Browse 2500+ brands with real-time boycott alerts",
-        "Voice input and output", "Task management", "General discussion"
-      ]
+jsonld: {
+  "@context": "https://schema.org",
+  "@type": ["Brand", "WebApplication"],
+  "name": "Xroga AI",
+  "slogan": "See Magic",
+  "description": "Xroga AI – Build Websites, Create Images, Deep Thinker, Islamic Learning, Travel Deals, & Ethical Shopping with boycott alerts.",
+  "url": "https://xroga.com/",
+  "logo": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+  "numberOfEmployees": {
+    "@type": "QuantitativeValue",
+    "value": 1
+  },
+  "founder": {
+    "@type": "Person",
+    "name": "Muhammad Ibrahim",
+    "age": 18,
+    "jobTitle": "Co‑founder & SEO Specialist",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "PK"
     }
+  },
+  "sameAs": [
+    "https://x.com/Xroga_AI",
+    "https://www.instagram.com/xroga_ai/",
+    "https://www.facebook.com/profile.php?id=61584249600838",
+    "https://www.youtube.com/@XrogaAI"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "hello@xroga.com",
+  },
+  "applicationCategory": "AI Assistant",
+  "operatingSystem": "All",
+  "offers": [
+    {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free plan – generous access to all core features with fair usage limits."
+    },
+    {
+      "@type": "Offer",
+      "description": "Paid plan – unlimited usage across all AI models. Flexible pricing: no fixed fee, pay‑per‑use, monthly plans, one‑time purchase, and annual plans available. Exact cost depends on the model or feature you choose."
+    }
+  ],
+  "knowsAbout": [
+    "Artificial Intelligence",
+    "Islamic Knowledge",
+    "Travel Booking",
+    "Ethical Shopping",
+    "Web Development"
+  ],
+  "featureList": [
+    "Code Expert Mode – AI-powered coding help",
+    "Lightning & Creative Mode – fast, imaginative responses",
+    "Deep Thought Mode – in-depth analysis and reasoning",
+    "Islamic Learning – Quran, Hadith, daily Islamic topics",
+    "Travel Planner – Book flights, hotels, and cars",
+    "Ethical Shopping – 2500+ brands with boycott alerts",
+    "Voice input and output",
+    "Task management",
+    "General discussion"
+  ]
+}
   },
   ai: {
     title: "AI Modes: Code, Creative & Deep Thought – Xroga AI",
