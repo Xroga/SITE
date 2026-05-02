@@ -11,76 +11,76 @@ const seoData = {
     twitterTitle: "Xroga AI – See Magic",
     twitterDesc: "Code, Create, Explore & Learn. Islamic guidance, travel planning, ethical shopping, and AI chat – all in Xroga AI.",
     twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
-jsonld: {
-  "@context": "https://schema.org",
-  "@type": ["Brand", "WebApplication"],
-  "name": "Xroga AI",
-  "slogan": "See Magic",
-  "description": "Xroga AI – Build Websites, Create Images, Deep Thinker, Islamic Learning, Travel Deals, & Ethical Shopping with boycott alerts.",
-  "url": "https://xroga.com/",
-  "logo": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
-  "numberOfEmployees": {
-    "@type": "QuantitativeValue",
-    "value": 1
-  },
-  "founder": {
-    "@type": "Person",
-    "name": "Muhammad Ibrahim",
-    "age": 18,
-    "jobTitle": "Co‑founder & SEO Specialist",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "PK"
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": ["Brand", "WebApplication"],
+      "name": "Xroga AI",
+      "slogan": "See Magic",
+      "description": "Xroga AI – Build Websites, Create Images, Deep Thinker, Islamic Learning, Travel Deals, & Ethical Shopping with boycott alerts.",
+      "url": "https://xroga.com/",
+      "logo": "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+      "numberOfEmployees": {
+        "@type": "QuantitativeValue",
+        "value": 1
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Muhammad Ibrahim",
+        "age": 18,
+        "jobTitle": "Co‑founder & SEO Specialist",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "PK"
+        }
+      },
+      "sameAs": [
+        "https://x.com/Xroga_AI",
+        "https://www.instagram.com/xroga_ai/",
+        "https://www.facebook.com/profile.php?id=61584249600838",
+        "https://www.youtube.com/@XrogaAI"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "hello@xroga.com"
+      },
+      "applicationCategory": "AI Assistant",
+      "operatingSystem": "All",
+      "offers": [
+        {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description": "Free plan – generous access to all core features with fair usage limits."
+        },
+        {
+          "@type": "Offer",
+          "description": "Paid plan – unlimited usage across all AI models. Flexible pricing: no fixed fee, pay‑per‑use, monthly plans, one‑time purchase, and annual plans available. Exact cost depends on the model or feature you choose."
+        }
+      ],
+      "knowsAbout": [
+        "Artificial Intelligence",
+        "Islamic Knowledge",
+        "Travel Booking",
+        "Ethical Shopping",
+        "Web Development"
+      ],
+      "featureList": [
+        "Code Expert Mode – AI-powered website builder",
+        "Lightning & Creative Mode – fast, imaginative responses",
+        "Deep Thought Mode – in-depth analysis and reasoning",
+        "Islamic Learning – Quran, Hadith, daily Islamic topics",
+        "Travel Planner – Book flights, hotels, and cars",
+        "Ethical Shopping – 2500+ brands with boycott alerts",
+        "Voice input and output",
+        "Task management",
+        "General discussion"
+      ]
     }
-  },
-  "sameAs": [
-    "https://x.com/Xroga_AI",
-    "https://www.instagram.com/xroga_ai/",
-    "https://www.facebook.com/profile.php?id=61584249600838",
-    "https://www.youtube.com/@XrogaAI"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer support",
-    "email": "hello@xroga.com",
-  },
-  "applicationCategory": "AI Assistant",
-  "operatingSystem": "All",
-  "offers": [
-    {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD",
-      "description": "Free plan – generous access to all core features with fair usage limits."
-    },
-    {
-      "@type": "Offer",
-      "description": "Paid plan – unlimited usage across all AI models. Flexible pricing: no fixed fee, pay‑per‑use, monthly plans, one‑time purchase, and annual plans available. Exact cost depends on the model or feature you choose."
-    }
-  ],
-  "knowsAbout": [
-    "Artificial Intelligence",
-    "Islamic Knowledge",
-    "Travel Booking",
-    "Ethical Shopping",
-    "Web Development"
-  ],
-  "featureList": [
-    "Code Expert Mode – AI-powered coding help",
-    "Lightning & Creative Mode – fast, imaginative responses",
-    "Deep Thought Mode – in-depth analysis and reasoning",
-    "Islamic Learning – Quran, Hadith, daily Islamic topics",
-    "Travel Planner – Book flights, hotels, and cars",
-    "Ethical Shopping – 2500+ brands with boycott alerts",
-    "Voice input and output",
-    "Task management",
-    "General discussion"
-  ]
-}
   },
   ai: {
-    title: "AI Modes: Code, Creative & Deep Thought – Xroga AI",
-    description: "Switch between Code Expert, Lightning Creative, and Deep Thought modes. AI that builds websites, creates images, and thinks deeply – all on Xroga.",
+    title: "AI Modes: Code, fast Creative & Deep Thought, shop/boycot, travel, islam, – Xroga AI",
+    description: "Switch Code Expert, Lightning Creative, and Deep Thought modes. AI that builds websites, creates images, and thinks deeply, travel found, shop afforadable check boycot & islamic guidence  – all on Xroga.",
     keywords: "Xroga AI, AI assistant, code expert, creative AI, deep thought, web search, image creation",
     ogTitle: "Xroga AI – All AI Modes in One Place",
     ogDesc: "Code, create, and reason deeply with Xroga's AI modes. Fast, creative, and intelligent.",
@@ -128,18 +128,115 @@ jsonld: {
   },
   boycott: {
     title: "Boycott Alerts & Affordable Ethical Shopping – 2500+ Brands | Xroga",
-    description: "Real-time boycott alerts for 2500+ brands. Shop ethical alternatives at affordable prices. Updated daily with Islamic principles.",
-    keywords: "boycott alerts, ethical shopping, brand boycott, halal shopping, affordable products, Xroga boycott, Palestine boycott",
+    description: "Real-time boycott alerts for 2500+ brands. Shop affordable items online with automatic boycott checks and discover ethical alternatives. Updated daily with Islamic principles.",
+    keywords: "boycott alerts, ethical shopping, brand boycott, halal shopping, affordable products, online shopping with boycott check, ethical alternatives, Xroga boycott, Palestine boycott, shop with conscience",
     ogTitle: "Ethical Shopping with Boycott Alerts – Xroga",
-    ogDesc: "Know which brands to boycott. Find affordable, ethical alternatives. Real-time alerts for 2500+ companies.",
+    ogDesc: "Know which brands to boycott. Find affordable, ethical alternatives online. Real-time alerts for 2500+ companies.",
     ogImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
     twitterTitle: "Boycott Alerts & Ethical Shop",
-    twitterDesc: "Shop with conscience. Real-time boycott alerts and affordable alternatives.",
+    twitterDesc: "Shop affordable items online with automatic boycott checks. Discover ethical alternatives instantly.",
     twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
     jsonld: {
       name: "Xroga Boycott Alerts & Ethical Shop",
-      description: "Boycott checker for 2500+ brands. Islamic ethical shopping guide with affordable alternatives.",
-      featureList: ["Real-time Boycott Alerts", "2500+ Brands Monitored", "Ethical Alternatives", "Affordable Prices", "Daily Updates"]
+      description: "Shop affordable online items with real-time boycott verification. 2500+ brands monitored and ethical alternatives provided daily. Islamic consumption guide.",
+      featureList: [
+        "Real-time Boycott Alerts",
+        "2500+ Brands Monitored",
+        "Ethical Alternatives",
+        "Affordable Prices",
+        "Shop with Boycott Check",
+        "Daily Updates"
+      ]
+    }
+  },
+  creative: {
+    title: "Lightning & Creative AI – Image Generation, Design, & Social Media | Xroga AI",
+    description: "Generate thumbnails, mobile posts, product images, remove backgrounds, upscale, create print‑on‑demand designs for mugs, t‑shirts, trousers, jackets. Auto‑schedule social media image posts. All with Xroga's Lightning & Creative AI.",
+    keywords: "image generation, thumbnail maker, mobile posts, auto post scheduler, product image generator, background remover, image upscaler, print on demand designs, custom mugs, t-shirt designs, social media automation, Xroga AI creative mode",
+    ogTitle: "Xroga AI – Lightning & Creative: Image Generator & Designer",
+    ogDesc: "Create thumbnails, product shots, remove backgrounds, upscale, design merch (mugs, tees), and auto‑post to social media. All in one creative AI.",
+    ogImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    twitterTitle: "Xroga AI – Lightning & Creative",
+    twitterDesc: "AI for image creation, background removal, upscale, print‑on‑demand designs, and scheduled social posts.",
+    twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    jsonld: {
+      name: "Xroga AI – Lightning & Creative Mode",
+      description: "Creative AI for generating thumbnails, product images, social media posts, background removal, upscaling, and designing print‑on‑demand merchandise (mugs, t‑shirts, trousers, jackets) with automated scheduling.",
+      featureList: [
+        "AI Image Generation (thumbnails, posts, product shots)",
+        "Background Removal",
+        "Image Upscaling",
+        "Print‑on‑Demand Design (mugs, t‑shirts, trousers, jackets)",
+        "Resale Images for Merch",
+        "Auto‑Schedule Social Media Image Posts",
+        "Fast & Creative Responses"
+      ]
+    }
+  },
+  code: {
+    title: "Code Expert – Instant AI Website Builder with Custom Domain | Xroga AI",
+    description: "Build any website instantly — portfolio, landing page, ecommerce store, restaurant, booking, real estate, plumbing, link sites & more. No technical skills needed. Host with custom domain.",
+    keywords: "AI website builder, instant website, custom domain hosting, no‑code website builder, portfolio builder, landing page creator, ecommerce store builder, restaurant website, booking website, real estate site, plumbing site, link sites, Xroga AI",
+    ogTitle: "Xroga AI – Code Expert: Instant Website Builder",
+    ogDesc: "Create and host websites instantly with custom domains. No technical skills. Portfolio, landing pages, ecommerce, and more.",
+    ogImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    twitterTitle: "Code Expert – Xroga AI",
+    twitterDesc: "Build websites instantly. No coding. Custom domain. Portfolio, ecommerce, restaurant, and more.",
+    twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    jsonld: {
+      name: "Xroga AI – Code Expert Website Builder",
+      description: "AI-powered website builder that instantly creates and hosts professional websites with custom domains. No technical skills required. Create portfolios, landing pages, ecommerce stores, restaurant sites, booking systems, real estate listings, plumbing sites, link sites, and more.",
+      featureList: [
+        "Instant Website Generation",
+        "Custom Domain Hosting",
+        "No Technical Skills Required",
+        "Portfolio Sites",
+        "Landing Pages",
+        "E‑commerce Stores",
+        "Restaurant Websites",
+        "Booking Systems",
+        "Real Estate Listings",
+        "Plumbing Sites",
+        "Link Sites",
+        "And Many More"
+      ]
+    }
+  },
+  deepthought: {
+    title: "Deep Thought Mode – In-Depth Analysis | Xroga AI",
+    description: "Use Deep Thought mode for complex reasoning, research, and detailed analysis.",
+    keywords: "deep AI, reasoning AI, research assistant, Xroga AI deep thought",
+    ogTitle: "Xroga AI – Deep Thought Mode",
+    ogDesc: "In-depth reasoning and analysis with Xroga's Deep Thought mode.",
+    ogImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    twitterTitle: "Deep Thought – Xroga AI",
+    twitterDesc: "Complex reasoning and research.",
+    twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    jsonld: {
+      name: "Xroga AI – Deep Thought",
+      description: "Advanced AI mode for deep reasoning, research, and complex analysis.",
+      featureList: ["Complex Reasoning", "Research", "In-depth Analysis"]
+    }
+  },
+  websearch: {
+    title: "AI Web Search – Explore the Web with Xroga AI",
+    description: "Use Xroga AI to search the web, get real-time answers, summaries, and explore topics deeply. All-in-one AI assistant with built-in web search capabilities.",
+    keywords: "web search AI, online search assistant, real-time web search, AI with internet, explore web, Xroga web search, search engine AI",
+    ogTitle: "Xroga AI – Web Search & Explore",
+    ogDesc: "Search the web with Xroga AI. Get real-time answers, summaries, and explore any topic.",
+    ogImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    twitterTitle: "Xroga AI – Web Search",
+    twitterDesc: "Explore the web with Xroga. Real-time AI search and answers.",
+    twitterImage: "https://i.postimg.cc/J0Sz6mkX/XROGAAI-1-removebg-preview.png",
+    jsonld: {
+      name: "Xroga AI – Web Search",
+      description: "AI-powered web search and exploration tool. Get real-time answers, summaries, and in-depth topic research.",
+      featureList: [
+        "Real-time Web Search",
+        "Summarization",
+        "Topic Exploration",
+        "Fact-checking"
+      ]
     }
   }
 };
