@@ -5548,6 +5548,519 @@ function createNewChat() {
     } else if (mode === 'muslim-islamic') {
         type = 'islamic'; color = 'text-amber-500'; titlePrefix = 'Islamic';
     }
+    
+function renderCodeExpertWelcome() {
+  const greeting = getTimeBasedGreeting();
+  const username = state.username || 'there';
+
+  // The complete siprompt-hero HTML (with your exact CSS and structure)
+  return `
+<div class="siteprompt-hero">
+<style>
+        /* ----- RESET & BASE (only for this page) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    
+    
+
+    /* ----- MAIN HERO CONTAINER (full width, no fixed positioning) ----- */
+    .siteprompt-hero {
+      --bg-deep: #020212;
+      --surface-glass: rgba(255, 255, 255, 0.04);
+      --text-primary: #f2f2fb;
+      --text-secondary: #bfbfdd;
+      --text-muted: #8787b5;
+      --accent-1: #8b5cf6;
+      --accent-2: #6366f1;
+      --accent-3: #a78bfa;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-warm: #f59e0b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --transition-spring: 0.5s cubic-bezier(0.22, 1.1, 0.36, 1);
+
+      position: relative;
+      width: 100%;
+      min-height: auto;
+      height: auto;
+      padding: 14px 24px;  /* top/bottom as you like, left/right 24px */
+      background: transparent;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* ---------- BACKGROUND ORBS ---------- */
+  
+
+    
+
+    /* ---------- BOLD BLUE RINGS (static, transparent border, expanded) ---------- */
+    .siteprompt-hero .rings-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: visible;
+    }
+   
+
+    /* ---------- HERO CONTENT ---------- */
+    .siteprompt-hero .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      max-width: 900px;
+      width: 100%;
+      padding: 16px; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      animation: contentEntry 0.85s var(--transition-spring) 0.1s both;
+    }
+    @keyframes contentEntry {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Override: remove all backgrounds and borders */
+.siteprompt-hero .ring-primary,
+.siteprompt-hero .ring-secondary,
+.siteprompt-hero .ring-tertiary {
+    background: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    filter: none !important;
+}
+
+.siteprompt-hero .badge {
+    background: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+}
+.siteprompt-hero .badge::before {
+    display: none !important;
+}
+
+.siteprompt-hero .feature-pill {
+    background: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+}
+
+.siteprompt-hero .mouse-glow {
+    display: none !important;
+}
+    @media (max-width: 700px) {
+      .siteprompt-hero .ring-primary {
+        top: 18%;
+        width: min(700px, 90vw);
+        height: min(700px, 90vw);
+        border-width: 4px;
+      }
+      .siteprompt-hero .ring-secondary {
+        top: 20%;
+        width: min(900px, 98vw);
+        height: min(900px, 98vw);
+        filter: blur(20px);
+      }
+      .siteprompt-hero .ring-tertiary {
+        top: 22%;
+        width: min(1200px, 115vw);
+        height: min(1200px, 115vw);
+        filter: blur(45px);
+      }
+    }
+
+    /* Badge */
+    .siteprompt-hero .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      backdrop-filter: blur(20px);
+      color: var(--text-secondary);
+      animation: badgeGlow 3s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .siteprompt-hero .badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(6,182,212,0.4), rgba(139,92,246,0.3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: borderRotate 4s linear infinite;
+    }
+    @keyframes borderRotate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes badgeGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.15), 0 0 40px rgba(139,92,246,0.05); }
+      50% { box-shadow: 0 0 30px rgba(139,92,246,0.3), 0 0 60px rgba(139,92,246,0.1); }
+    }
+    .siteprompt-hero .badge .badge-icon {
+      font-size: 0.9rem;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+    @keyframes sparkle {
+      0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+      50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+    }
+    .siteprompt-hero .badge .badge-sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      animation: cosmicPulse 1.5s ease-in-out infinite;
+    }
+    .siteprompt-hero .badge .badge-highlight {
+      color: #fff;
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    /* Headline */
+    .siteprompt-hero .headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    .siteprompt-hero .headline .gradient-text {
+      background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 28%, #6366f1 52%, #06b6d4 78%, #a78bfa 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+      display: block;
+    }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Rotating words */
+    .siteprompt-hero .rotator-wrapper {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .siteprompt-hero .rotator-prefix { color: #fff; }
+    .siteprompt-hero .rotator-container {
+      position: relative;
+      display: inline-block;
+      height: 1.3em;
+      overflow: hidden;
+      vertical-align: bottom;
+      min-width: 175px;
+    }
+    .siteprompt-hero .rotator-word {
+      position: absolute;
+      top: 0; left: 0;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: all 0.45s cubic-bezier(0.22,1.1,0.36,1);
+      color: var(--accent-3);
+    }
+    .siteprompt-hero .rotator-word.active { opacity: 1; transform: translateY(0); }
+    .siteprompt-hero .rotator-word.exit { opacity: 0; transform: translateY(-100%); }
+
+    /* Feature pills */
+    .siteprompt-hero .feature-burst {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 6px 0 2px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .siteprompt-hero .feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      background: var(--surface-glass);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(16px);
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      animation: pillPop 0.6s var(--transition-spring) both;
+      cursor: default;
+    }
+    .siteprompt-hero .feature-pill:nth-child(1) { animation-delay: 0.15s; }
+    .siteprompt-hero .feature-pill:nth-child(3) { animation-delay: 0.25s; }
+    .siteprompt-hero .feature-pill:nth-child(5) { animation-delay: 0.35s; }
+    .siteprompt-hero .feature-pill:nth-child(7) { animation-delay: 0.45s; }
+    .siteprompt-hero .feature-pill:nth-child(9) { animation-delay: 0.55s; }
+    @keyframes pillPop {
+      from { opacity: 0; transform: scale(0.8) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .siteprompt-hero .feature-separator { color: var(--text-muted); opacity: 0.5; font-size: 0.8rem; }
+
+    /* CTA */
+    .siteprompt-hero .cta-text-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .siteprompt-hero .cta-pure-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+      color: #fff;
+      cursor: default;
+      position: relative;
+      padding: 8px 4px;
+      transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1);
+      letter-spacing: -0.01em;
+      user-select: none;
+    }
+    .siteprompt-hero .cta-pure-text .cta-glow-text {
+      background: linear-gradient(135deg, #f5f3ff 0%, #c4b5fd 25%, #a78bfa 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 4s ease infinite;
+    }
+    .siteprompt-hero .cta-pure-text .cta-dash { color: var(--text-muted); font-weight: 400; opacity: 0.6; transition: all 0.4s ease; }
+    .siteprompt-hero .cta-pure-text .cta-sub-glow { color: var(--text-secondary); font-weight: 500; font-size: 0.9em; opacity: 0.85; transition: all 0.4s ease; }
+    .siteprompt-hero .cta-pure-text i { width: 20px; height: 20px; stroke-width: 2.5; color: var(--accent-3); transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1); }
+    .siteprompt-hero .cta-pure-text:hover { transform: scale(1.04); letter-spacing: 0.02em; }
+    .siteprompt-hero .cta-pure-text:hover .cta-glow-text {
+      background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 25%, #c4b5fd 50%, #a78bfa 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 18px rgba(139,92,246,0.6));
+    }
+    .siteprompt-hero .cta-pure-text:hover .cta-dash { opacity: 1; color: var(--accent-3); transform: scaleX(1.4); }
+    .siteprompt-hero .cta-pure-text:hover .cta-sub-glow { color: #fff; opacity: 1; text-shadow: 0 0 14px rgba(139,92,246,0.5); }
+    .siteprompt-hero .cta-pure-text:hover i { transform: translateX(6px) rotate(-5deg); color: #fff; filter: drop-shadow(0 0 8px rgba(139,92,246,0.7)); }
+    .siteprompt-hero .cta-pure-text::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, #06b6d4, transparent);
+      transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    .siteprompt-hero .cta-pure-text:hover::after { width: 90%; }
+    .siteprompt-hero .cta-sub-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    .siteprompt-hero .cta-pure-text:hover+.cta-sub-label { opacity: 1; color: var(--accent-3); letter-spacing: 0.09em; }
+
+    /* Cosmic line */
+    .siteprompt-hero .cosmic-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .siteprompt-hero .cosmic-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent-3);
+      animation: cosmicPulse 2s ease-in-out infinite;
+    }
+    .siteprompt-hero .cosmic-dot:nth-child(2) { animation-delay: 0.3s; background: var(--accent-cyan); }
+    .siteprompt-hero .cosmic-dot:nth-child(3) { animation-delay: 0.6s; background: var(--accent-warm); }
+    .siteprompt-hero .cosmic-dot:nth-child(4) { animation-delay: 0.9s; background: var(--accent-rose); }
+    .siteprompt-hero .cosmic-dot:nth-child(5) { animation-delay: 1.2s; background: var(--accent-green); }
+    @keyframes cosmicPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(2.4); opacity: 1; }
+    }
+    .siteprompt-hero .cosmic-text {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa, #06b6d4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Particle canvas and mouse glow */
+    .siteprompt-hero #particleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .siteprompt-hero .mouse-glow {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      width: 50vmax;
+      height: 50vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+          rgba(139,92,246,0.07) 0%,
+          rgba(99,102,241,0.03) 40%,
+          transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: left 0.15s ease-out, top 0.15s ease-out;
+      filter: blur(32px);
+      will-change: left, top;
+    }
+    @media (max-width: 700px) {
+      .siteprompt-hero .mouse-glow { display: none; }
+      .siteprompt-hero .hero-content { gap: 12px; padding: 16px; }
+      .siteprompt-hero .headline { font-size: 2rem; }
+      .siteprompt-hero .rotator-wrapper { font-size: 1.1rem; }
+      .siteprompt-hero .rotator-container { min-width: 135px; }
+      .siteprompt-hero .feature-burst { gap: 6px; font-size: 0.78rem; }
+      .siteprompt-hero .feature-pill { padding: 6px 14px; }
+      .siteprompt-hero .cta-pure-text { font-size: 1.1rem; }
+      .siteprompt-hero .badge { font-size: 0.7rem; padding: 8px 16px; gap: 6px; }
+    }
+      </style>
+      <!-- Font link (only needed if not already in <head>) -->
+      <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+      
+      
+      <div class="grid-overlay"></div>
+      <div class="mouse-glow" id="mouseGlow"></div>
+      <canvas id="particleCanvas"></canvas>
+      <div class="rings-layer">
+        <div class="ring-primary"></div>
+        <div class="ring-secondary"></div>
+        <div class="ring-tertiary"></div>
+      </div>
+      <div class="hero-content">
+        <div class="badge">
+          <span class="badge-icon">⚡</span>
+          <span class="badge-highlight">AI Website</span>
+          <span>+</span>
+          <span style="color:#06b6d4; font-weight:600;">SEO</span>
+          <span>+</span>
+          <span style="color:#f59e0b; font-weight:600;">CUSTOM-DOMAIN</span>
+          <span class="badge-sep"></span>
+          <span>Build Sites Instantly</span>
+        </div>
+        <h1 class="headline">
+          Your website,<br>
+          <span class="gradient-text">just a prompt away</span>
+        </h1>
+        <div class="rotator-wrapper">
+          <span class="rotator-prefix">For</span>
+          <div class="rotator-container" id="rotatorContainer">
+            <span class="rotator-word active">landing pages</span>
+<span class="rotator-word">ecommerce</span>
+<span class="rotator-word">portfolios</span>
+<span class="rotator-word">restaurants</span>
+<span class="rotator-word">booking sites</span>
+<span class="rotator-word">travel blogs</span>
+<span class="rotator-word">real estate</span>
+<span class="rotator-word">fitness coaches</span>
+<span class="rotator-word">local services</span>
+<span class="rotator-word">online courses</span>
+<span class="rotator-word">consultants</span>
+<span class="rotator-word">medical practices</span>
+<span class="rotator-word">event planners</span>
+<span class="rotator-word">photographers</span>
+<span class="rotator-word">SaaS startups</span>
+<span class="rotator-word">podcasts</span>
+<span class="rotator-word">nonprofits</span>
+<span class="rotator-word">freelancers</span>
+<span class="rotator-word">beauty salons</span>
+<!-- NEW ADDITIONS BELOW -->
+<span class="rotator-word">hotels</span>
+<span class="rotator-word">plumbers</span>
+<span class="rotator-word">cleaning services</span>
+<span class="rotator-word">electricians</span>
+<span class="rotator-word">auto repair shops</span>
+<span class="rotator-word">retail stores</span>
+<span class="rotator-word">B2B companies</span>
+<span class="rotator-word">franchises</span>
+          </div>
+        </div>
+        <div class="feature-burst">
+          <span class="feature-pill"><i data-lucide="wand-2"></i> No drag & drop</span>
+          <span class="feature-separator">·</span>
+          <span class="feature-pill"><i data-lucide="code-2"></i> No coding & technical skill</span>
+          <span class="feature-separator">·</span>
+          <span class="feature-separator">·</span>
+          <span class="feature-pill"><i data-lucide="zap"></i> SEO‑optimized</span>
+          <span class="feature-separator">·</span>
+          <span class="feature-pill"><i data-lucide="globe"></i> Custom domain</span>
+        </div>
+        <div class="cta-text-group">
+          <span class="cta-pure-text">
+            <span class="cta-glow-text">✨ Build it free</span>
+            <span class="cta-dash">—</span>
+            <span class="cta-sub-glow">host & domain paid</span>
+            <i data-lucide="sparkles"></i>
+          </span>
+          <span class="cta-sub-label">launch your site in minutes</span>
+        </div>
+        
+      </div>
+    </div>
+  `;
+}
 
     // Reset UI (keep your existing welcome HTML)
     state.selectedChat = null;
@@ -5564,247 +6077,58 @@ function createNewChat() {
     }
     state.uploadedFiles = [];
     
-// ----- Rotating Prompts & 4‑Card Suggestions -----
-const promptRotations = [
-  { text: 'Ask anything...', icon: 'message-circle' },
-  { text: 'Build anything...', icon: 'hammer' },
-  { text: 'Explore anything...', icon: 'compass' },
-  { text: 'Shopping anything...', icon: 'shopping-bag' },
-  { text: 'Booking anything...', icon: 'calendar' },
-  { text: 'Travel anything...', icon: 'plane' },
-  { text: 'Ask about Islam...', icon: 'book-open' },
-  { text: 'Create anything...', icon: 'sparkles' }
-];
 
-// Each set now has exactly 4 items
-const suggestionSets = [
-  [
-    { icon: 'plane', text: 'Travel', prompt: 'Plan a trip to ' },
-    { icon: 'book-open', text: 'Learn', prompt: 'Explain ' },
-    { icon: 'mail', text: 'Email', prompt: 'Write an email about ' },
-    { icon: 'code', text: 'Code', prompt: 'Write code for ' }
-  ],
-  [
-    { icon: 'lightbulb', text: 'Ideas', prompt: 'Creative ideas for ' },
-    { icon: 'file-text', text: 'Summarize', prompt: 'Summarize ' },
-    { icon: 'shopping-cart', text: 'Shop', prompt: 'Find deals on ' },
-    { icon: 'hotel', text: 'Booking', prompt: 'Book a hotel in ' }
-  ],
-  [
-    { icon: 'globe', text: 'Explore', prompt: 'Tell me about ' },
-    { icon: 'palette', text: 'Design', prompt: 'Design a ' },
-    { icon: 'music', text: 'Create', prompt: 'Create a playlist for ' },
-    { icon: 'dumbbell', text: 'Fitness', prompt: 'Workout plan for ' }
-  ],
-  [
-    { icon: 'brain', text: 'Solve', prompt: 'Solve this problem: ' },
-    { icon: 'pen-tool', text: 'Write', prompt: 'Write a story about ' },
-    { icon: 'coffee', text: 'Productivity', prompt: 'Tips for ' },
-    { icon: 'trending-up', text: 'Business', prompt: 'Business idea for ' }
-  ]
-];
 
-let promptIndex = 0;
-let suggestionSetIndex = 0;
-let rotationInterval = null;
+// Clear any existing rotation interval to avoid memory leaks
+stopWelcomeRotation();
 
-function rotateWelcomeContent() {
-  // Rotate prompt text and icon
-  promptIndex = (promptIndex + 1) % promptRotations.length;
-  const promptData = promptRotations[promptIndex];
-  const promptElement = document.querySelector('.prompt-text');
-  if (promptElement) {
-    const newHTML = `<i data-lucide="${promptData.icon}" class="w-5 h-5"></i><span>${promptData.text}</span>`;
-promptElement.style.opacity = '0';
-setTimeout(() => {
-  promptElement.innerHTML = newHTML;
-  promptElement.style.opacity = '1';
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-}, 150);
-  }
+// Build the HTML for the welcome screen based on mode
+let welcomeHTML = '';
 
-  // Rotate suggestion cards (4 cards)
-  suggestionSetIndex = (suggestionSetIndex + 1) % suggestionSets.length;
-  const currentSet = suggestionSets[suggestionSetIndex];
-  const suggestionsContainer = document.querySelector('.welcome-suggestions');
-  if (suggestionsContainer) {
-    suggestionsContainer.innerHTML = currentSet.map(item => `
-      <div class="suggestion-card" data-prompt="${item.prompt}">
-        <i data-lucide="${item.icon}" class="w-6 h-6"></i>
-        <span>${item.text}</span>
-      </div>
-    `).join('');
-    
-    // Attach click handlers
-    document.querySelectorAll('.suggestion-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const prompt = card.dataset.prompt;
-        const chatInput = document.getElementById('xroga-chat-input');
-        if (chatInput) {
-          chatInput.value = prompt;
-          chatInput.focus();
-        }
-      });
-    });
-  }
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+switch (mode) {
+  case 'code-expert':
+    welcomeHTML = renderCodeExpertWelcome();
+    break;
+
+  case 'travel-concierge':
+    welcomeHTML = renderTravelConciergeWelcome();
+    break;
+
+  case 'muslim-islamic':
+    welcomeHTML = renderIslamicWelcome();
+    break;
+
+  case 'shop-confidence':
+    welcomeHTML = renderShopWelcome();
+    break;
+
+  case 'deep-thought':
+    welcomeHTML = renderDeepThoughtWelcome();
+    break;
+
+  case 'lightening':
+  default:
+    welcomeHTML = renderLighteningWelcome();
+    break;
 }
 
-function getTimeBasedGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
+elements.chatMessages.innerHTML = welcomeHTML;
+
+// After inserting the HTML, attach card click handlers
+attachWelcomeCardListeners();
+
+// Handle post‑render logic per mode
+if (mode === 'code-expert') {
+  elements.chatMessages.style.height = '100%';
+  elements.chatMessages.style.overflow = 'hidden';
+  initSipromptHero();
+} else {
+  // for other modes, you might also want full‑height welcome, so do the same
+  startWelcomeRotation(mode);
 }
 
-function renderWelcomeScreen() {
-  const greeting = getTimeBasedGreeting();
-  const username = state.username || 'there';
-  const initialPrompt = promptRotations[0];
-  const initialSuggestions = suggestionSets[0];
-  
-  elements.chatMessages.innerHTML = `
-    <div class="modern-welcome">
-      <div class="welcome-panel">
-        <h1 class="welcome-headline">
-          ${greeting}, <span class="highlight">${username}</span>
-        </h1>
-        <div class="welcome-underline"></div>
-        
-         <div class="relative mt-3 min-h-[4rem] overflow-visible">
-    <div class="modern-rotator-wrapper backdrop-blur-md bg-white/70 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/50 rounded-2xl px-5 py-3 shadow-lg shadow-purple-500/10 dark:shadow-purple-800/20 transition-all duration-500 hover:shadow-purple-500/20 hover:border-purple-400/40">
-      <p id="dynamicRotator" class="text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-        <span class="rotating-text-content" id="typewriterText">Can you build websites, portfolios, landing pages, ecommerce, restaurants, booking websites and more...</span>
-        <span class="modern-cursor ml-1 inline-block w-0.5 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></span>
-      </p>
-    </div>
-    <!-- Subtle animated glow behind -->
-    <div class="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-fuchsia-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition duration-700 -z-10"></div>
-  </div>
-  
-        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
-          <div class="prompt-text">
-            <i data-lucide="${initialPrompt.icon}" class="w-5 h-5"></i>
-            <span>${initialPrompt.text}</span>
-          </div>
-        </div>
-        
-       
-        
-        <div class="welcome-suggestions">
-          ${initialSuggestions.map(item => `
-            <div class="suggestion-card" data-prompt="${item.prompt}">
-              <i data-lucide="${item.icon}" class="w-6 h-6"></i>
-              <span>${item.text}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // Attach click handlers to initial cards
-  document.querySelectorAll('.suggestion-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const prompt = card.dataset.prompt;
-      const chatInput = document.getElementById('xroga-chat-input');
-      if (chatInput) {
-        chatInput.value = prompt;
-        chatInput.focus();
-      }
-    });
-  });
-  
-  // Start rotation
-  if (rotationInterval) clearInterval(rotationInterval);
-  rotationInterval = setInterval(rotateWelcomeContent, 6000);
-  
-  if (typeof lucide !== 'undefined') lucide.createIcons();
-}
-
-// Clean up when leaving welcome screen (optional)
-function stopWelcomeRotation() {
-  if (rotationInterval) {
-    clearInterval(rotationInterval);
-    rotationInterval = null;
-  }
-}
-
-// Call this when appropriate
-renderWelcomeScreen();
-
-(function() {
-    const rotatorEl = document.getElementById('dynamicRotator');
-    if (!rotatorEl) return;
-
-    const textSpan = document.getElementById('typewriterText');
-    if (!textSpan) return;
-
-    const phrases = [
-      "can you build websites, portfolios, landing pages, ecommerce, hotels & bookings? ✨",
-      "want instant & creative chat ideas? more talks? 💡",
-      "need more detailed and reasoning chats? 🧠",
-      "save money on affordable shopping premium. Support justice? we recommend boycott‑aware items. ⚖️",
-      "worried about costly flights, hotels, cars? we found best affordable travel for you. ✈️",
-      "if you're Muslim: study Islam with Hadith, Quran, Fatwa & daily guidance. Qibla direction on travel? 🕋",
-      "your AI partner is ready — build, deploy, explore. Let's create magic. 🌟"
-    ];
-
-    let currentPhraseIndex = 0;
-    let isTyping = false;
-    let timeoutId = null;
-
-    // Typewriter function
-    function typeWriter(text, element, speed = 50) {
-      return new Promise((resolve) => {
-        let i = 0;
-        element.textContent = '';
-        
-        function type() {
-          if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            timeoutId = setTimeout(type, speed);
-          } else {
-            resolve();
-          }
-        }
-        
-        type();
-      });
-    }
-
-    // Clear text (optional fast erase effect – we just replace immediately for smooth rotation)
-    async function showNextPhrase() {
-      if (isTyping) return;
-      isTyping = true;
-
-      const phrase = phrases[currentPhraseIndex];
-      
-      // Type out the current phrase
-      await typeWriter(phrase, textSpan, 50);
-      
-      // Wait 3 seconds after typing completes
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Move to next phrase
-      currentPhraseIndex = (currentPhraseIndex + 1) % phrases.length;
-      
-      isTyping = false;
-      
-      // Recursively call to continue rotation
-      showNextPhrase();
-    }
-
-    // Initialize with default text cleared and start typing first phrase after short delay
-    setTimeout(() => {
-      // Clear default text
-      textSpan.textContent = '';
-      currentPhraseIndex = 0;
-      showNextPhrase();
-    }, 300);
-  })();
+// Refresh Lucide icons
+if (typeof lucide !== 'undefined') lucide.createIcons();
 
 
 // Create the new chat object with correct type
@@ -5826,6 +6150,272 @@ renderWelcomeScreen();
     lucide.createIcons();
     expandSectionForMode(mode);   // auto‑expand sidebar
     showToast('New chat started', 'Ready');
+}
+
+function renderLighteningWelcome() {
+  const greeting = getTimeBasedGreeting();
+  const username = state.username || 'there';
+  return `
+    <div class="modern-welcome">
+      <div class="welcome-panel">
+        <h1 class="welcome-headline">
+          ${greeting}, <span class="highlight">${username}</span>
+        </h1>
+        <div class="welcome-underline"></div>
+        <p class="welcome-subtitle">Lightning‑fast ideas, instant creativity, and dynamic conversations. ⚡</p>
+
+        <div class="relative mt-3 min-h-[4rem] overflow-visible">
+          <div class="modern-rotator-wrapper backdrop-blur-md bg-white/70 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/50 rounded-2xl px-5 py-3 shadow-lg shadow-purple-500/10 dark:shadow-purple-800/20 transition-all duration-500 hover:shadow-purple-500/20 hover:border-purple-400/40">
+            <p id="dynamicRotator" class="text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <span class="rotating-text-content" id="typewriterText">Dream it, and I’ll help you create it…</span>
+              <span class="modern-cursor ml-1 inline-block w-0.5 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="welcome-suggestions">
+          <div class="suggestion-card" data-prompt="Brainstorm 10 YouTube video ideas">
+            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+            <span>Brainstorm ideas</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Write a poem about the ocean">
+            <i data-lucide="feather" class="w-6 h-6"></i>
+            <span>Write a poem</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Design a futuristic city concept">
+            <i data-lucide="palette" class="w-6 h-6"></i>
+            <span>Design a concept</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Create social media captions for a fitness brand">
+            <i data-lucide="message-square" class="w-6 h-6"></i>
+            <span>Social captions</span>
+          </div>
+        </div>
+
+        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
+          <div class="prompt-text">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+            <span>Ask anything, get creative…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderDeepThoughtWelcome() {
+  const greeting = getTimeBasedGreeting();
+  const username = state.username || 'there';
+  return `
+    <div class="modern-welcome">
+      <div class="welcome-panel">
+        <h1 class="welcome-headline">
+          ${greeting}, <span class="highlight">${username}</span>
+        </h1>
+        <div class="welcome-underline"></div>
+        <p class="welcome-subtitle">Deep analysis, reasoning, and thorough explanations for complex topics. 🔬</p>
+
+        <div class="relative mt-3 min-h-[4rem] overflow-visible">
+          <div class="modern-rotator-wrapper backdrop-blur-md bg-white/70 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/50 rounded-2xl px-5 py-3 shadow-lg shadow-purple-500/10 dark:shadow-purple-800/20 transition-all duration-500 hover:shadow-purple-500/20 hover:border-purple-400/40">
+            <p id="dynamicRotator" class="text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <span class="rotating-text-content" id="typewriterText">Let’s dive into complex ideas, step by step…</span>
+              <span class="modern-cursor ml-1 inline-block w-0.5 h-6 bg-gradient-to-b from-emerald-400 to-blue-500 rounded-full"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="welcome-suggestions">
+          <div class="suggestion-card" data-prompt="Explain the theory of relativity in simple terms">
+            <i data-lucide="atom" class="w-6 h-6"></i>
+            <span>Relativity simplified</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Analyze the pros and cons of renewable energy">
+            <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+            <span>Renewable energy</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Give a step‑by‑step guide to learning machine learning">
+            <i data-lucide="brain" class="w-6 h-6"></i>
+            <span>Learn ML</span>
+          </div>
+          <div class="suggestion-card" data-prompt="Compare Stoicism and Existentialism">
+            <i data-lucide="scale" class="w-6 h-6"></i>
+            <span>Philosophy compare</span>
+          </div>
+        </div>
+
+        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
+          <div class="prompt-text">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+            <span>Ask a complex question…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+// GLOBAL HELPER (place it outside any function)
+function getTimeBasedGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function initSipromptHero() {
+  // Clean up any previous instance first
+  if (typeof cleanupSipromptHero === 'function') cleanupSipromptHero();
+
+  const container = document.querySelector('.siteprompt-hero');
+  if (!container) return;
+
+  // Initialize Lucide icons inside this container
+  if (typeof lucide !== 'undefined') {
+    const icons = container.querySelectorAll('[data-lucide]');
+    lucide.createIcons({ icons });
+  }
+
+  // Particle system
+  const canvas = container.querySelector('#particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouseX = -500, mouseY = -500;
+  let animId;
+
+  function resize() {
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.45;
+      this.vy = (Math.random() - 0.5) * 0.45;
+      this.size = Math.random() * 2.2 + 0.5;
+      this.opacity = Math.random() * 0.4 + 0.2;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < -20) this.x = canvas.width + 20;
+      if (this.x > canvas.width + 20) this.x = -20;
+      if (this.y < -20) this.y = canvas.height + 20;
+      if (this.y > canvas.height + 20) this.y = -20;
+    }
+    draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,190,230,${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    const count = Math.min(90, Math.floor((canvas.width * canvas.height) / 15000));
+    particles = Array.from({ length: count }, () => new Particle());
+  }
+  initParticles();
+
+  function drawConnections() {
+    const maxDist = 120;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(160,160,220,${0.11 * (1 - dist / maxDist)})`;
+          ctx.lineWidth = 0.55;
+          ctx.stroke();
+        }
+      }
+      if (mouseX > 0 && mouseY > 0) {
+        const dmx = mouseX - particles[i].x;
+        const dmy = mouseY - particles[i].y;
+        const distToMouse = Math.sqrt(dmx * dmx + dmy * dmy);
+        if (distToMouse < 180) {
+          particles[i].vx += dmx * 0.00012;
+          particles[i].vy += dmy * 0.00012;
+          particles[i].vx *= 0.998;
+          particles[i].vy *= 0.998;
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(ctx); });
+    drawConnections();
+    animId = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Mouse glow
+  const mouseGlow = container.querySelector('#mouseGlow');
+  function onMouseMove(e) {
+    const rect = container.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+    if (mouseGlow && window.innerWidth > 600) {
+      mouseGlow.style.left = e.clientX + 'px';
+      mouseGlow.style.top = e.clientY + 'px';
+    }
+  }
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseleave', () => { mouseX = -500; mouseY = -500; });
+
+  // Rotating words
+  const words = container.querySelectorAll('.rotator-word');
+  let idx = 0;
+  const rotatorInterval = setInterval(() => {
+    const current = words[idx];
+    const nextIdx = (idx + 1) % words.length;
+    const next = words[nextIdx];
+    current.classList.remove('active');
+    current.classList.add('exit');
+    next.classList.remove('exit');
+    next.classList.add('active');
+    setTimeout(() => current.classList.remove('exit'), 400);
+    idx = nextIdx;
+  }, 2600);
+
+  // Expose cleanup
+  window.__sipromptCleanup = function() {
+    cancelAnimationFrame(animId);
+    clearInterval(rotatorInterval);
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('resize', resize);
+  };
+}
+function attachWelcomeCardListeners() {
+  document.querySelectorAll('.suggestion-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const prompt = card.dataset.prompt;
+      const chatInput = document.getElementById('xroga-chat-input');
+      if (chatInput) {
+        chatInput.value = prompt;
+        chatInput.focus();
+      }
+    });
+  });
+}
+
+
+
+function stopWelcomeRotation() {
+  if (window._rotationTimers) {
+    window._rotationTimers.forEach(t => clearTimeout(t));
+    window._rotationTimers = [];
+  }
+  window._isTyping = false;
 }
         // ===================== AI API CALL =====================
        // ===================== NEW callAI using Gemini API directly =====================
@@ -10137,3 +10727,4 @@ window.xroga = {
     </script>
   </section>
 </div>
+
