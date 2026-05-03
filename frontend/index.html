@@ -1361,6 +1361,276 @@
   font-size: 1.2rem;
   cursor: pointer;
 }</style>
+
+<style>/* Modern Welcome – scoped under .modern-welcome-new */
+.modern-welcome-new .hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fefefe 0%, #f2f6fc 100%);
+  overflow: hidden;
+}
+.modern-welcome-new .bg-shape-1 {
+  position: absolute;
+  top: -15%;
+  right: -10%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(circle, rgba(0,112,243,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.modern-welcome-new .bg-shape-2 {
+  position: absolute;
+  bottom: -10%;
+  left: -5%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(0,200,130,0.03) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.modern-welcome-new .hero-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+.modern-welcome-new .hero-content {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.modern-welcome-new .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0,0,0,0.05);
+  padding: 0.25rem 0.9rem;
+  border-radius: 60px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #1e2f3f;
+  margin-bottom: 1rem;
+}
+.modern-welcome-new .badge span {
+  width: 6px;
+  height: 6px;
+  background: #0070f3;
+  border-radius: 50%;
+  animation: w-pulse 1.6s infinite;
+}
+.modern-welcome-new .main-heading {
+  font-size: clamp(1.8rem, 6vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #0a1929;
+  margin-bottom: 0.4rem;
+}
+.modern-welcome-new .action-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0.2rem 0 0.6rem;
+}
+.modern-welcome-new .prefix {
+  font-size: clamp(0.9rem, 3vw, 1.3rem);
+  font-weight: 500;
+  color: #2c3e50;
+}
+.modern-welcome-new .animated-word {
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
+  font-weight: 700;
+  background: linear-gradient(120deg, #0070f3, #00a86b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  min-width: 110px;
+  text-align: left;
+  transition: opacity 0.25s ease;
+}
+.modern-welcome-new .description {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+  color: #2d3e50;
+  max-width: 520px;
+  margin: 0.6rem auto 1rem auto;
+  line-height: 1.5;
+}
+.modern-welcome-new .prompt-area {
+  margin: 0.8rem auto 1rem;
+  max-width: 520px;
+}
+.modern-welcome-new .prompt-label {
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: #5a6e7c;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+}
+.modern-welcome-new .prompt-input {
+  width: 100%;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 48px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.85rem;
+  font-family: 'Inter', sans-serif;
+  color: #0f172a;
+  transition: all 0.2s;
+  outline: none;
+}
+.modern-welcome-new .prompt-input:focus {
+  border-color: #0070f3;
+  box-shadow: 0 2px 10px rgba(0,112,243,0.08);
+}
+.modern-welcome-new .critical-advice {
+  margin: 0.8rem auto 0.9rem;
+  max-width: 580px;
+  background: #fff8e7;
+  border-left: 3px solid #f5a623;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  text-align: left;
+}
+.modern-welcome-new .advice-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #b45f06;
+  margin-bottom: 0.25rem;
+}
+.modern-welcome-new .advice-text {
+  font-size: 0.75rem;
+  color: #5a3e1b;
+  line-height: 1.4;
+}
+.modern-welcome-new .advice-list {
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+  font-size: 0.7rem;
+  color: #6b4c23;
+}
+.modern-welcome-new .advice-list li {
+  margin: 0.1rem 0;
+}
+.modern-welcome-new .more-options {
+  margin: 0.6rem auto 0.8rem;
+  max-width: 640px;
+}
+.modern-welcome-new .options-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #5a6e7c;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+.modern-welcome-new .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.modern-welcome-new .chip {
+  background: rgba(0,0,0,0.02);
+  border: 1px solid #e2e8f0;
+  border-radius: 40px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.7rem;
+  color: #1e2f3f;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modern-welcome-new .chip:hover {
+  background: #eef2ff;
+  border-color: #0070f3;
+}
+.modern-welcome-new .live-status {
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.65rem;
+  font-family: monospace;
+  color: #4b6a7c;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  padding: 0.2rem 0.8rem;
+  border-radius: 40px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+.modern-welcome-new .pulse-dot {
+  width: 5px;
+  height: 5px;
+  background: #00a86b;
+  border-radius: 50%;
+  animation: w-pulse 1.6s infinite;
+}
+.modern-welcome-new .micro-hint {
+  margin-top: 0.5rem;
+  font-size: 0.6rem;
+  color: #6a7e8e;
+  font-family: monospace;
+  border-top: 0.5px solid #e2e8f0;
+  display: inline-block;
+  padding-top: 0.4rem;
+}
+@keyframes w-pulse {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+.modern-welcome-new .fade-up {
+  animation: w-fadeUp 0.4s ease-out forwards;
+}
+@keyframes w-fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* No visible buttons inside the welcome panel */
+.modern-welcome-new button,
+.modern-welcome-new .btn,
+.modern-welcome-new input[type="submit"],
+.modern-welcome-new [role="button"]:not(.chip) {
+  display: none !important;
+}
+/* Compact on small heights */
+@media (max-height: 700px) {
+  .modern-welcome-new .hero-container {
+    padding: 0.5rem 1.5rem;
+  }
+  .modern-welcome-new .badge { margin-bottom: 0.5rem; }
+  .modern-welcome-new .main-heading { margin-bottom: 0.2rem; }
+  .modern-welcome-new .description { margin: 0.4rem auto 0.6rem; }
+  .modern-welcome-new .critical-advice { margin: 0.5rem auto; padding: 0.4rem 0.8rem; }
+  .modern-welcome-new .more-options { margin: 0.3rem auto; }
+  .modern-welcome-new .chip { padding: 0.15rem 0.7rem; }
+  .modern-welcome-new .live-status { margin-top: 0.3rem; }
+}</style>
 </head>
 <body 
 
@@ -6230,53 +6500,506 @@ function renderLighteningWelcome() {
 function renderDeepThoughtWelcome() {
   const greeting = getTimeBasedGreeting();
   const username = state.username || 'there';
+
   return `
-    <div class="modern-welcome">
-      <div class="welcome-panel">
-        <h1 class="welcome-headline">
-          ${greeting}, <span class="highlight">${username}</span>
-        </h1>
-        <div class="welcome-underline"></div>
-        <p class="welcome-subtitle">Deep analysis, reasoning, and thorough explanations for complex topics. 🔬</p>
+<div class="deepthought-hero">
+<style>
+    /* ----- RESET & BASE (scoped) ----- */
+    .deepthought-hero * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        <div class="relative mt-3 min-h-[4rem] overflow-visible">
-          <div class="modern-rotator-wrapper backdrop-blur-md bg-white/70 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/50 rounded-2xl px-5 py-3 shadow-lg shadow-purple-500/10 dark:shadow-purple-800/20 transition-all duration-500 hover:shadow-purple-500/20 hover:border-purple-400/40">
-            <p id="dynamicRotator" class="text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-              <span class="rotating-text-content" id="typewriterText">Let’s dive into complex ideas, step by step…</span>
-              <span class="modern-cursor ml-1 inline-block w-0.5 h-6 bg-gradient-to-b from-emerald-400 to-blue-500 rounded-full"></span>
-            </p>
-          </div>
-        </div>
+    /* ----- MAIN HERO CONTAINER ----- */
+    .deepthought-hero {
+      --bg-deep: #020212;
+      --surface-glass: rgba(255, 255, 255, 0.04);
+      --text-primary: #f2f2fb;
+      --text-secondary: #bfbfdd;
+      --text-muted: #8787b5;
+      --accent-1: #8b5cf6;
+      --accent-2: #6366f1;
+      --accent-3: #a78bfa;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-warm: #f59e0b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --transition-spring: 0.5s cubic-bezier(0.22, 1.1, 0.36, 1);
 
-        <div class="welcome-suggestions">
-          <div class="suggestion-card" data-prompt="Explain the theory of relativity in simple terms">
-            <i data-lucide="atom" class="w-6 h-6"></i>
-            <span>Relativity simplified</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Analyze the pros and cons of renewable energy">
-            <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
-            <span>Renewable energy</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Give a step‑by‑step guide to learning machine learning">
-            <i data-lucide="brain" class="w-6 h-6"></i>
-            <span>Learn ML</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Compare Stoicism and Existentialism">
-            <i data-lucide="scale" class="w-6 h-6"></i>
-            <span>Philosophy compare</span>
-          </div>
-        </div>
+      position: relative;
+      width: 100%;
+      min-height: auto;
+      height: auto;
+      padding: 40px 24px;
+      background: transparent;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
 
-        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
-          <div class="prompt-text">
-            <i data-lucide="book-open" class="w-5 h-5"></i>
-            <span>Ask a complex question…</span>
-          </div>
-        </div>
+    /* ---------- RINGS (disabled background, kept for reference) ---------- */
+    .deepthought-hero .rings-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: visible;
+    }
+    .deepthought-hero .ring-primary,
+    .deepthought-hero .ring-secondary,
+    .deepthought-hero .ring-tertiary {
+      background: none !important;
+      box-shadow: none !important;
+      border: none !important;
+      filter: none !important;
+    }
+
+    /* ---------- HERO CONTENT ---------- */
+    .deepthought-hero .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      max-width: 900px;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      animation: deepContentEntry 0.85s var(--transition-spring) 0.1s both;
+    }
+    @keyframes deepContentEntry {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- BADGE ---------- */
+    .deepthought-hero .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      backdrop-filter: blur(20px);
+      color: var(--text-secondary);
+      animation: deepBadgeGlow 3s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .deepthought-hero .badge::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.5), rgba(6,182,212,0.4), rgba(139,92,246,0.3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: deepBorderRotate 4s linear infinite;
+    }
+    @keyframes deepBorderRotate {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes deepBadgeGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.15), 0 0 40px rgba(139,92,246,0.05); }
+      50% { box-shadow: 0 0 30px rgba(139,92,246,0.3), 0 0 60px rgba(139,92,246,0.1); }
+    }
+    .deepthought-hero .badge .badge-icon {
+      font-size: 0.9rem;
+      animation: deepSparkle 2s ease-in-out infinite;
+    }
+    @keyframes deepSparkle {
+      0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+      50% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+    }
+    .deepthought-hero .badge .badge-sep {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      animation: deepCosmicPulse 1.5s ease-in-out infinite;
+    }
+    .deepthought-hero .badge .badge-highlight {
+      color: #fff;
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
+    }
+
+    /* ---------- HEADLINE ---------- */
+    .deepthought-hero .headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5.5vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+    .deepthought-hero .headline .gradient-text {
+      background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 28%, #6366f1 52%, #06b6d4 78%, #a78bfa 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: deepGradientShift 4s ease infinite;
+      display: block;
+    }
+    @keyframes deepGradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* ---------- ROTATING WORDS ---------- */
+    .deepthought-hero .rotator-wrapper {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .deepthought-hero .rotator-prefix { color: #fff; }
+    .deepthought-hero .rotator-container {
+      position: relative;
+      display: inline-block;
+      height: 1.3em;
+      overflow: hidden;
+      vertical-align: bottom;
+      min-width: 175px;
+    }
+    .deepthought-hero .rotator-word {
+      position: absolute;
+      top: 0; left: 0;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(100%);
+      transition: all 0.45s cubic-bezier(0.22,1.1,0.36,1);
+      color: var(--accent-3);
+    }
+    .deepthought-hero .rotator-word.active { opacity: 1; transform: translateY(0); }
+    .deepthought-hero .rotator-word.exit { opacity: 0; transform: translateY(-100%); }
+
+    /* ---------- FEATURE PILLS ---------- */
+    .deepthought-hero .feature-burst {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin: 6px 0 2px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .deepthought-hero .feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      background: var(--surface-glass);
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(16px);
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      animation: deepPillPop 0.6s var(--transition-spring) both;
+      cursor: default;
+    }
+    .deepthought-hero .feature-pill:nth-child(1) { animation-delay: 0.15s; }
+    .deepthought-hero .feature-pill:nth-child(3) { animation-delay: 0.25s; }
+    .deepthought-hero .feature-pill:nth-child(5) { animation-delay: 0.35s; }
+    .deepthought-hero .feature-pill:nth-child(7) { animation-delay: 0.45s; }
+    .deepthought-hero .feature-pill:nth-child(9) { animation-delay: 0.55s; }
+    @keyframes deepPillPop {
+      from { opacity: 0; transform: scale(0.8) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .deepthought-hero .feature-separator { color: var(--text-muted); opacity: 0.5; font-size: 0.8rem; }
+
+    /* ---------- CTA ---------- */
+    .deepthought-hero .cta-text-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .deepthought-hero .cta-pure-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+      color: #fff;
+      cursor: default;
+      position: relative;
+      padding: 8px 4px;
+      transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1);
+      letter-spacing: -0.01em;
+      user-select: none;
+    }
+    .deepthought-hero .cta-pure-text .cta-glow-text {
+      background: linear-gradient(135deg, #f5f3ff 0%, #c4b5fd 25%, #a78bfa 50%, #8b5cf6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: deepGradientShift 4s ease infinite;
+    }
+    .deepthought-hero .cta-pure-text .cta-dash { color: var(--text-muted); font-weight: 400; opacity: 0.6; transition: all 0.4s ease; }
+    .deepthought-hero .cta-pure-text .cta-sub-glow { color: var(--text-secondary); font-weight: 500; font-size: 0.9em; opacity: 0.85; transition: all 0.4s ease; }
+    .deepthought-hero .cta-pure-text i { width: 20px; height: 20px; stroke-width: 2.5; color: var(--accent-3); transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1); }
+    .deepthought-hero .cta-pure-text:hover { transform: scale(1.04); letter-spacing: 0.02em; }
+    .deepthought-hero .cta-pure-text:hover .cta-glow-text {
+      background: linear-gradient(135deg, #ffffff 0%, #e9d5ff 25%, #c4b5fd 50%, #a78bfa 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 18px rgba(139,92,246,0.6));
+    }
+    .deepthought-hero .cta-pure-text:hover .cta-dash { opacity: 1; color: var(--accent-3); transform: scaleX(1.4); }
+    .deepthought-hero .cta-pure-text:hover .cta-sub-glow { color: #fff; opacity: 1; text-shadow: 0 0 14px rgba(139,92,246,0.5); }
+    .deepthought-hero .cta-pure-text:hover i { transform: translateX(6px) rotate(-5deg); color: #fff; filter: drop-shadow(0 0 8px rgba(139,92,246,0.7)); }
+    .deepthought-hero .cta-pure-text::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, #06b6d4, transparent);
+      transition: all 0.4s cubic-bezier(0.22,1.1,0.36,1);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    .deepthought-hero .cta-pure-text:hover::after { width: 90%; }
+    .deepthought-hero .cta-sub-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: all 0.3s ease;
+    }
+    .deepthought-hero .cta-pure-text:hover+.cta-sub-label { opacity: 1; color: var(--accent-3); letter-spacing: 0.09em; }
+
+    /* ---------- COSMIC LINE ---------- */
+    .deepthought-hero .cosmic-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .deepthought-hero .cosmic-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent-3);
+      animation: deepCosmicPulse 2s ease-in-out infinite;
+    }
+    .deepthought-hero .cosmic-dot:nth-child(2) { animation-delay: 0.3s; background: var(--accent-cyan); }
+    .deepthought-hero .cosmic-dot:nth-child(3) { animation-delay: 0.6s; background: var(--accent-warm); }
+    .deepthought-hero .cosmic-dot:nth-child(4) { animation-delay: 0.9s; background: var(--accent-rose); }
+    .deepthought-hero .cosmic-dot:nth-child(5) { animation-delay: 1.2s; background: var(--accent-green); }
+    @keyframes deepCosmicPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(2.4); opacity: 1; }
+    }
+    .deepthought-hero .cosmic-text {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #c4b5fd, #a78bfa, #06b6d4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ---------- PARTICLES & GLOW ---------- */
+    .deepthought-hero #particleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deepthought-hero .mouse-glow {
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+      width: 50vmax;
+      height: 50vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+          rgba(139,92,246,0.07) 0%,
+          rgba(99,102,241,0.03) 40%,
+          transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: left 0.15s ease-out, top 0.15s ease-out;
+      filter: blur(32px);
+      will-change: left, top;
+    }
+
+    /* ========== MOBILE RESPONSIVE (up to 700px) ========== */
+    @media (max-width: 700px) {
+      .deepthought-hero {
+        padding: 20px 12px;
+      }
+      .deepthought-hero .hero-content {
+        gap: 10px;
+        padding: 12px 8px;
+      }
+      .deepthought-hero .badge {
+        white-space: normal;
+        flex-wrap: wrap;
+        justify-content: center;
+        font-size: 0.72rem;
+        padding: 8px 14px;
+        gap: 6px;
+        line-height: 1.4;
+      }
+      .deepthought-hero .badge .badge-sep {
+        display: none;
+      }
+      .deepthought-hero .headline {
+        font-size: clamp(1.6rem, 8vw, 2rem);
+        line-height: 1.15;
+      }
+      .deepthought-hero .rotator-wrapper {
+        font-size: 0.95rem;
+        gap: 4px;
+      }
+      .deepthought-hero .rotator-container {
+        min-width: 155px;
+      }
+      .deepthought-hero .feature-burst {
+        gap: 4px;
+        font-size: 0.7rem;
+      }
+      .deepthought-hero .feature-pill {
+        padding: 4px 10px;
+        font-size: 0.68rem;
+        white-space: normal;
+        text-align: center;
+      }
+      .deepthought-hero .feature-separator {
+        display: none;
+      }
+      .deepthought-hero .cta-pure-text {
+        font-size: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        text-align: center;
+      }
+      .deepthought-hero .cta-sub-label {
+        font-size: 0.65rem;
+      }
+      .deepthought-hero .ring-primary,
+      .deepthought-hero .ring-secondary,
+      .deepthought-hero .ring-tertiary {
+        opacity: 0.4;
+      }
+      .deepthought-hero .mouse-glow {
+        display: none;
+      }
+    }
+  </style>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Background effects -->
+  <div class="grid-overlay"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
+  <canvas id="particleCanvas"></canvas>
+  <div class="rings-layer">
+    <div class="ring-primary"></div>
+    <div class="ring-secondary"></div>
+    <div class="ring-tertiary"></div>
+  </div>
+
+  <!-- Main content -->
+  <div class="hero-content">
+    <div class="badge">
+      <span class="badge-icon">🔬</span>
+      <span class="badge-highlight">Deep Analysis</span>
+      <span>+</span>
+      <span style="color:#06b6d4; font-weight:600;">Reasoning</span>
+      <span>+</span>
+      <span style="color:#f59e0b; font-weight:600;">Clarity</span>
+      <span class="badge-sep"></span>
+      <span>${greeting}, ${username}</span>
+    </div>
+
+    <h1 class="headline">
+      Deep thinking,<br>
+      <span class="gradient-text">made crystal clear</span>
+    </h1>
+
+    <div class="rotator-wrapper">
+      <span class="rotator-prefix">I</span>
+      <div class="rotator-container" id="rotatorContainer">
+        <span class="rotator-word active">reason & think</span>
+        <span class="rotator-word">explain with depth</span>
+        <span class="rotator-word">analyse critically</span>
+        <span class="rotator-word">simplify complexity</span>
+        <span class="rotator-word">connect big ideas</span>
+        <span class="rotator-word">find logical gaps</span>
+        <span class="rotator-word">give evidence‑based advice</span>
+        <span class="rotator-word">break down nuance</span>
+        <span class="rotator-word">offer thorough insight</span>
       </div>
     </div>
+
+    <div class="feature-burst">
+      <span class="feature-pill"><i data-lucide="brain"></i> Step‑by‑step reasoning</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="file-text"></i> Thorough explanations</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="layers"></i> Deep context</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="target"></i> Evidence‑based</span>
+    </div>
+
+    <div class="cta-text-group">
+      <span class="cta-pure-text">
+        <span class="cta-glow-text">✨ Ask a complex question</span>
+        <span class="cta-dash">—</span>
+        <span class="cta-sub-glow">get a thoughtful answer</span>
+        <i data-lucide="sparkles"></i>
+      </span>
+      <span class="cta-sub-label">go beyond surface‑level replies</span>
+    </div>
+  </div>
+</div>
   `;
 }
+
 // GLOBAL HELPER (place it outside any function)
 function getTimeBasedGreeting() {
   const hour = new Date().getHours();
@@ -6419,6 +7142,143 @@ function initSipromptHero() {
     window.removeEventListener('resize', resize);
   };
 }
+
+function initDeepThoughtHero() {
+  // Clean up any previous instance first
+  if (typeof cleanupDeepThoughtHero === 'function') cleanupDeepThoughtHero();
+
+  const container = document.querySelector('.deepthought-hero');
+  if (!container) return;
+
+  // Initialize Lucide icons inside this container
+  if (typeof lucide !== 'undefined') {
+    const icons = container.querySelectorAll('[data-lucide]');
+    lucide.createIcons({ icons });
+  }
+
+  // ----- Particle system -----
+  const canvas = container.querySelector('#particleCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let mouseX = -500, mouseY = -500;
+  let animId;
+
+  function resize() {
+    canvas.width = container.clientWidth;
+    canvas.height = container.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.45;
+      this.vy = (Math.random() - 0.5) * 0.45;
+      this.size = Math.random() * 2.2 + 0.5;
+      this.opacity = Math.random() * 0.4 + 0.2;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < -20) this.x = canvas.width + 20;
+      if (this.x > canvas.width + 20) this.x = -20;
+      if (this.y < -20) this.y = canvas.height + 20;
+      if (this.y > canvas.height + 20) this.y = -20;
+    }
+    draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(190,190,230,${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    const count = Math.min(90, Math.floor((canvas.width * canvas.height) / 15000));
+    particles = Array.from({ length: count }, () => new Particle());
+  }
+  initParticles();
+
+  function drawConnections() {
+    const maxDist = 120;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDist) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(160,160,220,${0.11 * (1 - dist / maxDist)})`;
+          ctx.lineWidth = 0.55;
+          ctx.stroke();
+        }
+      }
+      if (mouseX > 0 && mouseY > 0) {
+        const dmx = mouseX - particles[i].x;
+        const dmy = mouseY - particles[i].y;
+        const distToMouse = Math.sqrt(dmx * dmx + dmy * dmy);
+        if (distToMouse < 180) {
+          particles[i].vx += dmx * 0.00012;
+          particles[i].vy += dmy * 0.00012;
+          particles[i].vx *= 0.998;
+          particles[i].vy *= 0.998;
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(ctx); });
+    drawConnections();
+    animId = requestAnimationFrame(animate);
+  }
+  animate();
+
+  // ----- Mouse glow -----
+  const mouseGlow = container.querySelector('#mouseGlow');
+  function onMouseMove(e) {
+    const rect = container.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+    if (mouseGlow && window.innerWidth > 600) {
+      mouseGlow.style.left = e.clientX + 'px';
+      mouseGlow.style.top = e.clientY + 'px';
+    }
+  }
+  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('mouseleave', () => { mouseX = -500; mouseY = -500; });
+
+  // ----- Rotating words -----
+  const words = container.querySelectorAll('.rotator-word');
+  let idx = 0;
+  const rotatorInterval = setInterval(() => {
+    const current = words[idx];
+    const nextIdx = (idx + 1) % words.length;
+    const next = words[nextIdx];
+    current.classList.remove('active');
+    current.classList.add('exit');
+    next.classList.remove('exit');
+    next.classList.add('active');
+    setTimeout(() => current.classList.remove('exit'), 400);
+    idx = nextIdx;
+  }, 2600);
+
+  // ----- Expose cleanup -----
+  window.cleanupDeepThoughtHero = function() {
+    cancelAnimationFrame(animId);
+    clearInterval(rotatorInterval);
+    window.removeEventListener('mousemove', onMouseMove);
+    window.removeEventListener('resize', resize);
+    delete window.cleanupDeepThoughtHero;
+  };
+}
+
 function attachWelcomeCardListeners() {
   document.querySelectorAll('.suggestion-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -6433,7 +7293,6 @@ function attachWelcomeCardListeners() {
 }
 
 
-
 function stopWelcomeRotation() {
   if (window._rotationTimers) {
     window._rotationTimers.forEach(t => clearTimeout(t));
@@ -6441,6 +7300,8 @@ function stopWelcomeRotation() {
   }
   window._isTyping = false;
 }
+
+
         // ===================== AI API CALL =====================
        // ===================== NEW callAI using Gemini API directly =====================
 async function generateImage(prompt) {
@@ -9801,6 +10662,8 @@ window.xroga = {
         });
     })();
 </script>
+
+
 
 <script type="importmap">
     {
