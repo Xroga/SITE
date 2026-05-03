@@ -5553,21 +5553,17 @@ function renderCodeExpertWelcome() {
   const greeting = getTimeBasedGreeting();
   const username = state.username || 'there';
 
-  // The complete siprompt-hero HTML (with your exact CSS and structure)
   return `
 <div class="siteprompt-hero">
 <style>
-        /* ----- RESET & BASE (only for this page) ----- */
+    /* ----- RESET & BASE (only for this page) ----- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    
-    
-
-    /* ----- MAIN HERO CONTAINER (full width, no fixed positioning) ----- */
+    /* ----- MAIN HERO CONTAINER ----- */
     .siteprompt-hero {
       --bg-deep: #020212;
       --surface-glass: rgba(255, 255, 255, 0.04);
@@ -5588,9 +5584,9 @@ function renderCodeExpertWelcome() {
 
       position: relative;
       width: 100%;
-      min-height: auto;
+      min-height: auto;           /* no forced full screen */
       height: auto;
-      padding: 14px 24px;  /* top/bottom as you like, left/right 24px */
+      padding: 40px 24px;         /* comfortable vertical spacing */
       background: transparent;
       color: var(--text-primary);
       display: flex;
@@ -5600,12 +5596,7 @@ function renderCodeExpertWelcome() {
       isolation: isolate;
     }
 
-    /* ---------- BACKGROUND ORBS ---------- */
-  
-
-    
-
-    /* ---------- BOLD BLUE RINGS (static, transparent border, expanded) ---------- */
+    /* ---------- RINGS ---------- */
     .siteprompt-hero .rings-layer {
       position: absolute;
       inset: 0;
@@ -5613,7 +5604,16 @@ function renderCodeExpertWelcome() {
       z-index: 2;
       overflow: visible;
     }
-   
+
+    /* Override – remove backgrounds/borders */
+    .siteprompt-hero .ring-primary,
+    .siteprompt-hero .ring-secondary,
+    .siteprompt-hero .ring-tertiary {
+      background: none !important;
+      box-shadow: none !important;
+      border: none !important;
+      filter: none !important;
+    }
 
     /* ---------- HERO CONTENT ---------- */
     .siteprompt-hero .hero-content {
@@ -5622,7 +5622,7 @@ function renderCodeExpertWelcome() {
       text-align: center;
       max-width: 900px;
       width: 100%;
-      padding: 16px; 
+      padding: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -5633,56 +5633,8 @@ function renderCodeExpertWelcome() {
       from { opacity: 0; transform: translateY(35px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Override: remove all backgrounds and borders */
-.siteprompt-hero .ring-primary,
-.siteprompt-hero .ring-secondary,
-.siteprompt-hero .ring-tertiary {
-    background: none !important;
-    box-shadow: none !important;
-    border: none !important;
-    filter: none !important;
-}
 
-.siteprompt-hero .badge {
-    background: none !important;
-    border: none !important;
-    backdrop-filter: none !important;
-}
-.siteprompt-hero .badge::before {
-    display: none !important;
-}
-
-.siteprompt-hero .feature-pill {
-    background: none !important;
-    border: none !important;
-    backdrop-filter: none !important;
-}
-
-.siteprompt-hero .mouse-glow {
-    display: none !important;
-}
-    @media (max-width: 700px) {
-      .siteprompt-hero .ring-primary {
-        top: 18%;
-        width: min(700px, 90vw);
-        height: min(700px, 90vw);
-        border-width: 4px;
-      }
-      .siteprompt-hero .ring-secondary {
-        top: 20%;
-        width: min(900px, 98vw);
-        height: min(900px, 98vw);
-        filter: blur(20px);
-      }
-      .siteprompt-hero .ring-tertiary {
-        top: 22%;
-        width: min(1200px, 115vw);
-        height: min(1200px, 115vw);
-        filter: blur(45px);
-      }
-    }
-
-    /* Badge */
+    /* ---------- BADGE ---------- */
     .siteprompt-hero .badge {
       display: inline-flex;
       align-items: center;
@@ -5746,7 +5698,7 @@ function renderCodeExpertWelcome() {
       font-weight: 700;
     }
 
-    /* Headline */
+    /* ---------- HEADLINE ---------- */
     .siteprompt-hero .headline {
       font-family: var(--font-display);
       font-size: clamp(2.5rem, 5.5vw, 4.2rem);
@@ -5768,7 +5720,7 @@ function renderCodeExpertWelcome() {
       50% { background-position: 100% 50%; }
     }
 
-    /* Rotating words */
+    /* ---------- ROTATING WORDS ---------- */
     .siteprompt-hero .rotator-wrapper {
       display: flex;
       align-items: baseline;
@@ -5776,7 +5728,7 @@ function renderCodeExpertWelcome() {
       flex-wrap: wrap;
       gap: 8px;
       font-family: var(--font-display);
-      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      font-size: clamp(1rem, 2.2vw, 1.3rem);   /* smaller rotating text */
       font-weight: 700;
       margin-top: 2px;
     }
@@ -5801,13 +5753,13 @@ function renderCodeExpertWelcome() {
     .siteprompt-hero .rotator-word.active { opacity: 1; transform: translateY(0); }
     .siteprompt-hero .rotator-word.exit { opacity: 0; transform: translateY(-100%); }
 
-    /* Feature pills */
+    /* ---------- FEATURE PILLS ---------- */
     .siteprompt-hero .feature-burst {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 4px;
       margin: 6px 0 2px;
       font-size: 0.9rem;
       color: var(--text-muted);
@@ -5839,7 +5791,7 @@ function renderCodeExpertWelcome() {
     }
     .siteprompt-hero .feature-separator { color: var(--text-muted); opacity: 0.5; font-size: 0.8rem; }
 
-    /* CTA */
+    /* ---------- CTA ---------- */
     .siteprompt-hero .cta-text-group {
       display: flex;
       flex-direction: column;
@@ -5907,7 +5859,7 @@ function renderCodeExpertWelcome() {
     }
     .siteprompt-hero .cta-pure-text:hover+.cta-sub-label { opacity: 1; color: var(--accent-3); letter-spacing: 0.09em; }
 
-    /* Cosmic line */
+    /* ---------- COSMIC LINE ---------- */
     .siteprompt-hero .cosmic-line {
       display: flex;
       align-items: center;
@@ -5940,7 +5892,7 @@ function renderCodeExpertWelcome() {
       -webkit-text-fill-color: transparent;
     }
 
-    /* Particle canvas and mouse glow */
+    /* ---------- PARTICLES & GLOW ---------- */
     .siteprompt-hero #particleCanvas {
       position: absolute;
       inset: 0;
@@ -5965,100 +5917,172 @@ function renderCodeExpertWelcome() {
       filter: blur(32px);
       will-change: left, top;
     }
+
+    /* ========== MOBILE RESPONSIVE (up to 700px) ========== */
     @media (max-width: 700px) {
-      .siteprompt-hero .mouse-glow { display: none; }
-      .siteprompt-hero .hero-content { gap: 12px; padding: 16px; }
-      .siteprompt-hero .headline { font-size: 2rem; }
-      .siteprompt-hero .rotator-wrapper { font-size: 1.1rem; }
-      .siteprompt-hero .rotator-container { min-width: 135px; }
-      .siteprompt-hero .feature-burst { gap: 6px; font-size: 0.78rem; }
-      .siteprompt-hero .feature-pill { padding: 6px 14px; }
-      .siteprompt-hero .cta-pure-text { font-size: 1.1rem; }
-      .siteprompt-hero .badge { font-size: 0.7rem; padding: 8px 16px; gap: 6px; }
+      .siteprompt-hero {
+        padding: 20px 12px;
+      }
+      .siteprompt-hero .hero-content {
+        gap: 10px;
+        padding: 12px 8px;
+      }
+      /* Badge – allow wrapping so long text doesn’t overflow */
+      .siteprompt-hero .badge {
+        white-space: normal;
+        flex-wrap: wrap;
+        justify-content: center;
+        font-size: 0.72rem;
+        padding: 8px 14px;
+        gap: 6px;
+        line-height: 1.4;
+      }
+      .siteprompt-hero .badge .badge-sep {
+        display: none;
+      }
+
+      /* Headline */
+      .siteprompt-hero .headline {
+        font-size: clamp(1.6rem, 8vw, 2rem);
+        line-height: 1.15;
+      }
+
+      /* Rotating words – smaller + wider container */
+      .siteprompt-hero .rotator-wrapper {
+        font-size: 0.95rem;
+        gap: 4px;
+      }
+      .siteprompt-hero .rotator-container {
+        min-width: 155px;
+      }
+
+      .siteprompt-hero .feature-burst {
+     gap: 4px;                     /* tighter spacing */
+  font-size: 0.7rem;
+}
+.siteprompt-hero .feature-pill {
+  padding: 4px 10px;            /* smaller pill height */
+  font-size: 0.68rem;           /* smaller text */
+  white-space: normal;
+  text-align: center;
+}
+.siteprompt-hero .feature-separator {
+  display: none;                /* already hiding dots */
+}
+
+
+
+      /* CTA – stack if needed */
+      .siteprompt-hero .cta-pure-text {
+        font-size: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+        text-align: center;
+      }
+      .siteprompt-hero .cta-sub-label {
+        font-size: 0.65rem;
+      }
+
+      /* Keep rings subtle */
+      .siteprompt-hero .ring-primary,
+      .siteprompt-hero .ring-secondary,
+      .siteprompt-hero .ring-tertiary {
+        opacity: 0.4;
+      }
+
+      .siteprompt-hero .mouse-glow {
+        display: none;
+      }
     }
-      </style>
-      <!-- Font link (only needed if not already in <head>) -->
-      <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-      
-      
-      <div class="grid-overlay"></div>
-      <div class="mouse-glow" id="mouseGlow"></div>
-      <canvas id="particleCanvas"></canvas>
-      <div class="rings-layer">
-        <div class="ring-primary"></div>
-        <div class="ring-secondary"></div>
-        <div class="ring-tertiary"></div>
-      </div>
-      <div class="hero-content">
-        <div class="badge">
-          <span class="badge-icon">⚡</span>
-          <span class="badge-highlight">AI Website</span>
-          <span>+</span>
-          <span style="color:#06b6d4; font-weight:600;">SEO</span>
-          <span>+</span>
-          <span style="color:#f59e0b; font-weight:600;">CUSTOM-DOMAIN</span>
-          <span class="badge-sep"></span>
-          <span>Build Sites Instantly</span>
-        </div>
-        <h1 class="headline">
-          Your website,<br>
-          <span class="gradient-text">just a prompt away</span>
-        </h1>
-        <div class="rotator-wrapper">
-          <span class="rotator-prefix">For</span>
-          <div class="rotator-container" id="rotatorContainer">
-            <span class="rotator-word active">landing pages</span>
-<span class="rotator-word">ecommerce</span>
-<span class="rotator-word">portfolios</span>
-<span class="rotator-word">restaurants</span>
-<span class="rotator-word">booking sites</span>
-<span class="rotator-word">travel blogs</span>
-<span class="rotator-word">real estate</span>
-<span class="rotator-word">fitness coaches</span>
-<span class="rotator-word">local services</span>
-<span class="rotator-word">online courses</span>
-<span class="rotator-word">consultants</span>
-<span class="rotator-word">medical practices</span>
-<span class="rotator-word">event planners</span>
-<span class="rotator-word">photographers</span>
-<span class="rotator-word">SaaS startups</span>
-<span class="rotator-word">podcasts</span>
-<span class="rotator-word">nonprofits</span>
-<span class="rotator-word">freelancers</span>
-<span class="rotator-word">beauty salons</span>
-<!-- NEW ADDITIONS BELOW -->
-<span class="rotator-word">hotels</span>
-<span class="rotator-word">plumbers</span>
-<span class="rotator-word">cleaning services</span>
-<span class="rotator-word">electricians</span>
-<span class="rotator-word">auto repair shops</span>
-<span class="rotator-word">retail stores</span>
-<span class="rotator-word">B2B companies</span>
-<span class="rotator-word">franchises</span>
-          </div>
-        </div>
-        <div class="feature-burst">
-          <span class="feature-pill"><i data-lucide="wand-2"></i> No drag & drop</span>
-          <span class="feature-separator">·</span>
-          <span class="feature-pill"><i data-lucide="code-2"></i> No coding & technical skill</span>
-          <span class="feature-separator">·</span>
-          <span class="feature-separator">·</span>
-          <span class="feature-pill"><i data-lucide="zap"></i> SEO‑optimized</span>
-          <span class="feature-separator">·</span>
-          <span class="feature-pill"><i data-lucide="globe"></i> Custom domain</span>
-        </div>
-        <div class="cta-text-group">
-          <span class="cta-pure-text">
-            <span class="cta-glow-text">✨ Build it free</span>
-            <span class="cta-dash">—</span>
-            <span class="cta-sub-glow">host & domain paid</span>
-            <i data-lucide="sparkles"></i>
-          </span>
-          <span class="cta-sub-label">launch your site in minutes</span>
-        </div>
-        
+  </style>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Background effects -->
+  <div class="grid-overlay"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
+  <canvas id="particleCanvas"></canvas>
+  <div class="rings-layer">
+    <div class="ring-primary"></div>
+    <div class="ring-secondary"></div>
+    <div class="ring-tertiary"></div>
+  </div>
+
+  <!-- Main content -->
+  <div class="hero-content">
+    <div class="badge">
+      <span class="badge-icon">⚡</span>
+      <span class="badge-highlight">AI Website</span>
+      <span>+</span>
+      <span style="color:#06b6d4; font-weight:600;">SEO</span>
+      <span>+</span>
+      <span style="color:#f59e0b; font-weight:600;">CUSTOM-DOMAIN</span>
+      <span class="badge-sep"></span>
+      <span>Build Sites Instantly</span>
+    </div>
+
+    <h1 class="headline">
+      Your website,<br>
+      <span class="gradient-text">just a prompt away</span>
+    </h1>
+
+    <div class="rotator-wrapper">
+      <span class="rotator-prefix">For</span>
+      <div class="rotator-container" id="rotatorContainer">
+        <span class="rotator-word active">landing pages</span>
+        <span class="rotator-word">ecommerce</span>
+        <span class="rotator-word">portfolios</span>
+        <span class="rotator-word">restaurants</span>
+        <span class="rotator-word">booking sites</span>
+        <span class="rotator-word">travel blogs</span>
+        <span class="rotator-word">real estate</span>
+        <span class="rotator-word">fitness coaches</span>
+        <span class="rotator-word">local services</span>
+        <span class="rotator-word">online courses</span>
+        <span class="rotator-word">consultants</span>
+        <span class="rotator-word">medical practices</span>
+        <span class="rotator-word">event planners</span>
+        <span class="rotator-word">photographers</span>
+        <span class="rotator-word">SaaS startups</span>
+        <span class="rotator-word">podcasts</span>
+        <span class="rotator-word">nonprofits</span>
+        <span class="rotator-word">freelancers</span>
+        <span class="rotator-word">beauty salons</span>
+        <span class="rotator-word">hotels</span>
+        <span class="rotator-word">plumbers</span>
+        <span class="rotator-word">cleaning services</span>
+        <span class="rotator-word">electricians</span>
+        <span class="rotator-word">auto repair shops</span>
+        <span class="rotator-word">retail stores</span>
+        <span class="rotator-word">B2B companies</span>
+        <span class="rotator-word">franchises</span>
       </div>
     </div>
+
+    <div class="feature-burst">
+      <span class="feature-pill"><i data-lucide="wand-2"></i> No drag & drop</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="code-2"></i> No coding & technical skill</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="zap"></i> SEO‑optimized</span>
+      <span class="feature-separator">·</span>
+      <span class="feature-pill"><i data-lucide="globe"></i> Custom domain</span>
+    </div>
+
+    <div class="cta-text-group">
+      <span class="cta-pure-text">
+        <span class="cta-glow-text">✨ Build it free</span>
+        <span class="cta-dash">—</span>
+        <span class="cta-sub-glow">host & domain paid</span>
+        <i data-lucide="sparkles"></i>
+      </span>
+      <span class="cta-sub-label">launch your site in minutes</span>
+    </div>
+  </div>
+</div>
   `;
 }
 
