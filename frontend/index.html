@@ -6447,50 +6447,373 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function renderLighteningWelcome() {
-  const greeting = getTimeBasedGreeting();
+  const greeting = getTimeBasedGreeting(); // keep your existing helper
   const username = state.username || 'there';
+
   return `
-    <div class="modern-welcome">
-      <div class="welcome-panel">
-        <h1 class="welcome-headline">
-          ${greeting}, <span class="highlight">${username}</span>
+    <div class="lightening-hero">
+      <style>
+        /* ---------- SCOPED BOLT‑INSPIRED HERO ---------- */
+        .lightening-hero * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        .lightening-hero {
+          --color-surface: rgba(255, 255, 255, 0.04);
+          --color-border: rgba(255, 255, 255, 0.08);
+          --color-border-hover: rgba(255, 255, 255, 0.18);
+          --color-brand: #3b82f6;
+          --color-brand-glow: rgba(59, 130, 246, 0.45);
+          --color-accent: #06b6d4;
+          --color-text-primary: #f8fafc;
+          --color-text-secondary: #94a3b8;
+          --color-text-muted: #64748b;
+
+          position: relative;
+          width: 100%;
+          padding: 40px 24px 32px;
+          font-family: 'DM Sans', system-ui, sans-serif;
+          color: var(--color-text-primary);
+          overflow: hidden;
+          isolation: isolate;
+          background: transparent;
+        }
+
+        /* ---- Subtle grid overlay ---- */
+        .lightening-hero .grid-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          opacity: 0.03;
+          pointer-events: none;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px);
+          background-size: 50px 50px;
+          mask-image: radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%);
+        }
+
+        /* ---- Main content ---- */
+        .lightening-hero .hero-content {
+          position: relative;
+          z-index: 10;
+          text-align: center;
+          max-width: 780px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.8rem;
+        }
+
+        /* ---- Badge ---- */
+        .lightening-hero .hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.4rem 1.2rem;
+          background: var(--color-surface);
+          border: 1px solid var(--color-border);
+          border-radius: 9999px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: var(--color-text-secondary);
+          letter-spacing: 0.02em;
+          backdrop-filter: blur(16px);
+          transition: border-color 0.4s, box-shadow 0.4s;
+          cursor: default;
+        }
+        .lightening-hero .hero-badge:hover {
+          border-color: var(--color-border-hover);
+          color: #fff;
+          box-shadow: 0 0 24px var(--color-brand-glow);
+        }
+        .lightening-hero .badge-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--color-accent);
+          box-shadow: 0 0 8px var(--color-accent), 0 0 16px rgba(6,182,212,0.4);
+          animation: lighteningPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes lighteningPulse {
+          0%, 100% { opacity: 0.8; box-shadow: 0 0 6px var(--color-accent); }
+          50% { opacity: 1; box-shadow: 0 0 14px var(--color-accent), 0 0 26px rgba(6,182,212,0.5); }
+        }
+
+        /* ---- Headline ---- */
+        .lightening-hero .hero-title {
+          font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+          font-size: clamp(2.2rem, 6vw, 4rem);
+          font-weight: 700;
+          line-height: 1.06;
+          letter-spacing: -0.03em;
+          color: #fff;
+        }
+        .lightening-hero .gradient-word {
+          background: linear-gradient(135deg, #cbd5e1 0%, #60a5fa 30%, #22d3ee 60%, #a78bfa 85%, #e2e8f0 100%);
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: lighteningGradientShift 7s ease infinite;
+        }
+        @keyframes lighteningGradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
+        /* ---- Subtitle ---- */
+        .lightening-hero .hero-subtitle {
+          font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+          font-weight: 400;
+          color: var(--color-text-secondary);
+          max-width: 560px;
+          line-height: 1.6;
+        }
+        .lightening-hero .hero-subtitle strong {
+          color: #fff;
+          font-weight: 600;
+        }
+        .lightening-hero .hero-subtitle .accent {
+          color: var(--color-accent);
+          font-weight: 500;
+        }
+
+        /* ---- Prompt wrapper ---- */
+        .lightening-hero .prompt-wrapper {
+          width: 100%;
+          max-width: 580px;
+          margin-top: 0.3rem;
+        }
+        .lightening-hero .ai-prompt {
+          position: relative;
+          display: flex;
+          align-items: center;
+          background: rgba(15, 18, 32, 0.65);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 9999px;
+          padding: 0.3rem 0.3rem 0.3rem 1.8rem;
+          transition: border-color 0.4s, box-shadow 0.4s;
+        }
+        .lightening-hero .ai-prompt:focus-within {
+          border-color: rgba(59, 130, 246, 0.5);
+          box-shadow: 0 0 28px rgba(59, 130, 246, 0.2), 0 0 8px rgba(6, 182, 212, 0.15);
+        }
+        .lightening-hero .prompt-input {
+          flex: 1;
+          background: transparent;
+          border: none;
+          font-family: inherit;
+          font-size: 1.05rem;
+          color: #fff;
+          padding: 0.85rem 0;
+          outline: none;
+          caret-color: var(--color-brand);
+        }
+        .lightening-hero .prompt-input::placeholder {
+          color: transparent;
+        }
+        .lightening-hero .placeholder-text {
+          position: absolute;
+          left: 1.8rem;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 1.05rem;
+          color: rgba(255, 255, 255, 0.3);
+          pointer-events: none;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: calc(100% - 5rem);
+          transition: opacity 0.25s;
+        }
+        .lightening-hero .ai-prompt.has-value .placeholder-text,
+        .lightening-hero .prompt-input:focus ~ .placeholder-text {
+          opacity: 0;
+        }
+        .lightening-hero .prompt-submit {
+          background: rgba(255, 255, 255, 0.06);
+          border: none;
+          color: rgba(255, 255, 255, 0.65);
+          padding: 0.55rem 1.2rem;
+          border-radius: 9999px;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.25s;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          white-space: nowrap;
+          letter-spacing: 0.02em;
+        }
+        .lightening-hero .prompt-submit:hover {
+          background: rgba(255, 255, 255, 0.12);
+          color: #fff;
+          box-shadow: 0 0 18px var(--color-brand-glow);
+        }
+
+        /* ---- Floating feature cards (desktop) ---- */
+        .lightening-hero .feature-cards {
+          position: absolute;
+          inset: 0;
+          z-index: 5;
+          pointer-events: none;
+        }
+        .lightening-hero .feature-card {
+          position: absolute;
+          pointer-events: auto;
+          padding: 0.5rem 1.2rem;
+          background: rgba(18, 20, 40, 0.6);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 9999px;
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: var(--color-text-secondary);
+          letter-spacing: 0.02em;
+          transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+          cursor: default;
+          white-space: nowrap;
+          animation: lighteningCardFloat 7s ease-in-out infinite;
+        }
+        .lightening-hero .feature-card:hover {
+          border-color: rgba(255, 255, 255, 0.25);
+          color: #fff;
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.18);
+          transform: translateY(-8px) scale(1.04);
+          background: rgba(28, 32, 58, 0.7);
+          z-index: 20;
+        }
+        .lightening-hero .feature-card::before {
+          content: '';
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--color-accent);
+          margin-right: 0.5rem;
+          box-shadow: 0 0 8px var(--color-accent);
+        }
+        .lightening-hero .card-1 { top: 8%; left: 2%; animation-delay: 0s; }
+        .lightening-hero .card-2 { top: 18%; right: 3%; animation-delay: 1.2s; }
+        .lightening-hero .card-3 { top: 42%; left: 1%; animation-delay: 2.4s; }
+        .lightening-hero .card-4 { top: 48%; right: 2%; animation-delay: 3.6s; }
+        .lightening-hero .card-5 { bottom: 24%; left: 4%; animation-delay: 4.8s; }
+        .lightening-hero .card-6 { bottom: 18%; right: 5%; animation-delay: 5.6s; }
+        @keyframes lighteningCardFloat {
+          0%, 100% { transform: translateY(0); }
+          25% { transform: translateY(-6px) translateX(3px); }
+          50% { transform: translateY(-2px) translateX(-2px); }
+          75% { transform: translateY(-9px) translateX(2px); }
+        }
+
+        /* ---- Mobile feature chips ---- */
+        .lightening-hero .mobile-features {
+          display: none;
+        }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 1024px) {
+          .lightening-hero .feature-card { font-size: 0.72rem; padding: 0.4rem 0.9rem; }
+        }
+        @media (max-width: 768px) {
+          .lightening-hero { padding: 30px 16px 24px; }
+          .lightening-hero .hero-title { font-size: clamp(1.8rem, 10vw, 2.8rem); }
+          .lightening-hero .feature-cards { display: none; }
+          .lightening-hero .mobile-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            justify-content: center;
+            margin-top: 0.4rem;
+          }
+          .lightening-hero .mobile-chip {
+            padding: 0.3rem 0.8rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            color: var(--color-text-secondary);
+            backdrop-filter: blur(8px);
+          }
+        }
+        @media (max-width: 480px) {
+          .lightening-hero { padding: 24px 12px; }
+          .lightening-hero .hero-title { font-size: 1.7rem; }
+          .lightening-hero .hero-subtitle { font-size: 0.85rem; }
+          .lightening-hero .ai-prompt { padding-left: 1rem; }
+          .lightening-hero .prompt-input { font-size: 0.85rem; padding: 0.7rem 0; }
+          .lightening-hero .placeholder-text { font-size: 0.85rem; left: 1rem; }
+          .lightening-hero .prompt-submit { padding: 0.4rem 0.9rem; font-size: 0.75rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .lightening-hero .feature-card { animation: none !important; }
+        }
+      </style>
+
+      <!-- Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+
+      <!-- Subtle grid -->
+      <div class="grid-overlay" aria-hidden="true"></div>
+
+      <!-- Floating feature cards (desktop) -->
+      <div class="feature-cards" aria-hidden="true">
+        <span class="feature-card card-1">Creative Chats</span>
+        <span class="feature-card card-2">Web Search</span>
+        <span class="feature-card card-3">Image Generation</span>
+        <span class="feature-card card-4">Remove Background</span>
+        <span class="feature-card card-5">Auto-Schedule Posts</span>
+        <span class="feature-card card-6">Print-on-Demand</span>
+      </div>
+
+      <!-- Main content -->
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-indicator" aria-hidden="true"></span>
+          AI‑Powered Creative Engine
+        </div>
+
+        <h1 class="hero-title">
+          Create at the<br>
+          <span class="gradient-word">Speed of Ideas</span>
         </h1>
-        <div class="welcome-underline"></div>
-        <p class="welcome-subtitle">Lightning‑fast ideas, instant creativity, and dynamic conversations. ⚡</p>
 
-        <div class="relative mt-3 min-h-[4rem] overflow-visible">
-          <div class="modern-rotator-wrapper backdrop-blur-md bg-white/70 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/50 rounded-2xl px-5 py-3 shadow-lg shadow-purple-500/10 dark:shadow-purple-800/20 transition-all duration-500 hover:shadow-purple-500/20 hover:border-purple-400/40">
-            <p id="dynamicRotator" class="text-lg md:text-xl font-medium text-gray-800 dark:text-gray-200 flex items-center gap-2">
-              <span class="rotating-text-content" id="typewriterText">Dream it, and I’ll help you create it…</span>
-              <span class="modern-cursor ml-1 inline-block w-0.5 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"></span>
-            </p>
+        <p class="hero-subtitle">
+          <strong>Chat, generate, schedule, and sell</strong> — all in one intelligent workspace.
+          Remove backgrounds, upscale to 4K, auto‑post to social media,
+          and resell on <span class="accent">print‑on‑demand</span> platforms.
+          <strong>Your creative workflow, amplified.</strong>
+        </p>
+
+        <!-- AI Prompt (connected to main chat input) -->
+        <div class="prompt-wrapper">
+          <div class="ai-prompt" id="lighteningAiPrompt">
+            <input type="text" class="prompt-input" id="lighteningPromptInput" placeholder=" " autocomplete="off" aria-label="Describe your creative task">
+            <span class="placeholder-text" id="lighteningPlaceholderText">Describe your task…</span>
+            <button class="prompt-submit" id="lighteningSubmitPrompt" aria-label="Generate">
+              <span>Generate</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+            </button>
           </div>
         </div>
 
-        <div class="welcome-suggestions">
-          <div class="suggestion-card" data-prompt="Brainstorm 10 YouTube video ideas">
-            <i data-lucide="lightbulb" class="w-6 h-6"></i>
-            <span>Brainstorm ideas</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Write a poem about the ocean">
-            <i data-lucide="feather" class="w-6 h-6"></i>
-            <span>Write a poem</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Design a futuristic city concept">
-            <i data-lucide="palette" class="w-6 h-6"></i>
-            <span>Design a concept</span>
-          </div>
-          <div class="suggestion-card" data-prompt="Create social media captions for a fitness brand">
-            <i data-lucide="message-square" class="w-6 h-6"></i>
-            <span>Social captions</span>
-          </div>
-        </div>
-
-        <div class="welcome-prompt-box" onclick="document.getElementById('xroga-chat-input').focus();">
-          <div class="prompt-text">
-            <i data-lucide="zap" class="w-5 h-5"></i>
-            <span>Ask anything, get creative…</span>
-          </div>
+        <!-- Mobile feature chips -->
+        <div class="mobile-features">
+          <span class="mobile-chip">Creative Chats</span>
+          <span class="mobile-chip">Web Search</span>
+          <span class="mobile-chip">Image Gen</span>
+          <span class="mobile-chip">Remove BG</span>
+          <span class="mobile-chip">Upscale</span>
+          <span class="mobile-chip">Auto-Schedule</span>
+          <span class="mobile-chip">Print-on-Demand</span>
         </div>
       </div>
     </div>
@@ -7276,6 +7599,124 @@ function initDeepThoughtHero() {
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('resize', resize);
     delete window.cleanupDeepThoughtHero;
+  };
+}
+
+let cleanupLighteningWelcome = null;
+
+function initLighteningWelcome() {
+  // Clean up previous instance
+  if (typeof cleanupLighteningWelcome === 'function') cleanupLighteningWelcome();
+
+  const container = document.querySelector('.lightening-hero');
+  if (!container) return;
+
+  // DOM references
+  const promptInput = container.querySelector('#lighteningPromptInput');
+  const placeholderElem = container.querySelector('#lighteningPlaceholderText');
+  const aiPrompt = container.querySelector('#lighteningAiPrompt');
+  const submitBtn = container.querySelector('#lighteningSubmitPrompt');
+  const chatInput = document.getElementById('xroga-chat-input'); // main chat input
+
+  // ------ Typewriter carousel for placeholder ------
+  const suggestions = [
+    "Design a product mockup…",
+    "Remove background from photo…",
+    "Upscale to 4K resolution…",
+    "Summarize this article…",
+    "Generate a YouTube thumbnail…",
+    "Auto-schedule my posts…",
+    "Create a print-on-demand t-shirt…"
+  ];
+  let currentIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let typingTimer = null;
+
+  function typeLoop() {
+    const current = suggestions[currentIndex];
+    if (isDeleting) {
+      charIndex--;
+      placeholderElem.textContent = current.substring(0, charIndex);
+      if (charIndex <= 0) {
+        isDeleting = false;
+        currentIndex = (currentIndex + 1) % suggestions.length;
+        typingTimer = setTimeout(typeLoop, 450);
+        return;
+      }
+    } else {
+      charIndex++;
+      placeholderElem.textContent = current.substring(0, charIndex);
+      if (charIndex >= current.length) {
+        isDeleting = true;
+        typingTimer = setTimeout(typeLoop, 2400);
+        return;
+      }
+    }
+    typingTimer = setTimeout(typeLoop, isDeleting ? 30 : 75);
+  }
+
+  function resetAndRestartTyping() {
+    clearTimeout(typingTimer);
+    placeholderElem.textContent = '';
+    charIndex = 0;
+    isDeleting = false;
+    typingTimer = setTimeout(typeLoop, 300);
+  }
+
+  // ------ Prompt interaction ------
+  function updateHasValue() {
+    aiPrompt.classList.toggle('has-value', promptInput.value.length > 0);
+  }
+  promptInput.addEventListener('input', updateHasValue);
+
+  // Submit handler: sends text to main chat input
+  function handleSubmit() {
+    const value = promptInput.value.trim();
+    if (!value) return;
+
+    // Visual feedback
+    aiPrompt.style.boxShadow = '0 0 30px rgba(59,130,246,0.25)';
+    setTimeout(() => { aiPrompt.style.boxShadow = ''; }, 400);
+
+    // Place into main chat input
+    if (chatInput) {
+      chatInput.value = value;
+      chatInput.focus();
+      chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    // Clear local prompt and restart typing
+    promptInput.value = '';
+    updateHasValue();
+    resetAndRestartTyping();
+  }
+
+  // Keydown handler (Enter)
+  function onKeydown(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+    }
+  }
+  promptInput.addEventListener('keydown', onKeydown);
+
+  // Click handler for submit button
+  function onClickSubmit() {
+    handleSubmit();
+  }
+  submitBtn.addEventListener('click', onClickSubmit);
+
+  // Start typing
+  typingTimer = setTimeout(typeLoop, 600);
+
+  // ------ Cleanup function ------
+  cleanupLighteningWelcome = () => {
+    clearTimeout(typingTimer);
+    promptInput.removeEventListener('input', updateHasValue);
+    promptInput.removeEventListener('keydown', onKeydown);
+    submitBtn.removeEventListener('click', onClickSubmit);
+    cleanupLighteningWelcome = null;
   };
 }
 
@@ -11614,4 +12055,3 @@ window.xroga = {
     </script>
   </section>
 </div>
-
