@@ -3314,7 +3314,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 
 
 function attachChatItemEventListeners() {
-    // Remove any existing global click listener to avoid duplicates
+    // Close dropdowns when clicking outside
     if (window._closeDropdownListener) {
         document.removeEventListener('click', window._closeDropdownListener);
     }
@@ -3331,22 +3331,22 @@ function attachChatItemEventListeners() {
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        // Remove old handlers if present (to avoid duplicates)
+        // Remove old handlers to avoid duplicates
         if (container._menuHandler) container.removeEventListener('click', container._menuHandler);
         if (container._actionHandler) container.removeEventListener('click', container._actionHandler);
+        if (container._loadHandler) container.removeEventListener('click', container._loadHandler);
 
         // Handler for toggling the dropdown (three‑dots button)
         container._menuHandler = (e) => {
             const menuBtn = e.target.closest('.chat-menu-btn');
             if (!menuBtn) return;
-            e.stopPropagation();
+            e.stopPropagation();   // Prevent chat loading
             e.preventDefault();
 
             const chatItem = menuBtn.closest('.chat-item');
             const dropdown = chatItem?.querySelector('.chat-dropdown');
             if (!dropdown) return;
 
-            // Close all other dropdowns
             document.querySelectorAll('.chat-dropdown').forEach(d => {
                 if (d !== dropdown) d.classList.add('hidden');
             });
@@ -3358,7 +3358,7 @@ function attachChatItemEventListeners() {
         container._actionHandler = (e) => {
             const btn = e.target.closest('.dropdown-item');
             if (!btn) return;
-            e.stopPropagation();
+            e.stopPropagation();   // Prevent chat loading
             e.preventDefault();
 
             const chatItem = btn.closest('.chat-item');
@@ -3380,9 +3380,23 @@ function attachChatItemEventListeners() {
             if (dropdown) dropdown.classList.add('hidden');
         };
         container.addEventListener('click', container._actionHandler);
+
+        // ✅ NEW: Handler for loading the chat when the chat item is clicked
+        container._loadHandler = (e) => {
+            // Do nothing if clicking on the menu button or inside dropdown
+            if (e.target.closest('.chat-menu-btn') || e.target.closest('.chat-dropdown')) return;
+
+            const chatItem = e.target.closest('.chat-item');
+            if (!chatItem) return;
+            const chatId = chatItem.dataset.chatId;
+            const chat = state.chats.find(c => c.id.toString() === chatId);
+            if (chat) {
+                loadChat(chat);
+            }
+        };
+        container.addEventListener('click', container._loadHandler);
     });
 }
-
     function handleRenameChat(chat) {
         const renameModal = document.getElementById('rename-modal');
         const renameInput = document.getElementById('rename-input');
