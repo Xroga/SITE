@@ -80,7 +80,7 @@ landing page, or business site."`;
         { role: 'user', content: prompt }
       ],
       temperature: 0.7,
-      max_tokens: 4096
+      max_tokens: 10000
     })
   });
   const data = await response.json();
