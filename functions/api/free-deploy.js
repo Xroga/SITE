@@ -42,7 +42,7 @@ export async function onRequest(context) {
       return Response.json({
         success: true,
         siteUrl: liveUrl,
-        domain: `${subdomain}.xroga.app`
+        domain: `${subdomain}.xroga.com`
       });
     } catch (err) {
       return Response.json({ success: false, message: err.message }, { status: 500 });
