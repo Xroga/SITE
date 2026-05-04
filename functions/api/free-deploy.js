@@ -3,65 +3,50 @@ export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // --- Serve deployed site from subdomain (e.g., https://myapp.xroga.com) ---
-  const host = url.hostname;
-  if (host.endsWith('.xroga.com')) {
-    const subdomain = host.replace('.xroga.com', '');
-    const html = await env.KV.get(`subdomain:${subdomain}`);
-    if (html) {
-      return new Response(html, { headers: { 'Content-Type': 'text/html' } });
-    }
-    // If subdomain not found, show 404 (optional: fallback to frontend)
-    return new Response('Site not found', { status: 404 });
-  }
-
-  // --- Backward compatibility: /site/:subdomain ---
-  if (url.pathname.startsWith('/site/')) {
-    const subdomain = url.pathname.split('/site/')[1];
-    if (!subdomain) return new Response('Not found', { status: 404 });
-    const html = await env.KV.get(`subdomain:${subdomain}`);
+  // Serve deployed site from /p/:project
+  if (url.pathname.startsWith('/p/')) {
+    const project = url.pathname.split('/p/')[1];
+    if (!project) return new Response('Not found', { status: 404 });
+    const html = await env.KV.get(`project:${project}`);
     if (!html) return new Response('Site not found', { status: 404 });
     return new Response(html, { headers: { 'Content-Type': 'text/html' } });
   }
 
-  // --- Serve frontend at root ---
-  if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '')) {
-    // You can serve your index.html here (or embed it)
-    return new Response(FRONTEND_HTML, { headers: { 'Content-Type': 'text/html' } });
+  // Legacy /site/:project support
+  if (url.pathname.startsWith('/site/')) {
+    const project = url.pathname.split('/site/')[1];
+    if (!project) return new Response('Not found', { status: 404 });
+    const html = await env.KV.get(`project:${project}`);
+    if (!html) return new Response('Site not found', { status: 404 });
+    return new Response(html, { headers: { 'Content-Type': 'text/html' } });
   }
 
-  // --- POST /api/free-deploy ---
+  // POST /api/free-deploy
   if (request.method === 'POST' && url.pathname === '/api/free-deploy') {
     try {
       const { code, subdomain } = await request.json();
 
-      // Validate subdomain
       if (!subdomain || !/^[a-z0-9-]{3,30}$/.test(subdomain)) {
-        return Response.json({ success: false, message: 'Invalid subdomain. Use 3-30 lowercase letters, numbers, hyphens.' }, { status: 400 });
+        return Response.json({ success: false, message: 'Invalid project name. Use 3-30 lowercase letters, numbers, hyphens.' }, { status: 400 });
       }
 
-      // Check if subdomain already taken
-      const existing = await env.KV.get(`subdomain:${subdomain}`);
-      if (existing) {
-        return Response.json({ success: false, message: 'Subdomain already taken.' }, { status: 409 });
+      const existing = await env.KV.get(`project:${subdomain}`);
+      if (!existing) {
+        const userCount = await checkAndIncrementUserCounter(env);
+        if (userCount > 100) {
+          return Response.json({ success: false, message: 'Sorry, the 100 free gifts are already claimed.' }, { status: 403 });
+        }
       }
 
-      // Optional: first 100 users limit
-      const userCount = await checkAndIncrementUserCounter(env);
-      if (userCount > 100) {
-        return Response.json({ success: false, message: 'Sorry, the 100 free deployments are already claimed.' }, { status: 403 });
-      }
+      // Store (overwrite if exists)
+      await env.KV.put(`project:${subdomain}`, code, { expirationTtl: 86400 * 30 });
 
-      // Store the HTML
-      await env.KV.put(`subdomain:${subdomain}`, code, { expirationTtl: 86400 * 30 }); // 30 days
-
-      // Clean subdomain URL
-      const liveUrl = `https://${subdomain}.xroga.com`;
-
+      const liveUrl = `https://xroga.com/p/${subdomain}`;
       return Response.json({
         success: true,
         siteUrl: liveUrl,
-        domain: `${subdomain}.xroga.com`
+        domain: `xroga.com/p/${subdomain}`,
+        isUpdate: !!existing
       });
     } catch (err) {
       console.error(err);
@@ -84,7 +69,3 @@ async function checkAndIncrementUserCounter(env) {
   await env.KV.put(COUNTER_KEY, JSON.stringify({ count: newCount }));
   return newCount;
 }
-
-// --- Optional: embed your frontend HTML if not served separately ---
-// If you already serve index.html from Pages, you can remove this.
-const FRONTEND_HTML = `<!DOCTYPE html>...`; // your index.html content
