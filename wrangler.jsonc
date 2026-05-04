@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "xroga-deploy",          // your worker name
+  "main": "src/index.ts",          // or "functions/api/free-deploy.js"
+  "compatibility_date": "2025-02-04",
+  "observability": { "enabled": true },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "7b658abdcf9d456f9dbe0a9950f3dc12"
+      // preview_id is optional – omit or set later
+    }
+  ]
+}
