@@ -8060,155 +8060,138 @@ container.querySelector('.ai-edit-drag').onclick = () => {
 
 
 
-        // ===================== DEPLOYMENT MODAL (UPDATED PRICING & FEATURES) =====================
-        function openDeployModal(code) {
-            let modal = document.getElementById('deploy-modal');
-            if (!modal) {
-                modal = document.createElement('div');
-                modal.id = 'deploy-modal';
-                modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-all duration-300 hidden';
-                modal.innerHTML = `
-                    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0 border border-gray-200 dark:border-gray-700">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold gradient-text">🚀 Deploy Your Site</h3><button class="close-modal"><i data-lucide="x" class="w-6 h-6"></i></button></div>
-                            <div class="space-y-4">
-                                <div class="bg-gradient-to-r from-purple-500/20 to-blue-500/20 p-4 rounded-xl">
-                                    <div class="flex justify-between"><span class="font-semibold">First Month</span><span class="text-2xl font-bold text-purple-600">$13</span></div>
-                                    <div class="flex justify-between mt-1"><span class="text-sm">Then monthly</span><span class="text-lg font-semibold text-blue-600">$9</span></div>
-                                    <p class="text-xs text-gray-500 mt-2">✓ Unlimited code generation<br>✓ Deploy & host your website<br>✓ Free domain (.com, .co, .shop, etc.)<br>✓ Affordable .ai domains (extra charge)</p>
-                                </div>
-                                <div><label class="block text-sm font-medium mb-1">Domain Option</label><select id="domain-option" class="w-full p-2 rounded-lg border"><option value="free">Get a free domain (.com, .co, .shop)</option><option value="existing">Connect existing domain</option><option value="new">Buy new domain (via Spaceship)</option></select></div>
-                                <div id="domain-input-container" class="hidden"><label class="block text-sm font-medium mb-1">Domain name</label><input type="text" id="domain-name" placeholder="example.com" class="w-full p-2 rounded-lg border"></div>
-                                <button id="checkout-btn" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl text-white font-semibold flex items-center justify-center gap-2"><i data-lucide="credit-card" class="w-5 h-5"></i> Pay & Deploy</button>
-                            </div>
-                        </div>
+        // ===================== DEPLOYMENT MODAL (FREE FOR FIRST 100 USERS) =====================
+function openDeployModal(code) {
+    let modal = document.getElementById('deploy-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'deploy-modal';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-all duration-300 hidden';
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0 border border-gray-200 dark:border-gray-700">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold gradient-text">🚀 Deploy Your Site</h3>
+                        <button class="close-modal"><i data-lucide="x" class="w-6 h-6"></i></button>
                     </div>
-                `;
-                document.body.appendChild(modal);
-                lucide.createIcons();
-            }
-            const modalDiv = modal;
-            const closeBtn = modalDiv.querySelector('.close-modal');
-            const domainOption = modalDiv.querySelector('#domain-option');
-            const domainInputContainer = modalDiv.querySelector('#domain-input-container');
-            const checkoutBtn = modalDiv.querySelector('#checkout-btn');
+                    <div class="space-y-4">
+                        <!-- FREE banner for first 100 users -->
+                        <div class="bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-4 rounded-xl text-center border border-green-500/30">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <span class="text-2xl">🎉</span>
+                                <span class="font-bold text-green-600 dark:text-green-400">FREE for first 100 users!</span>
+                                <span class="text-2xl">✨</span>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">You're among the first 100 users of Xroga AI. Deployment is completely free — no payment required, now or ever.</p>
+                        </div>
 
-            domainOption.addEventListener('change', (e) => {
-                domainInputContainer.classList.toggle('hidden', e.target.value === 'free');
+                        <!-- Features list (all free) -->
+                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
+                            <p class="text-sm font-semibold mb-2">Includes:</p>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>✓ Unlimited code generation</li>
+                                <li>✓ Deploy & host your website</li>
+                                <li>✓ Free subdomain (your-site.xroga.com)</li>
+                                <li>✓ No monthly fees — forever free for early users</li>
+                            </ul>
+                        </div>
+
+                        <!-- Subdomain input -->
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Choose your subdomain</label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="subdomain" placeholder="myawesomeproject" class="flex-1 p-2 rounded-lg border dark:bg-gray-800">
+                                <span class="text-gray-500">.xroga.com</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Only lowercase letters, numbers, and hyphens (3-30 characters).</p>
+                        </div>
+
+                        <!-- Free Deploy button -->
+                        <button id="deploy-free-btn" class="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl text-white font-semibold flex items-center justify-center gap-2 hover:from-green-700 hover:to-emerald-700 transition-all">
+                            <i data-lucide="rocket" class="w-5 h-5"></i> Deploy for Free
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        lucide.createIcons();
+    }
+
+    const modalDiv = modal;
+    const closeBtn = modalDiv.querySelector('.close-modal');
+    const subdomainInput = modalDiv.querySelector('#subdomain');
+    const deployBtn = modalDiv.querySelector('#deploy-free-btn');
+
+    // Reset input value each time modal opens
+    subdomainInput.value = '';
+
+    deployBtn.onclick = async () => {
+        const subdomain = subdomainInput.value.trim();
+        if (!subdomain) {
+            showToast('Please enter a subdomain', 'Error');
+            return;
+        }
+        if (!/^[a-z0-9-]{3,30}$/.test(subdomain)) {
+            showToast('Subdomain must be 3-30 lowercase letters, numbers, or hyphens.', 'Error');
+            return;
+        }
+
+        deployBtn.disabled = true;
+        deployBtn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> Deploying...';
+
+        try {
+            // Call free deployment endpoint with subdomain
+            const response = await fetch('/api/free-deploy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, subdomain })
             });
-            domainInputContainer.classList.add('hidden');
+            const data = await response.json();
 
-            checkoutBtn.onclick = async () => {
-                const option = domainOption.value;
-                let domain = null;
-                if (option !== 'free') {
-                    domain = modalDiv.querySelector('#domain-name').value.trim();
-                    if (!domain) { showToast('Please enter a domain name', 'Error'); return; }
-                }
-                checkoutBtn.disabled = true;
-                checkoutBtn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> Processing...';
-                lucide.createIcons();
-                try {
-                    const response = await fetch('/api/create-checkout', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ code, domain, option })
-                    });
-                    const data = await response.json();
-                    if (data.url) window.location.href = data.url;
-                    else throw new Error('No checkout URL');
-                } catch (error) {
-                    showToast('Failed to initiate checkout', 'Error');
-                    checkoutBtn.disabled = false;
-                    checkoutBtn.innerHTML = '<i data-lucide="credit-card" class="w-5 h-5"></i> Pay & Deploy';
-                    lucide.createIcons();
-                }
-            };
-
-            modalDiv.classList.remove('hidden');
-            const modalContent = modalDiv.querySelector('div');
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-            closeBtn.onclick = () => {
+            if (data.success) {
+                // Close modal with animation
+                const modalContent = modalDiv.querySelector('div');
                 modalContent.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => modalDiv.classList.add('hidden'), 300);
-            };
-            modalDiv.onclick = (e) => { if (e.target === modalDiv) closeBtn.click(); };
-        }
 
-        async function verifyPaymentAndSetup() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sessionId = urlParams.get('session_id');
-            if (sessionId) {
-                try {
-                    const response = await fetch('/api/verify-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ session_id: sessionId })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        state.deployedSite = { url: data.siteUrl, domain: data.domain, deployedAt: new Date().toISOString() };
-                        saveDeployedSite();
-                        showCelebrationPopup(data.siteUrl, data.domain);
-                        createMovableSiteToggle();
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    } else showToast('Payment verification failed', 'Error');
-                } catch (error) { console.error(error); }
+                // Save deployment info and show celebration
+                state.deployedSite = {
+                    url: data.siteUrl,
+                    domain: data.domain,
+                    deployedAt: new Date().toISOString()
+                };
+                saveDeployedSite();
+                showCelebrationPopup(data.siteUrl, state.deployedSite.domain);
+                createMovableSiteToggle();
+            } else {
+                throw new Error(data.message || 'Deployment failed');
             }
-        }
-
-        function showCelebrationPopup(siteUrl, domain) {
-            const popup = document.createElement('div');
-            popup.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md';
-            popup.innerHTML = `<div class="bg-gradient-to-br from-purple-900 to-blue-900 rounded-2xl p-8 max-w-md text-center text-white animate-bounce-once"><div class="text-6xl mb-4">🎉✨🚀</div><h2 class="text-3xl font-bold mb-2">Deployment Successful!</h2><p class="mb-4">Your site is live at:</p><a href="${siteUrl}" target="_blank" class="inline-block px-6 py-3 bg-white text-purple-700 rounded-xl font-semibold">${domain}</a><button class="close-celebration mt-6 px-4 py-2 bg-white/20 rounded-lg">Close</button></div>`;
-            document.body.appendChild(popup);
-            popup.querySelector('.close-celebration').onclick = () => popup.remove();
-            setTimeout(() => popup.remove(), 10000);
-        }
-
-        // Movable toggle fixed at left center, draggable
-        function createMovableSiteToggle() {
-            if (!state.deployedSite) return;
-            let toggle = document.getElementById('live-site-toggle');
-            if (toggle) toggle.remove();
-            toggle = document.createElement('div');
-            toggle.id = 'live-site-toggle';
-            toggle.className = 'fixed left-4 top-1/2 transform -translate-y-1/2 z-40 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full shadow-2xl cursor-pointer flex items-center gap-2 px-4 py-2 transition-all hover:scale-105 animate-pulse-glow';
-            toggle.innerHTML = `<i data-lucide="globe" class="w-5 h-5"></i><span class="font-medium">${state.deployedSite.domain}</span><i data-lucide="chevron-right" class="w-4 h-4"></i>`;
-            document.body.appendChild(toggle);
+        } catch (error) {
+            console.error('Deployment error:', error);
+            showToast(error.message || 'Failed to deploy. Please try again.', 'Error');
+            deployBtn.disabled = false;
+            deployBtn.innerHTML = '<i data-lucide="rocket" class="w-5 h-5"></i> Deploy for Free';
             lucide.createIcons();
-
-            let isDragging = false, startX, startY, startLeft, startTop;
-            toggle.addEventListener('mousedown', (e) => {
-                if (e.target.closest('i')?.getAttribute('data-lucide') === 'chevron-right') return;
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                const rect = toggle.getBoundingClientRect();
-                startLeft = rect.left;
-                startTop = rect.top;
-                toggle.style.position = 'fixed';
-                toggle.style.left = startLeft + 'px';
-                toggle.style.top = startTop + 'px';
-                toggle.style.transform = 'none';
-                document.body.style.userSelect = 'none';
-            });
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                let newLeft = startLeft + (e.clientX - startX);
-                let newTop = startTop + (e.clientY - startY);
-                newLeft = Math.min(Math.max(newLeft, 0), window.innerWidth - toggle.offsetWidth);
-                newTop = Math.min(Math.max(newTop, 0), window.innerHeight - toggle.offsetHeight);
-                toggle.style.left = newLeft + 'px';
-                toggle.style.top = newTop + 'px';
-            });
-            window.addEventListener('mouseup', () => { isDragging = false; document.body.style.userSelect = ''; });
-            toggle.addEventListener('click', (e) => {
-                if (isDragging) return;
-                window.open(state.deployedSite.url, '_blank');
-            });
         }
+    };
+
+    // Show modal with entry animation
+    modalDiv.classList.remove('hidden');
+    const modalContent = modalDiv.querySelector('div');
+    modalContent.classList.remove('scale-95', 'opacity-0');
+    modalContent.classList.add('scale-100', 'opacity-100');
+
+    // Close modal events
+    closeBtn.onclick = () => {
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => modalDiv.classList.add('hidden'), 300);
+    };
+    modalDiv.onclick = (e) => { if (e.target === modalDiv) closeBtn.click(); };
+}
+
+// The rest of your functions (verifyPaymentAndSetup, showCelebrationPopup, createMovableSiteToggle) remain exactly the same.
+// Make sure they are present after this updated openDeployModal.
 
 
 function openCustomVisualEditor(initialCode, messageDiv, codeContainer) {
