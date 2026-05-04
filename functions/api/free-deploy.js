@@ -1,27 +1,9 @@
-// functions/api/free-deploy.js
+// functions/api/free-deploy.js (corrected)
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  // Serve deployed site from /p/:project
-  if (url.pathname.startsWith('/p/')) {
-    const project = url.pathname.split('/p/')[1];
-    if (!project) return new Response('Not found', { status: 404 });
-    const html = await env.KV.get(`project:${project}`);
-    if (!html) return new Response('Site not found', { status: 404 });
-    return new Response(html, { headers: { 'Content-Type': 'text/html' } });
-  }
-
-  // Legacy /site/:project support
-  if (url.pathname.startsWith('/site/')) {
-    const project = url.pathname.split('/site/')[1];
-    if (!project) return new Response('Not found', { status: 404 });
-    const html = await env.KV.get(`project:${project}`);
-    if (!html) return new Response('Site not found', { status: 404 });
-    return new Response(html, { headers: { 'Content-Type': 'text/html' } });
-  }
-
-  // POST /api/free-deploy
+  // Only handle POST /api/free-deploy
   if (request.method === 'POST' && url.pathname === '/api/free-deploy') {
     try {
       const { code, subdomain } = await request.json();
