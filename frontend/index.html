@@ -8061,56 +8061,53 @@ container.querySelector('.ai-edit-drag').onclick = () => {
 
 
         // ===================== DEPLOYMENT MODAL (FREE FOR FIRST 100 USERS) =====================
+// ===================== DEPLOYMENT MODAL (FREE, PATH-BASED URLS) =====================
 function openDeployModal(code) {
     let modal = document.getElementById('deploy-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'deploy-modal';
-        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-all duration-300 hidden';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-200 hidden';
         modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0 border border-gray-200 dark:border-gray-700">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-2xl font-bold gradient-text">🚀 Deploy Your Site</h3>
-                        <button class="close-modal"><i data-lucide="x" class="w-6 h-6"></i></button>
-                    </div>
-                    <div class="space-y-4">
-                        <!-- FREE banner for first 100 users -->
-                        <div class="bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-4 rounded-xl text-center border border-green-500/30">
-                            <div class="flex items-center justify-center gap-2 mb-2">
-                                <span class="text-2xl">🎉</span>
-                                <span class="font-bold text-green-600 dark:text-green-400">FREE for first 100 users!</span>
-                                <span class="text-2xl">✨</span>
-                            </div>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">You're among the first 100 users of Xroga AI. Deployment is completely free — no payment required, now or ever.</p>
-                        </div>
-
-                        <!-- Features list (all free) -->
-                        <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl">
-                            <p class="text-sm font-semibold mb-2">Includes:</p>
-                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                                <li>✓ Unlimited code generation</li>
-                                <li>✓ Deploy & host your website</li>
-                                <li>✓ Free subdomain (your-site.xroga.com)</li>
-                                <li>✓ No monthly fees — forever free for early users</li>
-                            </ul>
-                        </div>
-
-                        <!-- Subdomain input -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <!-- top accent -->
+                <div class="h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500"></div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-3">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Choose your subdomain</label>
-                            <div class="flex items-center gap-2">
-                                <input type="text" id="subdomain" placeholder="myawesomeproject" class="flex-1 p-2 rounded-lg border dark:bg-gray-800">
-                                <span class="text-gray-500">.xroga.com</span>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">Only lowercase letters, numbers, and hyphens (3-30 characters).</p>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">🎁 Special gift</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">First 100 users → lifetime free website + domain</p>
                         </div>
-
-                        <!-- Free Deploy button -->
-                        <button id="deploy-free-btn" class="w-full py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-xl text-white font-semibold flex items-center justify-center gap-2 hover:from-green-700 hover:to-emerald-700 transition-all">
-                            <i data-lucide="rocket" class="w-5 h-5"></i> Deploy for Free
-                        </button>
+                        <button class="close-modal text-gray-400 hover:text-gray-600"><i data-lucide="x" class="w-4 h-4"></i></button>
                     </div>
+
+                    <!-- Benefit pills (emphasising lifetime gift) -->
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-medium"><i data-lucide="gift" class="w-3 h-3"></i> Lifetime free</span>
+                        <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs px-2 py-1 rounded-full"><i data-lucide="link" class="w-3 h-3"></i> Permanent domain</span>
+                        <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-xs px-2 py-1 rounded-full"><i data-lucide="refresh-cw" class="w-3 h-3"></i> Update anytime</span>
+                        <span class="inline-flex items-center gap-1 bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full"><i data-lucide="eye-off" class="w-3 h-3"></i> No watermark</span>
+                        <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full"><i data-lucide="bar-chart" class="w-3 h-3"></i> 10k visits/mo</span>
+                    </div>
+
+                    <!-- URL preview (professional) -->
+                    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mb-4 text-center">
+                        <span class="text-xs text-gray-500">Your free, permanent domain</span>
+                        <div class="font-mono text-sm font-medium text-gray-800 dark:text-gray-200 mt-0.5">xroga.com/p/<span id="url-preview" class="text-indigo-600 dark:text-indigo-400">your‑project</span></div>
+                    </div>
+
+                    <!-- Subdomain input (editable only first time) -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Your project name (part of domain)</label>
+                        <div class="flex items-center gap-1">
+                            <input type="text" id="project-slug" placeholder="your‑project" class="flex-1 px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        </div>
+                        <p id="slug-hint" class="text-xs text-gray-400 mt-1 flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Locked after first publish – yours forever</p>
+                    </div>
+
+                    <button id="deploy-action-btn" class="w-full py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all">
+                        <i data-lucide="rocket" class="w-4 h-4"></i> Claim my lifetime gift
+                    </button>
                 </div>
             </div>
         `;
@@ -8120,42 +8117,71 @@ function openDeployModal(code) {
 
     const modalDiv = modal;
     const closeBtn = modalDiv.querySelector('.close-modal');
-    const subdomainInput = modalDiv.querySelector('#subdomain');
-    const deployBtn = modalDiv.querySelector('#deploy-free-btn');
+    const slugInput = modalDiv.querySelector('#project-slug');
+    const deployBtn = modalDiv.querySelector('#deploy-action-btn');
+    const hintEl = modalDiv.querySelector('#slug-hint');
+    const urlPreviewSpan = modalDiv.querySelector('#url-preview');
 
-    // Reset input value each time modal opens
-    subdomainInput.value = '';
+    // Live preview
+    const updatePreview = () => {
+        let val = slugInput.value.trim();
+        if (val === "") val = "your‑project";
+        urlPreviewSpan.textContent = val;
+    };
+    slugInput.addEventListener('input', updatePreview);
+
+    // Check existing deployment
+    let existingSubdomain = null;
+    if (state.deployedSite && state.deployedSite.domain) {
+        const match = state.deployedSite.domain.match(/\/p\/([^\/]+)/);
+        if (match) existingSubdomain = match[1];
+    }
+
+    if (existingSubdomain) {
+        slugInput.value = existingSubdomain;
+        slugInput.disabled = true;
+        slugInput.classList.add('bg-gray-100', 'dark:bg-gray-700', 'cursor-not-allowed');
+        hintEl.innerHTML = '<i data-lucide="lock" class="w-3 h-3"></i> Your permanent domain – locked. You can still update site content.';
+        lucide.createIcons();
+        updatePreview();
+    } else {
+        slugInput.value = '';
+        slugInput.disabled = false;
+        slugInput.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'cursor-not-allowed');
+        hintEl.innerHTML = '<i data-lucide="gift" class="w-3 h-3"></i> One chance to choose – it becomes your lifetime free domain.';
+        lucide.createIcons();
+        updatePreview();
+    }
 
     deployBtn.onclick = async () => {
-        const subdomain = subdomainInput.value.trim();
-        if (!subdomain) {
-            showToast('Please enter a subdomain', 'Error');
+        let projectSlug = slugInput.value.trim();
+        if (slugInput.disabled) projectSlug = existingSubdomain;
+
+        if (!projectSlug) {
+            showToast('Give your project a name', 'Error');
             return;
         }
-        if (!/^[a-z0-9-]{3,30}$/.test(subdomain)) {
-            showToast('Subdomain must be 3-30 lowercase letters, numbers, or hyphens.', 'Error');
+        if (!/^[a-z0-9-]{3,30}$/.test(projectSlug)) {
+            showToast('Use 3‑30 lowercase letters, numbers or hyphens', 'Error');
             return;
         }
 
         deployBtn.disabled = true;
-        deployBtn.innerHTML = '<div class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> Deploying...';
+        deployBtn.innerHTML = '<div class="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent"></div> Activating gift...';
 
         try {
-            // Call free deployment endpoint with subdomain
             const response = await fetch('/api/free-deploy', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code, subdomain })
+                body: JSON.stringify({ code, subdomain: projectSlug })
             });
             const data = await response.json();
 
             if (data.success) {
-                // Close modal with animation
                 const modalContent = modalDiv.querySelector('div');
                 modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => modalDiv.classList.add('hidden'), 300);
+                setTimeout(() => modalDiv.classList.add('hidden'), 150);
 
-                // Save deployment info and show celebration
                 state.deployedSite = {
                     url: data.siteUrl,
                     domain: data.domain,
@@ -8165,27 +8191,25 @@ function openDeployModal(code) {
                 showCelebrationPopup(data.siteUrl, state.deployedSite.domain);
                 createMovableSiteToggle();
             } else {
-                throw new Error(data.message || 'Deployment failed');
+                throw new Error(data.message || 'Gift activation failed');
             }
         } catch (error) {
-            console.error('Deployment error:', error);
-            showToast(error.message || 'Failed to deploy. Please try again.', 'Error');
+            console.error(error);
+            showToast(error.message || 'Something went wrong. Try again.', 'Error');
             deployBtn.disabled = false;
-            deployBtn.innerHTML = '<i data-lucide="rocket" class="w-5 h-5"></i> Deploy for Free';
+            deployBtn.innerHTML = '<i data-lucide="rocket" class="w-4 h-4"></i> Retry';
             lucide.createIcons();
         }
     };
 
-    // Show modal with entry animation
     modalDiv.classList.remove('hidden');
     const modalContent = modalDiv.querySelector('div');
     modalContent.classList.remove('scale-95', 'opacity-0');
     modalContent.classList.add('scale-100', 'opacity-100');
 
-    // Close modal events
     closeBtn.onclick = () => {
         modalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => modalDiv.classList.add('hidden'), 300);
+        setTimeout(() => modalDiv.classList.add('hidden'), 150);
     };
     modalDiv.onclick = (e) => { if (e.target === modalDiv) closeBtn.click(); };
 }
