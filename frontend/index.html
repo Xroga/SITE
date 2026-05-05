@@ -488,7 +488,7 @@
         max-height: 300px;
         overflow-y: auto;
     }
-    #code-chats-list, #general-chats-list {
+    #code-expert-list, #general-chats-list {
         transition: all 0.2s ease;
     }
     .collapsed > .chat-list-container {
@@ -1689,12 +1689,12 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 </div>
                 
               <!-- Code Chats Section (collapsible) -->
-<div id="code-chats-section" class="mb-6">
-    <button id="toggle-code-chats" class="w-full flex items-center justify-between p-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
-        <span><i data-lucide="code-2" class="w-4 h-4 inline mr-2"></i>Code Chats</span>
-        <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="code-chats-chevron"></i>
+<div id="code-expert" class="mb-6">
+    <button id="toggle-code-expert" class="w-full flex items-center justify-between p-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+        <span><i data-lucide="code-2" class="w-4 h-4 inline mr-2"></i>Code expert chat</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="code-expert-chevron"></i>
     </button>
-    <div id="code-chats-list" class="space-y-1 mt-2"></div>
+    <div id="code-expert-list" class="space-y-1 mt-2"></div>
 </div>
 
 <!-- Lightening + Creative Chats Section (collapsible) -->
@@ -3305,7 +3305,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
             chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
     }
 
-      renderChatList('code-chats-list', codeChats, 'code-2', 'text-purple-500');
+      renderChatList('code-expert-list', codeChats, 'code-2', 'text-purple-500');
     renderChatList('lightening-chats-list', lighteningChats, 'zap', 'text-yellow-500');
     renderChatList('deepthought-chats-list', deepthoughtChats, 'brain', 'text-blue-500');
 
@@ -3325,7 +3325,7 @@ function attachChatItemEventListeners() {
     };
     document.addEventListener('click', window._closeDropdownListener);
 
-    const containers = ['code-chats-list', 'lightening-chats-list', 'deepthought-chats-list'];
+    const containers = ['code-expert-list', 'lightening-chats-list', 'deepthought-chats-list'];
 
     containers.forEach(containerId => {
         const container = document.getElementById(containerId);
@@ -3489,7 +3489,6 @@ function addChatToHistory(title, messages = [], type = 'lightening') {
     state.chats.unshift(chat);
     state.currentChatId = chat.id;
     state.selectedChat = chat;
-    state.currentMode = cfg.mode;   // includes 'travel-concierge'
     saveChats();
     loadChatHistory(elements.searchChats?.value || '');
     updateModeReminder();
@@ -3575,10 +3574,17 @@ if (btnIcon && btnName) {
     if (state.currentMode !== 'travel-concierge' && state.currentMode !== 'muslim-islamic') {
         elements.chatMessages.innerHTML = '';
         if (chat.messages && chat.messages.length) {
-            chat.messages.forEach(msg => {
-                if (msg.role === 'user') addUserMessage(msg.content, false);
-                else addAIMessage(msg.content, false);
-            });
+    chat.messages.forEach(msg => {
+        if (msg.role === 'user') {
+            addUserMessage(msg.content, false);
+        } else if (msg.role === 'assistant') {
+            if (msg.type === 'code') {
+                addCodeResponse(msg.content, false);   // ✅ code block
+            } else {
+                addAIMessage(msg.content, false);      // ✅ plain text
+            }
+        }
+    });
         } else {
             elements.chatMessages.innerHTML = `<div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto py-8">
                 <div class="relative mb-6">
@@ -8768,8 +8774,8 @@ function addLoadingMessage(type = 'chat') {
                 <div class="flex items-center gap-3 mb-3">
                     <span class="font-bold text-lg">Xroga AI</span>
                     <span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">
-                        ${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}
-                    </span>
+    ${getModeDisplayName(state.currentMode)}
+</span>
                 </div>
                 <div class="flex justify-center items-center py-6">
                     ${animationHTML}
@@ -8782,6 +8788,18 @@ function addLoadingMessage(type = 'chat') {
     lucide.createIcons();    // render the Lucide icon when used
     scrollToBottom();
     return messageDiv;
+}
+
+function getModeDisplayName(mode) {
+    const names = {
+        'code-expert': 'Code Expert',
+        'lightening': 'Lightning+Creative',
+        'deep-thought': 'Deep Thought',
+        'shop-confidence': 'Shop with Confidence',
+        'travel-concierge': 'Travel Concierge',
+        'muslim-islamic': 'Muslim Islamic'
+    };
+    return names[mode] || 'Xroga AI';
 }
 
 /* ===================== AI MESSAGE ===================== */
@@ -8815,7 +8833,7 @@ function addAIMessage(content, saveToHistory = true) {
                 <div class="flex items-center gap-3 mb-3">
                     <span class="font-bold text-lg">Xroga AI</span>
                     <span class="text-xs px-2 py-1 bg-primary-500/30 rounded-full">
-                        ${state.currentMode === 'lightening' ? 'Lightning+Creative' : 'Deep Thought'}
+                        ${getModeDisplayName(state.currentMode)}
                     </span>
                 </div>
                 <div class="prose dark:prose-invert message-content">${safeHtml}</div>
@@ -9712,7 +9730,7 @@ window.updateModeReminder = updateModeReminder;
 // Automatically expand the correct sidebar section based on current mode
 function expandSectionForMode(mode) {
     const sections = [
-        { mode: 'code-expert', listId: 'code-chats-list', chevronId: 'code-chats-chevron' },
+        { mode: 'code-expert', listId: 'code-expert-list', chevronId: 'code-expert-chevron' },
         { mode: 'lightening', listId: 'lightening-chats-list', chevronId: 'lightening-chats-chevron' },
         { mode: 'deep-thought', listId: 'deepthought-chats-list', chevronId: 'deepthought-chats-chevron' }
     ];
@@ -9828,6 +9846,40 @@ window.xroga = {
     expandSectionForMode: expandSectionForMode
 };
     })();
+    
+    // Code Expert toggle
+const codeToggle = document.getElementById('toggle-code-expert');
+const codeList = document.getElementById('code-expert-list');
+const codeChevron = document.getElementById('code-expert-chevron');
+if (codeToggle && codeList && codeChevron) {
+    codeToggle.addEventListener('click', () => {
+        codeList.classList.toggle('hidden');
+        codeChevron.style.transform = codeList.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)';
+    });
+}
+
+// Lightening toggle
+const lightToggle = document.getElementById('toggle-lightening-chats');
+const lightList = document.getElementById('lightening-chats-list');
+const lightChevron = document.getElementById('lightening-chats-chevron');
+if (lightToggle && lightList && lightChevron) {
+    lightToggle.addEventListener('click', () => {
+        lightList.classList.toggle('hidden');
+        lightChevron.style.transform = lightList.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)';
+    });
+}
+
+// Deep Thought toggle
+const deepToggle = document.getElementById('toggle-deepthought-chats');
+const deepList = document.getElementById('deepthought-chats-list');
+const deepChevron = document.getElementById('deepthought-chats-chevron');
+if (deepToggle && deepList && deepChevron) {
+    deepToggle.addEventListener('click', () => {
+        deepList.classList.toggle('hidden');
+        deepChevron.style.transform = deepList.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0deg)';
+    });
+}
+
     // ==================== ULTIMATE AUTOCOMPLETE + AUTOCORRECT (FIXED) ====================
     (function() {
         // ---------- AUTOCORRECT DICTIONARY (common misspellings) ----------
@@ -11952,3 +12004,5 @@ window.xroga = {
     </script>
   </section>
 </div>
+
+
