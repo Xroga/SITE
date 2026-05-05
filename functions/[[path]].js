@@ -1,4 +1,3 @@
-// frontend/functions/[[path]].js
 // All SEO data embedded directly (no JSON import)
 const seoData = {
   default: {
