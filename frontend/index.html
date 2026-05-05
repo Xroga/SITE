@@ -7745,307 +7745,87 @@ async function callAI(prompt, mode, files = []) {
 }
 
         // ===================== MODERN CODE BLOCK =====================
-        function addCodeResponse(codeContent, saveToHistory = true) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message-enter flex gap-4 max-w-3xl w-full';
-            const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            messageDiv.dataset.messageId = messageId;
 
-            messageDiv.innerHTML = `
-                <div class="flex-shrink-0"><div class="w-10 h-10 rounded-full overflow-hidden shadow-lg"><img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" alt="Xroga AI" class="w-full h-full object-cover"></div></div>
-                <div class="flex-1 min-w-0"><div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg gradient-text">Xroga AI</span><span class="text-xs px-2 py-1 bg-purple-500/30 dark:bg-purple-900/40 rounded-full backdrop-blur-sm">Code Expert</span></div>
-                    <div class="code-block-container w-full overflow-hidden">
-                        <div class="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-xl transition-all">
-                            <div class="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700">
-                                <div class="flex items-center gap-1">
-                                    <div class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
-                                </div>
-                                <div class="flex gap-1.5">
-                                    <button class="code-action copy-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                                    <button class="code-action download-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
-                                    <button class="code-action quick-view p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Live Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    
-                                    
-                                    <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-                                    <button class="deploy-btn inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-sm font-bold shadow-md transition-all transform hover:scale-105">
-                                        <i data-lucide="cloud-upload" class="w-4 h-4"></i> Deploy
-                                        <span class="ml-0.5 text-[10px] bg-yellow-400 text-black px-1.5 py-0.5 rounded-full">PAID</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="code-editor-container w-full overflow-x-auto">
-                                <pre class="code-display p-4 text-sm font-mono whitespace-pre-wrap break-words"><code class="language-javascript">${escapeHtml(codeContent)}</code></pre>
-                                <textarea class="code-edit-area hidden w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none" rows="12">${escapeHtml(codeContent)}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div></div>
-                <div id="travelDashboard" class="hidden flex-1 overflow-y-auto bg-heritage-emerald"></div>
-            `;
-            elements.chatMessages.appendChild(messageDiv);
-            lucide.createIcons();
+// Helper to escape HTML special characters
+function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+    });
+}
 
-            const container = messageDiv.querySelector('.code-block-container');
-            const displayPre = container.querySelector('.code-display');
-            const editArea = container.querySelector('.code-edit-area');
-            let isEditing = false;
-
-            // Copy
-            container.querySelector('.copy-code').onclick = () => {
-                const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
-                navigator.clipboard.writeText(code);
-                showToast('Code copied to clipboard', 'Copied');
-            };
-            // Download
-            container.querySelector('.download-code').onclick = () => {
-                const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
-                const blob = new Blob([code], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `xroga-code-${Date.now()}.js`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast('Code downloaded', 'Download');
-            };
-            // Live Preview (new tab with rendered HTML/CSS/JS)
-            container.querySelector('.quick-view').onclick = () => {
-                const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
-                const win = window.open();
-                win.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head><title>Xroga Live Preview</title><style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;padding:20px;}</style></head>
-                    <body><div style="max-width:1200px;margin:0 auto;">${escapeHtml(code)}</div><script>try{eval(${JSON.stringify(code)})}catch(e){console.error(e)}<\/script></body>
-                    </html>
-                `);
-                win.document.close();
-            };
-            // Edit/Save
-            const editBtn = container.querySelector('.edit-code');
-            editBtn.onclick = () => {
-                if (!isEditing) {
-                    editArea.value = displayPre.querySelector('code').innerText;
-                    displayPre.classList.add('hidden');
-                    editArea.classList.remove('hidden');
-                    editBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i>';
-                    isEditing = true;
-                    lucide.createIcons();
-                } else {
-                    const newCode = editArea.value;
-                    displayPre.querySelector('code').innerText = newCode;
-                    if (window.hljs) hljs.highlightElement(displayPre.querySelector('code'));
-                    displayPre.classList.remove('hidden');
-                    editArea.classList.add('hidden');
-                    editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
-                    isEditing = false;
-                    if (saveToHistory && state.selectedChat) {
-                        const msg = state.selectedChat.messages.find(m => m.messageId === messageId);
-                        if (msg) msg.content = newCode;
-                        saveChats();
-                    }
-                    showToast('Code updated', 'Saved');
-                    lucide.createIcons();
-                }
-            };
-            // Delete
-            container.querySelector('.delete-code').onclick = () => {
-                if (confirm('Delete this code message?')) {
-                    messageDiv.remove();
-                    if (saveToHistory && state.selectedChat) {
-                        state.selectedChat.messages = state.selectedChat.messages.filter(m => m.messageId !== messageId);
-                        saveChats();
-                    }
-                    showToast('Code message deleted', 'Deleted');
-                }
-            };
-            // Deploy
-            container.querySelector('.deploy-btn').onclick = () => {
-                const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
-                openDeployModal(code);
-            };
-
-            if (saveToHistory && state.selectedChat) {
-                if (!state.selectedChat.messages) state.selectedChat.messages = [];
-                state.selectedChat.messages.push({ role: 'assistant', content: codeContent, timestamp: new Date().toISOString(), messageId, type: 'code' });
-                saveChats();
-            }
-            scrollToBottom();
-            if (state.autoSpeak) speakText(codeContent);
-            return messageDiv;
-        }
-// ===================== MOTIVATIONAL QUOTES (Inside Code Block Toolbar) =====================
-const wisdomQuotes = [
-    { text: "“So verily, with hardship comes ease.” – Quran 94:5", icon: "📖" },
-    { text: "“And do good; indeed, Allah loves the doers of good.” – Quran 2:195", icon: "📖" },
-    { text: "“The best among you are those who learn the Qur’an and teach it.” – Bukhari", icon: "🕊️" },
-    { text: "“Seeking knowledge is an obligation upon every Muslim.” – Ibn Majah", icon: "🕊️" },
-    { text: "“The strong believer is better and more beloved to Allah than the weak believer.” – Muslim", icon: "🕊️" },
-    { text: "“Do not waste water even if you are on a flowing river.” – Ibn Majah", icon: "🕊️" },
-    { text: "“The way to get started is to quit talking and begin doing.” – Walt Disney", icon: "💡" },
-    { text: "“Your work is going to fill a large part of your life… do what you believe is great work.” – Steve Jobs", icon: "💡" },
-    { text: "“Don’t be afraid to give up the good to go for the great.” – John D. Rockefeller", icon: "💡" },
-    { text: "“Success is not final, failure is not fatal: it is the courage to continue that counts.” – Churchill", icon: "🏆" },
-    { text: "“The only limit to our realization of tomorrow is our doubts of today.” – FDR", icon: "💡" },
-    { text: "“Focus on being productive instead of busy.” – Tim Ferriss", icon: "🎯" },
-    { text: "“Eliminate distractions and you will achieve more.”", icon: "🧠" },
-    { text: "“Productivity is never an accident. It is always the result of commitment to excellence.”", icon: "⚡" },
-    { text: "“Procrastination is the thief of time.” – Edward Young", icon: "⏰" },
-    { text: "“You may delay, but time will not.” – Benjamin Franklin", icon: "⌛" },
-    { text: "“Time is the most valuable thing a man can spend.” – Theophrastus", icon: "💰" },
-    { text: "“Wealth is the ability to fully experience life.” – Thoreau", icon: "💵" },
-    { text: "“Never depend on a single income. Make investment to create a second source.” – Buffett", icon: "📈" },
-    { text: "“The weak can never forgive. Forgiveness is the attribute of the strong.” – Gandhi", icon: "💪" },
-    { text: "“Strength does not come from physical capacity. It comes from an indomitable will.” – Gandhi", icon: "🦁" },
-    { text: "“Avoid that which requires an apology.” – Islamic saying", icon: "⚠️" },
-    { text: "“Pornography destroys the mind, relationships, and spiritual connection. Guard your gaze.”", icon: "🚫" },
-    { text: "“Every addiction begins with a single careless moment. Protect your soul.”", icon: "🛑" },
-    { text: "“The believer’s shade on the Day of Resurrection will be his charity.” – Hadith", icon: "🤲" },
-    { text: "“Give, and it will be given to you.” – Luke 6:38", icon: "🎁" },
-    { text: "“Palestine is not a cause, it is the heart of the Ummah.”", icon: "🇵🇸" },
-    { text: "“One Ummah, one struggle – our brothers and sisters in Palestine need our du’a and support.”", icon: "🕋" },
-    { text: "“The Muslims are like one body; if one part suffers, the whole body suffers.” – Hadith", icon: "🤝" },
-    { text: "“Unite, for Allah loves those who stand together as one Ummah.”", icon: "🌍" },
-    { text: "“Build an army of Allah through good deeds, charity, and spreading justice.”", icon: "⚔️" },
-    { text: "“Stand up for justice, even if it is against yourselves.” – Quran 4:135", icon: "⚖️" },
-    { text: "“The best among you are those who are best to their women.” – Prophet Muhammad (PBUH)", icon: "👩" },
-    { text: "“A woman’s voice, mind, and rights are to be respected and uplifted.”", icon: "💜" },
-    { text: "✅ Good habit: Write down your goals every morning.", icon: "✅" },
-    { text: "✅ Good habit: Read for 20 minutes before sleeping.", icon: "✅" },
-    { text: "✅ Good habit: Drink a glass of water right after waking up.", icon: "✅" },
-    { text: "✅ Good habit: Exercise for 15 minutes daily.", icon: "✅" },
-    { text: "⚠️ Bad habit: Procrastination steals your future.", icon: "⚠️" },
-    { text: "⚠️ Bad habit: Constant phone checking kills focus.", icon: "⚠️" },
-    { text: "⚠️ Bad habit: Skipping breakfast harms metabolism.", icon: "⚠️" },
-    { text: "⚠️ Bad habit: Backbiting destroys relationships and rewards.", icon: "⚠️" }
-];
-
-// Reveals code character by character with a rotating quote inside the toolbar
-async function revealCodeResponse(fullCode, saveToHistory = true) {
+// ----------------------------------------------------------------------
+// 1) Instant code display (no animation)
+// ----------------------------------------------------------------------
+function addCodeResponse(codeContent, saveToHistory = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'message-enter flex gap-4 max-w-3xl w-full';
     const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     messageDiv.dataset.messageId = messageId;
 
     messageDiv.innerHTML = `
-       <div class="flex-1 min-w-0"><div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center gap-3 mb-3"><span class="font-bold text-lg gradient-text">Xroga AI</span>
-      <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-white/10 dark:bg-white/5 backdrop-blur-md text-gray-700 dark:text-gray-200 font-medium rounded-full border border-white/20 dark:border-white/10 shadow-sm">
-  <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
-  Code Expert
-</span></div>
-            <div class="code-block-container w-full overflow-hidden">
-                <div class="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-xl transition-all">
-                    <div class="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700 flex-wrap gap-2">
-                        <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-                            <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+        <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg">
+                <img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" alt="Xroga AI" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="font-bold text-lg gradient-text">Xroga AI</span>
+                    <span class="text-xs px-2 py-1 bg-purple-500/30 dark:bg-purple-900/40 rounded-full backdrop-blur-sm">Code Expert</span>
+                </div>
+                <div class="code-block-container w-full overflow-hidden">
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-xl transition-all">
+                        <div class="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700 flex-wrap gap-2">
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <button class="code-action copy-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                <button class="code-action download-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                <button class="code-action quick-view p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Live Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                <button class="code-action edit-code p-1.5 rounded-lg transition-all hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                                <button class="code-action ai-edit-drag p-1.5 rounded-lg transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" title="AI Drag & Drop Editor"><i data-lucide="sparkles" class="w-4 h-4"></i></button>
+                                <div class="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                <button class="deploy-btn w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-1 px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-xs sm:text-sm font-bold shadow-md transition-all transform hover:scale-105">
+                                    <i data-lucide="cloud-upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Deploy
+                                </button>
+                                <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
                         </div>
-                        <div id="quote-display-${messageId}" class="quote-in-toolbar">✨ Loading wisdom...</div>
-                        <div class="flex gap-1.5">
-                            <button class="code-action copy-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                            <button class="code-action download-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
-                            <button class="code-action quick-view p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Live Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                            <button>
-<button class="code-action ai-edit-drag p-1.5 rounded-lg transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" title="AI Drag & Drop Editor">
-    <i data-lucide="sparkles" class="w-4 h-4"></i>
-</button>
-
-                                          <!-- Divider - hidden on mobile -->
-  <div class="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
-
-  <!-- Deploy button: full width on mobile forces new line, left aligned, smaller padding and text -->
-  <button class="deploy-btn w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-1 px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-xs sm:text-sm font-bold shadow-md transition-all transform hover:scale-105">
-    <i data-lucide="cloud-upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Deploy
-   
-  </button>
-</div>
-
- <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-  <!-- Delete button -->
-  <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete">
-    <i data-lucide="trash-2" class="w-4 h-4"></i>
-  </button>
-
-
-                    </div>
-
-                    <div class="code-editor-container w-full overflow-x-auto">
-                        <pre class="code-display p-4 text-sm font-mono whitespace-pre-wrap break-words"><code class="language-javascript"></code></pre>
-                        <textarea class="code-edit-area hidden w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none" rows="12"></textarea>
+                        <div class="code-editor-container w-full overflow-x-auto">
+                            <pre class="code-display p-4 text-sm font-mono whitespace-pre-wrap break-words"><code class="language-javascript">${escapeHtml(codeContent)}</code></pre>
+                            <textarea class="code-edit-area hidden w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none" rows="12">${escapeHtml(codeContent)}</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div></div>
+        </div>
     `;
+
     elements.chatMessages.appendChild(messageDiv);
     lucide.createIcons();
     scrollToBottom();
 
-    const codeElement = messageDiv.querySelector('.code-display code');
-    const editArea = messageDiv.querySelector('.code-edit-area');
     const container = messageDiv.querySelector('.code-block-container');
-    const quoteElement = messageDiv.querySelector(`#quote-display-${messageId}`);
-
-    // Start rotating quotes – CONTINUES FOREVER (no clearInterval)
-    let quoteIndex = Math.floor(Math.random() * wisdomQuotes.length);
-    function updateToolbarQuote() {
-        if (!quoteElement) return;
-        const q = wisdomQuotes[quoteIndex];
-        quoteElement.innerHTML = `${q.icon} ${q.text}`;
-        quoteIndex = (quoteIndex + 1) % wisdomQuotes.length;
-    }
-    updateToolbarQuote();
-    const quoteInterval = setInterval(updateToolbarQuote, 4000);
-
-    // Reveal code chunk by chunk
-    let currentIndex = 0;
-    const chunkSize = 5;
-    const delayMs = 3;
-    function addNextChunk() {
-        if (currentIndex < fullCode.length) {
-            const nextChunk = fullCode.slice(currentIndex, currentIndex + chunkSize);
-            codeElement.textContent += nextChunk;
-            editArea.value = codeElement.textContent;
-            currentIndex += chunkSize;
-            setTimeout(addNextChunk, delayMs);
-        } else {
-            // Do NOT clear the quote interval – keep it running forever
-            if (window.hljs) hljs.highlightElement(codeElement);
-            attachCodeBlockEvents(container, messageDiv, fullCode);
-            if (saveToHistory && state.selectedChat) {
-                state.selectedChat.messages.push({
-                    role: 'assistant',
-                    content: fullCode,
-                    timestamp: new Date().toISOString(),
-                    messageId,
-                    type: 'code'
-                });
-                saveChats();
-            }
-            // Optionally, we could store the interval on the messageDiv so it can be cleaned up if the message is deleted
-            messageDiv._quoteInterval = quoteInterval;
-        }
-    }
-    addNextChunk();
-}
-
-// Helper to attach all buttons (copy, download, edit, delete, deploy)
-function attachCodeBlockEvents(container, messageDiv, originalCode) {
     const displayPre = container.querySelector('.code-display');
     const editArea = container.querySelector('.code-edit-area');
     let isEditing = false;
 
+    // Copy
     container.querySelector('.copy-code').onclick = () => {
         const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
         navigator.clipboard.writeText(code);
         showToast('Code copied to clipboard', 'Copied');
     };
+    // Download
     container.querySelector('.download-code').onclick = () => {
         const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
         const blob = new Blob([code], { type: 'text/plain' });
@@ -8057,6 +7837,7 @@ function attachCodeBlockEvents(container, messageDiv, originalCode) {
         URL.revokeObjectURL(url);
         showToast('Code downloaded', 'Download');
     };
+    // Live Preview
     container.querySelector('.quick-view').onclick = () => {
         const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
         const win = window.open();
@@ -8069,17 +7850,278 @@ function attachCodeBlockEvents(container, messageDiv, originalCode) {
         `);
         win.document.close();
     };
+    // Edit / Save
+    const editBtn = container.querySelector('.edit-code');
+    editBtn.onclick = () => {
+        if (!isEditing) {
+            editArea.value = displayPre.querySelector('code').innerText;
+            displayPre.classList.add('hidden');
+            editArea.classList.remove('hidden');
+            editBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i>';
+            isEditing = true;
+            lucide.createIcons();
+        } else {
+            const newCode = editArea.value;
+            displayPre.querySelector('code').innerText = newCode;
+            if (window.hljs) hljs.highlightElement(displayPre.querySelector('code'));
+            displayPre.classList.remove('hidden');
+            editArea.classList.add('hidden');
+            editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+            isEditing = false;
+            if (saveToHistory && state.selectedChat) {
+                const msg = state.selectedChat.messages.find(m => m.messageId === messageId);
+                if (msg) msg.content = newCode;
+                saveChats();
+            }
+            showToast('Code updated', 'Saved');
+            lucide.createIcons();
+        }
+    };
+    // Delete
+    container.querySelector('.delete-code').onclick = () => {
+        if (confirm('Delete this code message?')) {
+            // If this message had a quote interval (from revealCodeResponse), clear it
+            if (messageDiv._quoteInterval) clearInterval(messageDiv._quoteInterval);
+            messageDiv.remove();
+            if (saveToHistory && state.selectedChat) {
+                state.selectedChat.messages = state.selectedChat.messages.filter(m => m.messageId !== messageId);
+                saveChats();
+            }
+            showToast('Code message deleted', 'Deleted');
+        }
+    };
+    // Deploy
+    container.querySelector('.deploy-btn').onclick = () => {
+        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
+        openDeployModal(code);
+    };
+    // AI Drag & Drop Editor
+    container.querySelector('.ai-edit-drag').onclick = () => {
+        const code = container.querySelector('.code-display code').innerText;
+        openCustomVisualEditor(code, messageDiv, container);
+    };
 
- 
+    // Save to chat history if requested
+    if (saveToHistory && state.selectedChat) {
+        if (!state.selectedChat.messages) state.selectedChat.messages = [];
+        state.selectedChat.messages.push({
+            role: 'assistant',
+            content: codeContent,
+            timestamp: new Date().toISOString(),
+            messageId,
+            type: 'code'
+        });
+        saveChats();
+    }
 
-container.querySelector('.ai-edit-drag').onclick = () => {
-    const code = container.querySelector('.code-display code').innerText;
-    openCustomVisualEditor(code, messageDiv, container);
-};
+    if (state.autoSpeak) speakText(codeContent);
+    return messageDiv;
 }
 
+// ----------------------------------------------------------------------
+// 2) Animated code reveal with motivational quotes in the toolbar
+// ----------------------------------------------------------------------
+const wisdomQuotes = [
+    { text: "“So verily, with hardship comes ease.” – Quran 94:5", icon: "📖" },
+    { text: "“And do good; indeed, Allah loves the doers of good.” – Quran 2:195", icon: "📖" },
+    { text: "“The best among you are those who learn the Qur’an and teach it.” – Bukhari", icon: "🕊️" },
+];
 
+async function revealCodeResponse(fullCode, saveToHistory = true) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message-enter flex gap-4 max-w-3xl w-full';
+    const messageId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    messageDiv.dataset.messageId = messageId;
 
+    messageDiv.innerHTML = `
+        <div class="flex-shrink-0">
+            <div class="w-10 h-10 rounded-full overflow-hidden shadow-lg">
+                <img src="https://i.postimg.cc/Sj09h9Gq/Untitled-design-(64).png" alt="Xroga AI" class="w-full h-full object-cover">
+            </div>
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="ai-message p-5 rounded-2xl shadow-lg relative group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="font-bold text-lg gradient-text">Xroga AI</span>
+                    <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 bg-white/10 dark:bg-white/5 backdrop-blur-md text-gray-700 dark:text-gray-200 font-medium rounded-full border border-white/20 dark:border-white/10 shadow-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+                        Code Expert
+                    </span>
+                </div>
+                <div class="code-block-container w-full overflow-hidden">
+                    <div class="relative rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 shadow-xl transition-all">
+                        <div class="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 border-b border-gray-300 dark:border-gray-700 flex-wrap gap-2">
+                            <div class="flex items-center gap-1">
+                                <div class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+                            </div>
+                            <div id="quote-display-${messageId}" class="quote-in-toolbar">✨ Loading wisdom...</div>
+                            <div class="flex gap-1.5">
+                                <button class="code-action copy-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Copy"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                                <button class="code-action download-code p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Download"><i data-lucide="download" class="w-4 h-4"></i></button>
+                                <button class="code-action quick-view p-1.5 rounded-lg transition-all hover:bg-white/60 dark:hover:bg-gray-700/80" title="Live Preview"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                                <button class="code-action edit-code p-1.5 rounded-lg transition-all hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                                <button class="code-action ai-edit-drag p-1.5 rounded-lg transition-all hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" title="AI Drag & Drop Editor"><i data-lucide="sparkles" class="w-4 h-4"></i></button>
+                                <div class="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                                <button class="deploy-btn w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-1 px-2.5 py-1 sm:px-3 sm:py-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg text-white text-xs sm:text-sm font-bold shadow-md transition-all transform hover:scale-105">
+                                    <i data-lucide="cloud-upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Deploy
+                                </button>
+                                <button class="code-action delete-code p-1.5 rounded-lg transition-all hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="code-editor-container w-full overflow-x-auto">
+                            <pre class="code-display p-4 text-sm font-mono whitespace-pre-wrap break-words"><code class="language-javascript"></code></pre>
+                            <textarea class="code-edit-area hidden w-full p-4 font-mono text-sm bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 outline-none" rows="12"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    elements.chatMessages.appendChild(messageDiv);
+    lucide.createIcons();
+    scrollToBottom();
+
+    const codeElement = messageDiv.querySelector('.code-display code');
+    const editArea = messageDiv.querySelector('.code-edit-area');
+    const container = messageDiv.querySelector('.code-block-container');
+    const quoteElement = messageDiv.querySelector(`#quote-display-${messageId}`);
+
+    // Rotating quotes – continues forever, interval stored on messageDiv for cleanup
+    let quoteIndex = Math.floor(Math.random() * wisdomQuotes.length);
+    function updateToolbarQuote() {
+        if (!quoteElement) return;
+        const q = wisdomQuotes[quoteIndex];
+        quoteElement.innerHTML = `${q.icon} ${q.text}`;
+        quoteIndex = (quoteIndex + 1) % wisdomQuotes.length;
+    }
+    updateToolbarQuote();
+    const quoteInterval = setInterval(updateToolbarQuote, 4000);
+    messageDiv._quoteInterval = quoteInterval;
+
+    // Reveal code chunk by chunk
+    let currentIndex = 0;
+    const chunkSize = 5;
+    const delayMs = 3;
+
+    function addNextChunk() {
+        if (currentIndex < fullCode.length) {
+            const nextChunk = fullCode.slice(currentIndex, currentIndex + chunkSize);
+            codeElement.textContent += nextChunk;
+            editArea.value = codeElement.textContent;
+            currentIndex += chunkSize;
+            setTimeout(addNextChunk, delayMs);
+        } else {
+            // Reveal finished – attach all interactive events
+            if (window.hljs) hljs.highlightElement(codeElement);
+            attachCodeBlockEvents(container, messageDiv, fullCode, messageId, saveToHistory);
+            if (saveToHistory && state.selectedChat) {
+                if (!state.selectedChat.messages) state.selectedChat.messages = [];
+                state.selectedChat.messages.push({
+                    role: 'assistant',
+                    content: fullCode,
+                    timestamp: new Date().toISOString(),
+                    messageId,
+                    type: 'code'
+                });
+                saveChats();
+            }
+        }
+    }
+    addNextChunk();
+}
+
+// ----------------------------------------------------------------------
+// Helper to attach all button events (used by both addCodeResponse and revealCodeResponse)
+// ----------------------------------------------------------------------
+function attachCodeBlockEvents(container, messageDiv, originalCode, messageId, saveToHistory = true) {
+    const displayPre = container.querySelector('.code-display');
+    const editArea = container.querySelector('.code-edit-area');
+    let isEditing = false;
+
+    // Copy
+    container.querySelector('.copy-code').onclick = () => {
+        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
+        navigator.clipboard.writeText(code);
+        showToast('Code copied to clipboard', 'Copied');
+    };
+    // Download
+    container.querySelector('.download-code').onclick = () => {
+        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
+        const blob = new Blob([code], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `xroga-code-${Date.now()}.js`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Code downloaded', 'Download');
+    };
+    // Live Preview
+    container.querySelector('.quick-view').onclick = () => {
+        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
+        const win = window.open();
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Xroga Live Preview</title><style>body{background:#0d1117;color:#e6edf3;font-family:sans-serif;padding:20px;}</style></head>
+            <body><div style="max-width:1200px;margin:0 auto;">${escapeHtml(code)}</div><script>try{eval(${JSON.stringify(code)})}catch(e){console.error(e)}<\/script></body>
+            </html>
+        `);
+        win.document.close();
+    };
+    // Edit / Save
+    const editBtn = container.querySelector('.edit-code');
+    editBtn.onclick = () => {
+        if (!isEditing) {
+            editArea.value = displayPre.querySelector('code').innerText;
+            displayPre.classList.add('hidden');
+            editArea.classList.remove('hidden');
+            editBtn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i>';
+            isEditing = true;
+            lucide.createIcons();
+        } else {
+            const newCode = editArea.value;
+            displayPre.querySelector('code').innerText = newCode;
+            if (window.hljs) hljs.highlightElement(displayPre.querySelector('code'));
+            displayPre.classList.remove('hidden');
+            editArea.classList.add('hidden');
+            editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
+            isEditing = false;
+            if (saveToHistory && state.selectedChat) {
+                const msg = state.selectedChat.messages.find(m => m.messageId === messageId);
+                if (msg) msg.content = newCode;
+                saveChats();
+            }
+            showToast('Code updated', 'Saved');
+            lucide.createIcons();
+        }
+    };
+    // Delete
+    container.querySelector('.delete-code').onclick = () => {
+        if (confirm('Delete this code message?')) {
+            if (messageDiv._quoteInterval) clearInterval(messageDiv._quoteInterval);
+            messageDiv.remove();
+            if (saveToHistory && state.selectedChat) {
+                state.selectedChat.messages = state.selectedChat.messages.filter(m => m.messageId !== messageId);
+                saveChats();
+            }
+            showToast('Code message deleted', 'Deleted');
+        }
+    };
+    // Deploy
+    container.querySelector('.deploy-btn').onclick = () => {
+        const code = isEditing ? editArea.value : displayPre.querySelector('code').innerText;
+        openDeployModal(code);
+    };
+    // AI Drag & Drop Editor
+    container.querySelector('.ai-edit-drag').onclick = () => {
+        const code = container.querySelector('.code-display code').innerText;
+        openCustomVisualEditor(code, messageDiv, container);
+    };
+}
         // ===================== DEPLOYMENT MODAL (FREE FOR FIRST 100 USERS) =====================
 // ===================== DEPLOYMENT MODAL (FREE, PATH-BASED URLS) =====================
 function openDeployModal(code) {
@@ -12004,5 +12046,3 @@ if (deepToggle && deepList && deepChevron) {
     </script>
   </section>
 </div>
-
-
