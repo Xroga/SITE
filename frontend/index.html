@@ -12053,5 +12053,89 @@ if (deepToggle && deepList && deepChevron) {
 </div>
 
               
+<div id="modern-banner" style="position: sticky; top: 16px; z-index: 1000; max-width: 95%; width: fit-content; margin: 0 auto; background: rgba(15, 25, 45, 0.75); backdrop-filter: blur(12px); border-radius: 80px; padding: 6px 20px 6px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; box-shadow: 0 8px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15); transition: all 0.3s ease; font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;">
+  
+  <!-- Left side: icon + text -->
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <div style="background: linear-gradient(135deg, #3b82f6, #a855f7); padding: 6px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+      <i data-lucide="zap" style="width: 18px; height: 18px; color: white;"></i>
+    </div>
+    <span style="font-weight: 500; font-size: 0.85rem; color: white; letter-spacing: -0.2px;">
+      🚀 <strong>100 free lifetime websites</strong> → <code style="background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 30px; font-size: 0.75rem;">xroga.com/yourname</code>
+    </span>
+  </div>
 
+  <!-- Right side: button + close icon (Lucide) -->
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <a href="/?feature=code" class="glass-btn" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); border-radius: 60px; padding: 6px 20px; text-decoration: none; color: white; font-weight: 600; font-size: 0.8rem; transition: all 0.25s ease; border: 1px solid rgba(255,255,255,0.2);">
+      <i data-lucide="code-2" style="width: 16px; height: 16px;"></i>
+      Start Building
+      <i data-lucide="arrow-right" style="width: 14px; height: 14px; transition: transform 0.2s;"></i>
+    </a>
+    <button id="closeModernBanner" style="background: transparent; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%; transition: background 0.2s;">
+      <i data-lucide="x" style="width: 16px; height: 16px; color: rgba(255,255,255,0.7);"></i>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Hover effect for the CTA button (modern glassmorphism) */
+  .glass-btn:hover {
+    background: linear-gradient(105deg, #3b82f6, #8b5cf6) !important;
+    border-color: transparent !important;
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px -8px rgba(59,130,246,0.5);
+  }
+  .glass-btn:hover i:last-child {
+    transform: translateX(4px);
+  }
+  /* Close button hover */
+  #closeModernBanner:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  #closeModernBanner:hover i {
+    color: white;
+  }
+  /* Minimal fade animation when removed */
+  .banner-fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+</style>
+
+<script>
+  (function() {
+    // Ensure Lucide is loaded (if not, load it automatically)
+    function loadLucideAndRun() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      } else {
+        // Dynamically load Lucide if not present
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/lucide@latest';
+        script.onload = () => {
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        };
+        document.head.appendChild(script);
+      }
+    }
+
+    const banner = document.getElementById('modern-banner');
+    if (!banner) return;
+    
+    const closeBtn = document.getElementById('closeModernBanner');
+    const removeBanner = () => {
+      banner.classList.add('banner-fade-out');
+      setTimeout(() => {
+        if (banner.parentNode) banner.parentNode.removeChild(banner);
+      }, 300);
+    };
+    
+    if (closeBtn) closeBtn.addEventListener('click', removeBanner);
+    setTimeout(removeBanner, 10000);
+    
+    loadLucideAndRun();
+  })();
+</script>
 
