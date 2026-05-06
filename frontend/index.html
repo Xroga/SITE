@@ -12054,89 +12054,84 @@ if (deepToggle && deepList && deepChevron) {
 
               
 
-  <!-- Paste this code anywhere on your page (before closing </body> is fine) -->
-<div id="xroga-offer-message" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; max-width: 380px; width: calc(100% - 40px); opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none;">
-  <div style="background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.95), rgba(79,70,229,0.95)); backdrop-filter: blur(8px); border-radius: 1.5rem; padding: 1rem 1rem 1rem 1.5rem; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); position: relative; overflow: hidden; pointer-events: auto;">
+<!-- Paste this code anywhere inside <body> (preferably right after the opening <body> tag) -->
+<div id="xroga-announcement" style="position: relative; width: 100%; background: linear-gradient(135deg, #1e3c72, #2a5298, #1e3c72); background-size: 200% 200%; animation: gradientShift 6s ease infinite; color: white; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease; z-index: 1000;">
+  <!-- Shine overlay -->
+  <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transform: skewX(-15deg); animation: shineSweep 8s infinite;"></div>
+  
+  <div style="position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 12px 24px; backdrop-filter: blur(2px);">
+    <!-- Left side: text + badge -->
+    <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <span style="background: rgba(255,255,255,0.2); border-radius: 40px; padding: 4px 12px; font-size: 0.75rem; font-weight: 600;">✨ LIMITED</span>
+      <span style="font-size: 0.9rem; font-weight: 500;">🚀 <strong>100 users</strong> get <strong>free lifetime hosting</strong> → <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 12px;">xroga.com/your-username</code> · No credit card · No trial</span>
+    </div>
     
-    <!-- Shine effect overlay -->
-    <div style="position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); animation: xrogaShine 6s infinite;"></div>
-    
-    <!-- Content -->
-    <div style="position: relative; z-index: 2;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
-        <div style="flex: 1;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span style="font-size: 1.2rem;">✨</span>
-            <span style="font-weight: 800; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); letter-spacing: -0.3px;">Xroga Code Expert</span>
-          </div>
-          <p style="color: rgba(255,255,255,0.95); font-size: 0.85rem; margin: 6px 0 8px 0; line-height: 1.4;">
-            🚀 <strong>100 users</strong> get <strong>free website hosting forever</strong>!<br>
-            Build portfolio, landing pages, any site → 
-            <code style="background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 12px; font-size: 0.75rem;">xroga.com/your-username</code>
-            <br>✅ No credit card · No trial · Lifetime.
-          </p>
-          
-          <!-- Your website button + close button inline -->
-          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;">
-            <a href="/?feature=code" class="group inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium 
-              bg-white dark:bg-gray-900 text-black dark:text-white 
-              border border-black dark:border-white shadow-sm
-              hover:text-white hover:border-transparent hover:shadow-blue-400/30 hover:shadow-lg
-              hover:bg-gradient-to-r hover:from-blue-600 hover:via-blue-500 hover:to-indigo-600 
-              hover:scale-105 transition-all duration-300 ease-out" style="text-decoration: none;">
-              <i data-lucide="code-2" class="w-3 h-3 transition-transform group-hover:rotate-12"></i>
-              Start Building
-            </a>
-            <button id="xroga-close-offer" style="background: rgba(0,0,0,0.3); border: none; color: white; font-size: 1rem; cursor: pointer; width: 28px; height: 28px; border-radius: 40px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s ease;">✕</button>
-          </div>
-        </div>
-      </div>
+    <!-- Right side: button + close button -->
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <a href="/?feature=code" class="group" style="display: inline-flex; align-items: center; gap: 6px; background: white; color: #1e3c72; padding: 6px 16px; border-radius: 40px; font-size: 0.8rem; font-weight: 600; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.2s ease; border: none;">
+        <i data-lucide="code-2" style="width: 16px; height: 16px;"></i>
+        <span>Start Building</span>
+      </a>
+      <button id="closeAnnouncement" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; transition: all 0.2s;">✕</button>
     </div>
   </div>
 </div>
 
 <style>
-@keyframes xrogaShine {
-  0% { left: -100%; }
-  20% { left: 120%; }
-  100% { left: 120%; }
-}
-/* Simple fade-in animation for the message */
-.xroga-message-show {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes shineSweep {
+    0% { left: -100%; }
+    20% { left: 120%; }
+    100% { left: 120%; }
+  }
+  /* Button hover effect (modern) */
+  .group:hover {
+    transform: scale(1.03);
+    background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+    color: white !important;
+    box-shadow: 0 8px 20px -5px rgba(37,99,235,0.4) !important;
+  }
+  .group:hover i {
+    transform: rotate(12deg);
+  }
+  /* Fade out animation when closed */
+  .announcement-hide {
+    opacity: 0;
+    transform: translateY(-100%);
+    position: absolute;
+    pointer-events: none;
+  }
 </style>
 
 <script>
-(function() {
-  const messageDiv = document.getElementById('xroga-offer-message');
-  if (!messageDiv) return;
-
-  // Show with animation
-  messageDiv.classList.add('xroga-message-show');
-
-  // Close function
-  const closeBtn = document.getElementById('xroga-close-offer');
-  const removeMessage = () => {
-    if (messageDiv) {
-      messageDiv.style.opacity = '0';
-      messageDiv.style.transform = 'translateY(20px)';
+  (function() {
+    const banner = document.getElementById('xroga-announcement');
+    const closeBtn = document.getElementById('closeAnnouncement');
+    if (!banner) return;
+    
+    function removeBanner() {
+      if (!banner) return;
+      banner.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(-100%)';
       setTimeout(() => {
-        if (messageDiv.parentNode) messageDiv.parentNode.removeChild(messageDiv);
+        if (banner.parentNode) banner.parentNode.removeChild(banner);
       }, 400);
     }
-  };
-
-  // Manual close
-  if (closeBtn) closeBtn.addEventListener('click', removeMessage);
-
-  // Auto erase after 10 seconds
-  setTimeout(removeMessage, 10000);
-
-  // If Lucide icons are used globally, replace icons inside the message (optional)
-  if (typeof lucide !== 'undefined' && lucide.createIcons) {
-    lucide.createIcons();
-  }
-})();
-</script>            
+    
+    // Close on button click
+    if (closeBtn) closeBtn.addEventListener('click', removeBanner);
+    
+    // Auto‑remove after 10 seconds
+    setTimeout(removeBanner, 10000);
+    
+    // If Lucide is available, render icons
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+      lucide.createIcons();
+    }
+  })();
+</script>
