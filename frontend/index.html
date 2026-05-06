@@ -2088,6 +2088,156 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     Ready to build, &amp; create
   </h1>
 
+<!-- Sticky announcement with timed show/hide sequence -->
+<div id="timed-banner-wrapper" style="position: sticky; top: 16px; z-index: 1000; display: flex; flex-direction: column; align-items: center; width: 100%; pointer-events: none;">
+  
+  <!-- Two badges attached above the banner -->
+  <div id="banner-badges" style="pointer-events: auto; display: flex; gap: 8px; margin-bottom: 6px; z-index: 2; flex-wrap: wrap; justify-content: center;">
+    <!-- Beta badge -->
+    <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 60px; padding: 2px 14px 2px 10px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid rgba(139,92,246,0.5); backdrop-filter: blur(4px);">
+      <i data-lucide="flask-conical" style="width: 12px; height: 12px; color: #c084fc;"></i>
+      <span style="font-size: 0.65rem; font-weight: 600; color: #cbd5e1;">Code Expert Beta</span>
+    </div>
+    <!-- Subdomain + Hosting badge -->
+    <div style="background: linear-gradient(135deg, #0f2b3d, #1a4a6f); border-radius: 60px; padding: 2px 14px 2px 10px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); border: 1px solid rgba(59,130,246,0.5); backdrop-filter: blur(4px);">
+      <i data-lucide="globe" style="width: 12px; height: 12px; color: #3b82f6;"></i>
+      <span style="font-size: 0.65rem; font-weight: 500; color: #bfdbfe;"><code style="background: rgba(0,0,0,0.3); padding: 1px 4px; border-radius: 20px; font-size: 0.6rem;">xroga.com/yourname</code> + Hosting</span>
+    </div>
+  </div>
+
+  <!-- Main banner (will be shown/hidden automatically) -->
+  <div id="timed-banner" style="pointer-events: auto; background: rgba(15, 25, 45, 0.85); backdrop-filter: blur(12px); border-radius: 60px; padding: 6px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 6px 14px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1); font-family: system-ui, 'Inter', sans-serif;">
+    
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div style="background: linear-gradient(135deg, #3b82f6, #a855f7); padding: 4px; border-radius: 50%;">
+        <i data-lucide="users" style="width: 14px; height: 14px; color: white;"></i>
+      </div>
+      <span style="font-size: 0.75rem; font-weight: 500; color: white;">
+        🎉 <strong>First 100 users</strong> → <strong>1 free website</strong> · Lifetime Access
+      </span>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <a href="/?feature=code" class="banner-cta" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border-radius: 60px; padding: 4px 16px; text-decoration: none; color: white; font-weight: 500; font-size: 0.7rem; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.2);">
+        <i data-lucide="code-2" style="width: 12px; height: 12px;"></i> Build
+      </a>
+      <button id="closeTimedBanner" style="background: transparent; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%;">
+        <i data-lucide="x" style="width: 14px; height: 14px; color: rgba(255,255,255,0.6);"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .banner-cta:hover {
+    background: linear-gradient(105deg, #3b82f6, #8b5cf6) !important;
+    border-color: transparent !important;
+    transform: scale(1.02);
+  }
+  #closeTimedBanner:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  #closeTimedBanner:hover i {
+    color: white;
+  }
+  .hidden-banner {
+    display: none !important;
+  }
+</style>
+
+<script>
+  (function() {
+    // Ensure Lucide icons
+    function ensureLucide() {
+      if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+      } else {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/lucide@latest';
+        script.onload = () => { if (typeof lucide !== 'undefined') lucide.createIcons(); };
+        document.head.appendChild(script);
+      }
+    }
+    
+    const wrapper = document.getElementById('timed-banner-wrapper');
+    const banner = document.getElementById('timed-banner');
+    const closeBtn = document.getElementById('closeTimedBanner');
+    
+    if (!wrapper || !banner) return;
+    
+    let activeTimers = [];
+    let isUserClosed = false;
+    
+    // Sequence of intervals (in seconds) between shows AFTER the banner hides
+    // First hide after 20s, then wait 1min, 5min, 15min, then every hour (3600s)
+    const intervals = [60, 300, 900, 3600]; // seconds
+    let intervalIndex = 0;
+    
+    // Helper to clear all timers
+    function clearAllTimers() {
+      activeTimers.forEach(timer => clearTimeout(timer));
+      activeTimers = [];
+    }
+    
+    // Show the banner (remove hidden class)
+    function showBanner() {
+      if (isUserClosed) return;
+      wrapper.classList.remove('hidden-banner');
+      // After showing, schedule hide after 20 seconds
+      const hideTimer = setTimeout(() => {
+        if (!isUserClosed) {
+          wrapper.classList.add('hidden-banner');
+          // Schedule next show based on current interval
+          scheduleNextShow();
+        }
+      }, 20000); // 20 seconds
+      activeTimers.push(hideTimer);
+    }
+    
+    // Schedule next show after the current interval
+    function scheduleNextShow() {
+      if (isUserClosed) return;
+      let delay = intervals[intervalIndex];
+      if (delay === undefined) {
+        // After last interval (1 hour), repeat the last interval indefinitely
+        delay = intervals[intervals.length - 1];
+      } else {
+        intervalIndex++;
+      }
+      const showTimer = setTimeout(() => {
+        if (!isUserClosed) {
+          showBanner();
+        }
+      }, delay * 1000);
+      activeTimers.push(showTimer);
+    }
+    
+    // User manually closed: clear timers, hide permanently, and stop further shows
+    function permanentClose() {
+      isUserClosed = true;
+      clearAllTimers();
+      wrapper.classList.add('hidden-banner');
+    }
+    
+    // Initialize: banner visible, then hide after 20s, then start sequence
+    wrapper.classList.remove('hidden-banner');
+    // First hide after 20 seconds
+    const firstHideTimer = setTimeout(() => {
+      if (!isUserClosed) {
+        wrapper.classList.add('hidden-banner');
+        scheduleNextShow(); // start the interval cycle
+      }
+    }, 20000);
+    activeTimers.push(firstHideTimer);
+    
+    // Attach manual close
+    if (closeBtn) {
+      closeBtn.addEventListener('click', permanentClose);
+    }
+    
+    ensureLucide();
+  })();
+</script>
   <!-- Chips – even tinier, seamless gap -->
   <div class="flex flex-wrap justify-center gap-1.5 mt-2 mb-2">
     <a href="/?feature=ai" class="group inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium 
@@ -2378,6 +2528,8 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 
 </div>
 
+
+
                <!-- Typing Indicator -->
 <div id="typing-indicator" class="hidden absolute bottom-32 left-4 md:left-6">
     <div class="flex items-center gap-4">
@@ -2392,7 +2544,8 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     </div>
 </div>
 </div>
-            
+
+          
 <!-- XROGA AI · CHAT BAR v66 — Full theme support for all elements -->
 <style>
   /* ----- SCOPED ROOT – minimal footprint ----- */
@@ -12051,91 +12204,3 @@ if (deepToggle && deepList && deepChevron) {
     </script>
   </section>
 </div>
-
-              
-<div id="modern-banner" style="position: sticky; top: 16px; z-index: 1000; max-width: 95%; width: fit-content; margin: 0 auto; background: rgba(15, 25, 45, 0.75); backdrop-filter: blur(12px); border-radius: 80px; padding: 6px 20px 6px 24px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; box-shadow: 0 8px 20px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.15); transition: all 0.3s ease; font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;">
-  
-  <!-- Left side: icon + text -->
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <div style="background: linear-gradient(135deg, #3b82f6, #a855f7); padding: 6px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-      <i data-lucide="zap" style="width: 18px; height: 18px; color: white;"></i>
-    </div>
-    <span style="font-weight: 500; font-size: 0.85rem; color: white; letter-spacing: -0.2px;">
-      🚀 <strong>100 free lifetime websites</strong> → <code style="background: rgba(255,255,255,0.15); padding: 4px 8px; border-radius: 30px; font-size: 0.75rem;">xroga.com/yourname</code>
-    </span>
-  </div>
-
-  <!-- Right side: button + close icon (Lucide) -->
-  <div style="display: flex; align-items: center; gap: 12px;">
-    <a href="/?feature=code" class="glass-btn" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); backdrop-filter: blur(4px); border-radius: 60px; padding: 6px 20px; text-decoration: none; color: white; font-weight: 600; font-size: 0.8rem; transition: all 0.25s ease; border: 1px solid rgba(255,255,255,0.2);">
-      <i data-lucide="code-2" style="width: 16px; height: 16px;"></i>
-      Start Building
-      <i data-lucide="arrow-right" style="width: 14px; height: 14px; transition: transform 0.2s;"></i>
-    </a>
-    <button id="closeModernBanner" style="background: transparent; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%; transition: background 0.2s;">
-      <i data-lucide="x" style="width: 16px; height: 16px; color: rgba(255,255,255,0.7);"></i>
-    </button>
-  </div>
-</div>
-
-<style>
-  /* Hover effect for the CTA button (modern glassmorphism) */
-  .glass-btn:hover {
-    background: linear-gradient(105deg, #3b82f6, #8b5cf6) !important;
-    border-color: transparent !important;
-    transform: scale(1.03);
-    box-shadow: 0 8px 20px -8px rgba(59,130,246,0.5);
-  }
-  .glass-btn:hover i:last-child {
-    transform: translateX(4px);
-  }
-  /* Close button hover */
-  #closeModernBanner:hover {
-    background: rgba(255,255,255,0.2);
-  }
-  #closeModernBanner:hover i {
-    color: white;
-  }
-  /* Minimal fade animation when removed */
-  .banner-fade-out {
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-</style>
-
-<script>
-  (function() {
-    // Ensure Lucide is loaded (if not, load it automatically)
-    function loadLucideAndRun() {
-      if (typeof lucide !== 'undefined' && lucide.createIcons) {
-        lucide.createIcons();
-      } else {
-        // Dynamically load Lucide if not present
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/lucide@latest';
-        script.onload = () => {
-          if (typeof lucide !== 'undefined') lucide.createIcons();
-        };
-        document.head.appendChild(script);
-      }
-    }
-
-    const banner = document.getElementById('modern-banner');
-    if (!banner) return;
-    
-    const closeBtn = document.getElementById('closeModernBanner');
-    const removeBanner = () => {
-      banner.classList.add('banner-fade-out');
-      setTimeout(() => {
-        if (banner.parentNode) banner.parentNode.removeChild(banner);
-      }, 300);
-    };
-    
-    if (closeBtn) closeBtn.addEventListener('click', removeBanner);
-    setTimeout(removeBanner, 10000);
-    
-    loadLucideAndRun();
-  })();
-</script>
-
