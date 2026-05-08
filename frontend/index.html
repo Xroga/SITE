@@ -2056,14 +2056,12 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     Ready to build, &amp; create
   </h1>
 
-<!-- Sticky banner – compact, modern, timed -->
+<!-- Sticky banner – compact, modern, timed, with sparkles button -->
 <div id="timed-banner-wrapper" style="position: sticky; top: 12px; z-index: 1000; display: flex; flex-direction: column; align-items: center; width: 100%; pointer-events: none;">
   
-  <!-- Hidden theme toggle IDs -->
   <div id="theme-toggle" style="display: none;"></div>
   <div id="mobile-theme-toggle" style="display: none;"></div>
 
-  <!-- Badge (optional, kept but mini) -->
   <div id="banner-badges" style="pointer-events: auto; display: flex; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; justify-content: center;">
     <div class="badge hosting-badge">
       <code class="code-chip">xroga.com/yourname</code>
@@ -2071,15 +2069,29 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     </div>
   </div>
 
-  <!-- Main banner – slim, modern -->
   <div id="timed-banner" class="main-banner">
     <span class="banner-text">🎉 <strong>First 100 users</strong> → <strong>1 free site</strong> · Lifetime</span>
-    <a href="/?feature=code" class="cta-modern">Build →</a>
+    
+    <!-- Fixed button: only data-model-id, no href, no id -->
+    <div class="bottom-chip" data-model-id="code-expert">
+      <i data-lucide="sparkles" class="ai-icon"></i>
+      <span>Generate</span>
+      
+      <!-- Animated gradient bubbles -->
+      <div class="bubble-layer bubble-1"></div>
+      <div class="bubble-layer bubble-2"></div>
+      <div class="bubble-layer bubble-3"></div>
+      <div class="bubble-layer bubble-4"></div>
+      <div class="bubble-layer bubble-5"></div>
+      <div class="bubble-layer bubble-6"></div>
+      <div class="bubble-layer bubble-7"></div>
+    </div>
   </div>
 </div>
 
+<script src="https://unpkg.com/lucide@latest"></script>
+
 <style>
-  /* Light / dark theme variables – minimal */
   :root {
     --bg-badge: rgba(255,255,255,0.4);
     --badge-border: 1px solid rgba(59,130,246,0.2);
@@ -2087,10 +2099,8 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     --text-banner: #0f172a;
     --shadow: 0 2px 8px rgba(0,0,0,0.04);
     --plus-text: #1e3a8a;
-    --btn-text: #2563eb;
-    --btn-border: 1px solid #2563eb;
-    --btn-hover-bg: #2563eb;
-    --btn-hover-text: white;
+    --chip-bg: rgba(0,0,0,0.05);
+    --chip-text: #2563eb;
   }
   body.dark, html.dark {
     --bg-badge: rgba(30,41,59,0.6);
@@ -2099,10 +2109,8 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     --text-banner: #e2e8f0;
     --shadow: 0 2px 8px rgba(0,0,0,0.2);
     --plus-text: #bfdbfe;
-    --btn-text: #60a5fa;
-    --btn-border: 1px solid #60a5fa;
-    --btn-hover-bg: #60a5fa;
-    --btn-hover-text: #0f172a;
+    --chip-bg: rgba(255,255,255,0.08);
+    --chip-text: #60a5fa;
   }
 
   .hosting-badge {
@@ -2131,7 +2139,6 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     font-size: 0.65rem;
   }
 
-  /* Main banner – slim, pill shape */
   .main-banner {
     pointer-events: auto;
     background: var(--bg-banner);
@@ -2163,34 +2170,92 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     }
   }
 
-  /* Modern Build button – outline style with subtle hover */
-  .cta-modern {
+  /* ========= GRADIENT ANIMATED BUBBLE BUTTON (applied directly to .bottom-chip) ========= */
+  .bottom-chip {
+    position: relative;                /* needed for bubble layers and ::before */
+    padding: 5px 18px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;                     /* text always white on bubbles */
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    overflow: hidden;                 /* keep bubbles inside */
     background: transparent;
-    border: var(--btn-border);
-    border-radius: 40px;
-    padding: 4px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+    transition: transform 0.2s ease;
     text-decoration: none;
-    color: var(--btn-text);
-    font-size: 0.7rem;
-    font-weight: 550;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(4px);
-    letter-spacing: -0.1px;
     white-space: nowrap;
   }
-  .cta-modern:hover {
-    background: var(--btn-hover-bg);
-    color: var(--btn-hover-text);
-    transform: scale(1.02);
-    box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+  .bottom-chip span,
+  .bottom-chip i {
+    position: relative;
+    z-index: 15;
   }
+  .bottom-chip i {
+    width: 16px;
+    height: 16px;
+    color: white;
+  }
+  .bottom-chip:active {
+    transform: scale(0.96);
+  }
+  /* Dark overlay that appears on hover (makes bubbles pop) */
+  .bottom-chip::before {
+    content: "";
+    background: rgb(0 0 0);
+    border-radius: inherit;
+    height: calc(100% - 4px);
+    width: calc(100% - 4px);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    z-index: 12;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.5s ease;
+  }
+  .bottom-chip:hover::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+  /* Bubble layers (same as before) */
+  .bubble-layer {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    filter: blur(10px);
+    z-index: 0;
+  }
+  .bubble-1 { background: #ff007f; top: -20%; left: -10%; animation: moveUpRight 6s ease-in-out infinite; }
+  .bubble-2 { background: #ff6a00; top: 0%; left: 10%; animation: moveDownLeft 5s ease-in-out infinite; animation-delay: 1s; }
+  .bubble-3 { background: #ffcc00; top: 20%; left: 50%; animation: moveRight 4s ease-in-out infinite; animation-delay: 2s; }
+  .bubble-4 { background: #00fff0; top: -20%; left: 70%; animation: moveUpLeft 7s ease-in-out infinite; animation-delay: 3s; }
+  .bubble-5 { background: #9d00ff; top: 30%; left: -10%; animation: moveDownRight 3s ease-in-out infinite; animation-delay: 4s; }
+  .bubble-6 { background: #ff007f; top: -10%; left: 30%; animation: moveLeft 8s ease-in-out infinite; animation-delay: 0.5s; }
+  .bubble-7 { background: #ff6a00; top: 40%; left: 60%; animation: moveUp 6s ease-in-out infinite; animation-delay: 1.5s; }
+
+  /* Keyframes – unchanged */
+  @keyframes moveUpRight { 0% { transform: translate(0, 0); } 25% { transform: translate(100%, -100%); } 50% { transform: translate(-50%, 50%); } 75% { transform: translate(50%, -50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveDownLeft { 0% { transform: translate(0, 0); } 25% { transform: translate(-100%, 100%); } 50% { transform: translate(50%, -50%); } 75% { transform: translate(-50%, 50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveRight { 0% { transform: translate(0, 0); } 25% { transform: translate(100%, 0); } 50% { transform: translate(-100%, 50%); } 75% { transform: translate(50%, -50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveUpLeft { 0% { transform: translate(0, 0); } 25% { transform: translate(-100%, -100%); } 50% { transform: translate(50%, 50%); } 75% { transform: translate(-50%, -50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveDownRight { 0% { transform: translate(0, 0); } 25% { transform: translate(100%, 100%); } 50% { transform: translate(-50%, -50%); } 75% { transform: translate(50%, 50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveLeft { 0% { transform: translate(0, 0); } 25% { transform: translate(-100%, 0); } 50% { transform: translate(100%, -50%); } 75% { transform: translate(-50%, 50%); } 100% { transform: translate(0, 0); } }
+  @keyframes moveUp { 0% { transform: translate(0, 0); } 25% { transform: translate(0, -100%); } 50% { transform: translate(50%, 50%); } 75% { transform: translate(-50%, -50%); } 100% { transform: translate(0, 0); } }
 
   .hidden-banner {
     display: none !important;
   }
-</style>
+</style> 
 
 <script>
+  lucide.createIcons();
+
   (function() {
     const wrapper = document.getElementById('timed-banner-wrapper');
     if (!wrapper) return;
@@ -2213,7 +2278,6 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     function permClose() { closed = true; clear(); wrapper.classList.add('hidden-banner'); }
     wrapper.classList.remove('hidden-banner');
     timers.push(setTimeout(() => { if (!closed) { wrapper.classList.add('hidden-banner'); next(); } }, 20000));
-    // No close button – only timed
   })();
 </script>
 
