@@ -1636,6 +1636,20 @@
   .modern-welcome-new .chip { padding: 0.15rem 0.7rem; }
   .modern-welcome-new .live-status { margin-top: 0.3rem; }
 }</style>
+
+<style>/* Make sidebar fixed (stays in place while scrolling) and prevent overflow */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 18rem; /* 72 = 18rem */
+    overflow-y: auto;
+    z-index: 50;
+    transition: transform 0.3s ease-in-out;
+}
+
+</style>
 </head>
 <body 
 
@@ -3355,6 +3369,28 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
             localStorage.setItem('currentMode', 'code-expert');
         }
 
+// ===================== GLOBAL REFS FROM SUPABASE SCRIPT =====================
+
+let supabaseReady = false;
+let supabaseSaveChatMessage = window.saveChatMessage || (() => {});
+let supabaseSaveWebsite = window.saveWebsiteToCloud || (() => {});
+let supabaseWorkerUrl = window.WORKER_URL || '';
+let supabaseClient = window.supabase || null;
+
+// Wait for Supabase script to initialize (it runs first because it's in the head)
+setTimeout(() => {
+    if (window.saveChatMessage) supabaseSaveChatMessage = window.saveChatMessage;
+    if (window.saveWebsiteToCloud) supabaseSaveWebsite = window.saveWebsiteToCloud;
+    if (window.currentUser !== undefined) {
+        // We'll use the global currentUser from the first script
+        Object.defineProperty(window, 'currentUser', {
+            get() { return window._currentUser; },
+            set(v) { window._currentUser = v; }
+        });
+    }
+    supabaseReady = true;
+}, 100);
+
         // ===================== DOM ELEMENTS =====================
         const elements = {
             themeToggle: document.getElementById('theme-toggle'),
@@ -3437,6 +3473,10 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
                 return m;
             });
         }
+        
+        function clearChatUI() {
+    if (elements.chatMessages) elements.chatMessages.innerHTML = '';
+}
 
 // ===================== SIDEBAR & CHAT LIST RENDERING =====================
     function renderChatList(containerId, chats, iconName, colorClass) {
@@ -8051,9 +8091,8 @@ function addCodeResponse(codeContent, saveToHistory = true) {
         `);
         win.document.close();
     };
-    // Edit / Save
-    const editBtn = container.querySelector('.edit-code');
-    editBtn.onclick = () => {
+     const editBtn = container.querySelector('.edit-code');
+    editBtn.onclick = async () => {
         if (!isEditing) {
             editArea.value = displayPre.querySelector('code').innerText;
             displayPre.classList.add('hidden');
@@ -8069,26 +8108,30 @@ function addCodeResponse(codeContent, saveToHistory = true) {
             editArea.classList.add('hidden');
             editBtn.innerHTML = '<i data-lucide="pencil" class="w-4 h-4"></i>';
             isEditing = false;
-            if (saveToHistory && state.selectedChat) {
-                const msg = state.selectedChat.messages.find(m => m.messageId === messageId);
-                if (msg) msg.content = newCode;
-                saveChats();
+
+            // ✅ Update in Supabase (no local storage)
+            if (window.currentUser && window.updateChatMessage) {
+                await window.updateChatMessage(messageId, newCode);
+                showToast('Code updated (saved to cloud)');
+            } else {
+                showToast('You must be signed in to edit code', 'Error');
             }
-            showToast('Code updated', 'Saved');
             lucide.createIcons();
         }
     };
-    // Delete
-    container.querySelector('.delete-code').onclick = () => {
+
+    // ✅ DELETE (REPLACE this whole delete-code onclick)
+    container.querySelector('.delete-code').onclick = async () => {
         if (confirm('Delete this code message?')) {
-            // If this message had a quote interval (from revealCodeResponse), clear it
             if (messageDiv._quoteInterval) clearInterval(messageDiv._quoteInterval);
             messageDiv.remove();
-            if (saveToHistory && state.selectedChat) {
-                state.selectedChat.messages = state.selectedChat.messages.filter(m => m.messageId !== messageId);
-                saveChats();
+            // ✅ Delete from Supabase
+            if (window.currentUser && window.deleteChatMessage) {
+                await window.deleteChatMessage(messageId);
+                showToast('Code message deleted from cloud', 'Deleted');
+            } else {
+                showToast('You must be signed in to delete messages', 'Error');
             }
-            showToast('Code message deleted', 'Deleted');
         }
     };
     // Deploy
@@ -8102,17 +8145,9 @@ function addCodeResponse(codeContent, saveToHistory = true) {
         openCustomVisualEditor(code, messageDiv, container);
     };
 
-    // Save to chat history if requested
-    if (saveToHistory && state.selectedChat) {
-        if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({
-            role: 'assistant',
-            content: codeContent,
-            timestamp: new Date().toISOString(),
-            messageId,
-            type: 'code'
-        });
-        saveChats();
+    // ✅ Save to Supabase (if user is signed in)
+    if (saveToHistory && window.currentUser && window.saveChatMessage) {
+        window.saveChatMessage('assistant', codeContent, messageId, 'code');
     }
 
     if (state.autoSpeak) speakText(codeContent);
@@ -8323,6 +8358,8 @@ function attachCodeBlockEvents(container, messageDiv, originalCode, messageId, s
         openCustomVisualEditor(code, messageDiv, container);
     };
 }
+
+
         // ===================== DEPLOYMENT MODAL (FREE FOR FIRST 100 USERS) =====================
 // ===================== DEPLOYMENT MODAL (FREE, PATH-BASED URLS) =====================
 function openDeployModal(code) {
@@ -8721,9 +8758,11 @@ function showToast(msg, title = 'Info', type = 'info') {  // type can be 'info',
 }
 
 
+
+
         // ===================== ORIGINAL FUNCTIONS (keep for non-code modes) =====================
-/* ===================== USER MESSAGE ===================== */
 function addUserMessage(content, saveToHistory = true) {
+    // Special handling for travel mode (kept from your original)
     if (state.currentMode === 'travel-concierge') {
         if (saveToHistory && state.selectedChat) {
             if (!state.selectedChat.messages) state.selectedChat.messages = [];
@@ -8767,16 +8806,15 @@ function addUserMessage(content, saveToHistory = true) {
         navigator.clipboard.writeText(content);
         showToast('Copied!');
     };
-    if (saveToHistory && state.selectedChat) {
-        if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({
-            role: 'user', content,
-            timestamp: new Date().toISOString(),
-            messageId
-        });
-        saveChats();
-    }
+
+
     scrollToBottom();
+
+    // ✅ Save to Supabase (using correct global names)
+    if (saveToHistory && window.currentUser && window.saveChatMessage) {
+        window.saveChatMessage('user', content, messageId, 'text');
+    }
+
     return messageDiv;
 }
 
@@ -8908,16 +8946,10 @@ function displayImageResult(imageUrl, prompt, isPlaceholder = false) {
         window.open(`https://www.printful.com/custom?image=${encodeURIComponent(imageUrl)}`, '_blank');
     };
 
-    // Save to history
-    if (state.selectedChat) {
-        if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({
-            role: 'assistant',
-            content: `![Generated Image](${imageUrl})`,
-            timestamp: new Date().toISOString(),
-            messageId
-        });
-        saveChats();
+    // ✅ Save to Supabase (if user is signed in)
+    if (window.currentUser && window.saveChatMessage) {
+        const imageMessageId = 'img-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        window.saveChatMessage('assistant', imageUrl, imageMessageId, 'image');
     }
     scrollToBottom();
 }
@@ -8993,6 +9025,7 @@ function openImagePopup(imageUrl) {
         if (e.target === overlay) overlay.remove();
     });
 }
+
 
 /* ===================== LOADING MESSAGE ===================== */
 function addLoadingMessage(type = 'chat') {
@@ -9098,15 +9131,13 @@ function addAIMessage(content, saveToHistory = true) {
     messageDiv.querySelector('.regenerate-btn').onclick = () => regenerateAIMessage(messageDiv);
     messageDiv.querySelector('.speak-btn').onclick = () => speakText(content);
     messageDiv.querySelector('.edit-btn').onclick = () => startEditing(messageDiv, false, content);
-    if (saveToHistory && state.selectedChat) {
-        if (!state.selectedChat.messages) state.selectedChat.messages = [];
-        state.selectedChat.messages.push({
-            role: 'assistant', content,
-            timestamp: new Date().toISOString(),
-            messageId
-        });
-        saveChats();
+
+    // ❌ Removed local save block (no more saveChats())
+    // ✅ Save only to Supabase
+    if (saveToHistory && window.currentUser && window.saveChatMessage) {
+        window.saveChatMessage('assistant', content, messageId, 'text');
     }
+
     scrollToBottom();
     if (state.autoSpeak) speakText(content);
     return messageDiv;
@@ -9134,23 +9165,29 @@ function startEditing(messageDiv, isUser, originalContent) {
     contentDiv.parentNode.insertBefore(textarea, contentDiv.nextSibling);
     contentDiv.parentNode.insertBefore(controls, textarea.nextSibling);
     lucide.createIcons();
+
     const cleanup = () => {
         textarea.remove();
         controls.remove();
         contentDiv.style.display = 'block';
     };
-    saveBtn.onclick = () => {
+
+    saveBtn.onclick = async () => {
         const newContent = textarea.value.trim();
         if (newContent && newContent !== originalContent) {
+            // Update UI
             if (isUser) contentDiv.innerText = newContent;
             else contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newContent));
+
             const msgId = messageDiv.dataset.messageId;
-            if (state.selectedChat) {
-                const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
-                if (msg) msg.content = newContent;
-                saveChats();
+
+            // ✅ Update in Supabase only (no local fallback)
+            if (window.currentUser && window.updateChatMessage) {
+                await window.updateChatMessage(msgId, newContent);
+                showToast('Message updated (saved to cloud)');
+            } else {
+                showToast('You must be signed in to edit messages', 'Error');
             }
-            showToast('Message updated');
         }
         cleanup();
     };
@@ -9181,15 +9218,20 @@ async function regenerateAIMessage(aiMessageDiv) {
     try {
         const newResponse = await callAI(userMsg, state.currentMode);
         if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+
+        // Update UI
         const contentDiv = aiMessageDiv.querySelector('.message-content');
         contentDiv.innerHTML = DOMPurify.sanitize(marked.parse(newResponse));
+
         const msgId = aiMessageDiv.dataset.messageId;
-        if (state.selectedChat) {
-            const msg = state.selectedChat.messages.find(m => m.messageId === msgId);
-            if (msg) msg.content = newResponse;
-            saveChats();
+
+        // ✅ Update in Supabase only (no local fallback)
+        if (window.currentUser && window.updateChatMessage) {
+            await window.updateChatMessage(msgId, newResponse);
+            showToast('Regenerated (saved to cloud)');
+        } else {
+            showToast('You must be signed in to regenerate messages', 'Error');
         }
-        showToast('Regenerated');
     } catch (error) {
         if (loadingEl && loadingEl.parentNode) loadingEl.remove();
         showToast('Regeneration failed', 'Error');
@@ -9330,23 +9372,29 @@ async function sendMessage() {
 }
         
         // ===================== SIDEBAR =====================
-    function toggleSidebar(force) {
-        const shouldOpen = force !== undefined ? force : !state.isSidebarOpen;
-        state.isSidebarOpen = shouldOpen;
-        if (elements.sidebar) elements.sidebar.classList.toggle('-translate-x-full', !shouldOpen);
-        if (elements.sidebarOverlay) elements.sidebarOverlay.classList.toggle('hidden', !shouldOpen);
-        const mainContent = document.getElementById('main-content');
-        if (mainContent) {
-            mainContent.classList.toggle('lg:ml-72', shouldOpen);
-            mainContent.classList.toggle('main-content-expanded', !shouldOpen);
-        }
-        const desktopToggle = document.getElementById('desktop-sidebar-toggle');
-        if (desktopToggle) {
-            const icon = desktopToggle.querySelector('i');
-            if (icon) icon.setAttribute('data-lucide', shouldOpen ? 'panel-left-close' : 'panel-left-open');
-            lucide.createIcons();
-        }
+function toggleSidebar(force) {
+    const shouldOpen = force !== undefined ? force : !state.isSidebarOpen;
+    state.isSidebarOpen = shouldOpen;
+    if (elements.sidebar) elements.sidebar.classList.toggle('-translate-x-full', !shouldOpen);
+    if (elements.sidebarOverlay) elements.sidebarOverlay.classList.toggle('hidden', !shouldOpen);
+    
+    // Prevent body scroll on mobile
+    if (window.innerWidth < 1024) {
+        document.body.classList.toggle('overflow-hidden', shouldOpen);
     }
+    
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        mainContent.classList.toggle('lg:ml-72', shouldOpen);
+        mainContent.classList.toggle('main-content-expanded', !shouldOpen);
+    }
+    const desktopToggle = document.getElementById('desktop-sidebar-toggle');
+    if (desktopToggle) {
+        const icon = desktopToggle.querySelector('i');
+        if (icon) icon.setAttribute('data-lucide', shouldOpen ? 'panel-left-close' : 'panel-left-open');
+        lucide.createIcons();
+    }
+}
     elements.mobileMenuBtn?.addEventListener('click', () => toggleSidebar(true));
     elements.sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
     const desktopToggleBtn = document.getElementById('desktop-sidebar-toggle');
@@ -9925,16 +9973,6 @@ document.addEventListener('DOMContentLoaded', initTaskSystem);
 
         function speakText(text) { if (!window.speechSynthesis) return; const utterance = new SpeechSynthesisUtterance(text); window.speechSynthesis.cancel(); window.speechSynthesis.speak(utterance); }
 
-        function toggleSidebar(force) {
-            const shouldOpen = force !== undefined ? force : !state.isSidebarOpen;
-            state.isSidebarOpen = shouldOpen;
-            if (elements.sidebar) elements.sidebar.classList.toggle('-translate-x-full', !shouldOpen);
-            if (elements.sidebarOverlay) elements.sidebarOverlay.classList.toggle('hidden', !shouldOpen);
-            const mainContent = document.getElementById('main-content');
-            if (mainContent) mainContent.classList.toggle('lg:ml-72', shouldOpen);
-        }
-        elements.mobileMenuBtn?.addEventListener('click', () => toggleSidebar(true));
-        elements.sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
 
         function updateUsernameDisplay() {
             if (elements.usernameElement) elements.usernameElement.textContent = state.username;
@@ -11298,140 +11336,266 @@ if (deepToggle && deepList && deepChevron) {
 
 
 
-<script type="importmap">
-    {
-        "imports": {
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
-        }
-    }
-</script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script type="module">
-    // ========== Firebase Auth – Google Login with Modal & Toast ==========
+<script>
+  // ==================== SUPABASE CONFIGURATION ====================
+  const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl'; // <-- your publishable key
+  const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';        // <-- your Worker URL
 
-    import { initializeApp } from "firebase/app";
-    import { 
-        getAuth, 
-        signInWithPopup, 
-        GoogleAuthProvider, 
-        onAuthStateChanged, 
-        signOut 
-    } from "firebase/auth";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ---------- Your Firebase Config ----------
-    const firebaseConfig = {
-        apiKey: "AIzaSyAgcStVL656Vt932deq7s7UeA1Urum9O-Q",
-        authDomain: "xrogaai.firebaseapp.com",
-        projectId: "xrogaai",
-        storageBucket: "xrogaai.firebasestorage.app",
-        messagingSenderId: "401390812801",
-        appId: "1:401390812801:web:63b04785f1a0aea1349780",
-        measurementId: "G-MW6NYHS9NW"
-    };
+  // ==================== DOM Elements (reuse your existing IDs) ====================
+  const loginModal = document.getElementById('login-modal');
+  const closeModalBtn = document.getElementById('close-modal');
+  const googleSigninBtn = document.getElementById('google-signin-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userDisplayArea = document.getElementById('user-display');
+  const toastEl = document.getElementById('toast');
+  const toastTitle = document.getElementById('toast-title');
+  const toastMessage = document.getElementById('toast-message');
+  const loginShowBtn = document.getElementById('login-show-btn');
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+  // ==================== Toast Helper (unchanged) ====================
+  function showToast(title, message, isSuccess = true) {
+    if (!toastEl || !toastTitle || !toastMessage) return;
+    toastTitle.textContent = title;
+    toastMessage.textContent = message;
+    toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+    setTimeout(() => {
+      toastEl.classList.add('opacity-0', 'translate-y-4');
+      setTimeout(() => toastEl.classList.add('hidden'), 300);
+    }, 3000);
+  }
 
-    // ---------- DOM Elements ----------
-    const loginModal = document.getElementById('login-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const googleSigninBtn = document.getElementById('google-signin-btn');
-    const toastEl = document.getElementById('toast');
-    const toastTitle = document.getElementById('toast-title');
-    const toastMessage = document.getElementById('toast-message');
+  // ==================== Modal Controls (unchanged) ====================
+  function openModal() { loginModal?.classList.remove('hidden'); }
+  function closeModal() { loginModal?.classList.add('hidden'); }
+  closeModalBtn?.addEventListener('click', closeModal);
+  window.addEventListener('click', (e) => { if (e.target === loginModal) closeModal(); });
+  loginShowBtn?.addEventListener('click', openModal);
 
-    // Optional UI triggers – add these IDs to your page if you have them
-    const loginShowBtn = document.getElementById('login-show-btn');   // e.g., "Sign In" button in navbar
-    const logoutBtn = document.getElementById('logout-btn');         // Sign out button
-    const userDisplayArea = document.getElementById('user-display'); // Where user info is shown
-
-    // ---------- Toast Helper ----------
-    function showToast(title, message, isSuccess = true) {
-        if (!toastEl || !toastTitle || !toastMessage) return;
-        
-        toastTitle.textContent = title;
-        toastMessage.textContent = message;
-        toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
-        
-        setTimeout(() => {
-            toastEl.classList.add('opacity-0', 'translate-y-4');
-            setTimeout(() => toastEl.classList.add('hidden'), 300);
-        }, 3000);
-    }
-
-    // ---------- Modal Controls ----------
-    function openModal() {
-        loginModal?.classList.remove('hidden');
-    }
-    function closeModal() {
-        loginModal?.classList.add('hidden');
-    }
-
-    // Attach close events
-    closeModalBtn?.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === loginModal) closeModal();
+  // ==================== Google Sign‑In (Supabase) ====================
+  googleSigninBtn?.addEventListener('click', async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
     });
+    if (error) showToast('Sign-in Failed', error.message, false);
+    else closeModal();
+  });
 
-    // If you have a "Login" button that opens the modal
-    loginShowBtn?.addEventListener('click', openModal);
+  // ==================== Sign Out ====================
+  logoutBtn?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    showToast('Signed Out', 'You have been logged out.');
+  });
 
-    // ---------- Google Sign-In ----------
-    googleSigninBtn?.addEventListener('click', async () => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            closeModal();
-            showToast('Welcome!', `Signed in as ${result.user.displayName || result.user.email}`);
-        } catch (error) {
-            console.error('Sign-in error:', error);
-            showToast('Sign-in Failed', error.message.replace('Firebase:', ''), false);
-        }
-    });
+  // ==================== GLOBAL VARIABLES (for polling) ====================
+  let currentUser = null;
+  let lastMessageTimestamp = null;
+  let pollInterval = null;
 
-    // ---------- Sign Out ----------
-    logoutBtn?.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            showToast('Signed Out', 'You have been logged out.');
-        } catch (error) {
-            showToast('Error', error.message, false);
-        }
-    });
-
-    // ---------- Auth State Observer (Updates UI) ----------
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            // Update user display area if present
-            if (userDisplayArea) {
-                userDisplayArea.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <img src="${user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.displayName || 'User')}" 
-                             class="w-8 h-8 rounded-full" alt="Profile">
-                        <span class="text-sm font-medium">${user.displayName || user.email}</span>
-                    </div>
-                `;
+  // ==================== POLLING FOR NEW MESSAGES (every 5 seconds) ====================
+async function pollNewMessages() {
+    if (!currentUser) return;
+    let query = supabase
+        .from('chats')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: true });
+    if (lastMessageTimestamp) {
+        query = query.gt('created_at', lastMessageTimestamp);
+    }
+    const { data, error } = await query;
+    if (error) {
+        console.error('Poll error:', error);
+        return;
+    }
+    if (data && data.length) {
+        for (const msg of data) {
+            // Use existing display functions (defined in the main UI script)
+            if (msg.role === 'user') {
+                if (typeof addUserMessage === 'function') addUserMessage(msg.content, false);
+            } else if (msg.role === 'assistant') {
+                if (msg.type === 'code') {
+                    if (typeof addCodeResponse === 'function') addCodeResponse(msg.content, false);
+                } else if (msg.type === 'image') {
+                    // ✅ Show image card (not plain text)
+                    if (typeof displayImageResult === 'function') displayImageResult(msg.content, '', false);
+                } else {
+                    if (typeof addAIMessage === 'function') addAIMessage(msg.content, false);
+                }
             }
-            if (logoutBtn) logoutBtn.classList.remove('hidden');
-            if (loginShowBtn) loginShowBtn.classList.add('hidden');
-            
-            // Optional: show logged-in only content
-            // document.getElementById('protected-content')?.classList.remove('hidden');
-        } else {
-            // User is signed out
-            if (userDisplayArea) userDisplayArea.innerHTML = '';
-            if (logoutBtn) logoutBtn.classList.add('hidden');
-            if (loginShowBtn) loginShowBtn.classList.remove('hidden');
-            
-            // Optional: hide protected content
-            // document.getElementById('protected-content')?.classList.add('hidden');
         }
+        // Update lastMessageTimestamp to the latest message's created_at
+        lastMessageTimestamp = data[data.length - 1].created_at;
+    }
+}
+
+  function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(pollNewMessages, 5000);
+  }
+  function stopPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = null;
+  }
+
+// ==================== SAVE CHAT MESSAGE TO SUPABASE ====================
+async function saveChatMessage(role, content, messageId, type = 'text') {
+    if (!currentUser) return;
+    await supabase.from('chats').insert({
+        user_id: currentUser.id,
+        role,
+        content,
+        message_id: messageId,
+        created_at: new Date().toISOString(),
+        type
     });
+}
+
+window.saveChatMessage = saveChatMessage;
+  // ==================== SAVE CHAT MESSAGE TO SUPABASE ====================
+async function updateChatMessage(messageId, newContent) {
+    if (!currentUser) return;
+    const { error } = await supabase
+        .from('chats')
+        .update({ content: newContent })
+        .eq('message_id', messageId)
+        .eq('user_id', currentUser.id);
+    if (error) console.error('Update error:', error);
+}
+
+window.updateChatMessage = updateChatMessage;
+
+// ==================== Delete chat message ====================
+async function deleteChatMessage(messageId) {
+    if (!currentUser) return;
+    const { error } = await supabase
+        .from('chats')
+        .delete()
+        .eq('message_id', messageId)
+        .eq('user_id', currentUser.id);
+    if (error) console.error('Delete error:', error);
+}
+window.deleteChatMessage = deleteChatMessage;
+
+  // ==================== UPLOAD TO R2 VIA CLOUDFLARE WORKER ====================
+  async function uploadToR2(fileBlob, filename, bucketType) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, bucketType })
+    });
+    if (!res.ok) throw new Error('Failed to get upload URL');
+    const { url, key } = await res.json();
+    const uploadRes = await fetch(url, { method: 'PUT', body: fileBlob });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    return key;
+  }
+
+  // ==================== SAVE WEBSITE (Code Expert) ====================
+  // This function will be called from your Code Expert save button.
+  // You must replace your existing website save function with this one.
+  async function saveWebsiteToCloud(title, codeHtml, subdomain) {
+    if (!currentUser) return;
+    try {
+      const blob = new Blob([codeHtml], { type: 'text/html' });
+      const filename = `${title.replace(/\s/g, '_')}.html`;
+      const r2Key = await uploadToR2(blob, filename, 'website');
+      await supabase.from('websites').insert({
+        user_id: currentUser.id,
+        title,
+        r2_key: r2Key,
+        subdomain
+      });
+      showToast('Website saved to cloud!', 'Success');
+    } catch (err) {
+      console.error('Save website error:', err);
+      showToast('Failed to save website', 'Error', false);
+    }
+  }
+
+  // Expose this function globally so your Code Expert button can call it.
+  window.saveWebsiteToCloud = saveWebsiteToCloud;
+
+  // ==================== AUTH STATE CHANGE ====================
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    currentUser = session?.user || null;
+    window.currentUser = currentUser;
+    if (currentUser) {
+      // Update UI (same as Firebase code)
+      if (userDisplayArea) {
+        const meta = currentUser.user_metadata;
+        userDisplayArea.innerHTML = `
+          <div class="flex items-center gap-2">
+            <img src="${meta?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(meta?.full_name || currentUser.email)}" class="w-8 h-8 rounded-full">
+            <span class="text-sm font-medium">${meta?.full_name || currentUser.email}</span>
+          </div>
+        `;
+      }
+      logoutBtn?.classList.remove('hidden');
+      if (loginShowBtn) loginShowBtn.classList.add('hidden');
+
+      // Load existing messages for the current chat (if any)
+      // We'll load them using the same polling mechanism – first fetch all messages
+      // but we need to set lastMessageTimestamp to the latest message.
+      const { data: lastMsg } = await supabase
+        .from('chats')
+        .select('created_at')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (lastMsg && lastMsg.length) {
+        lastMessageTimestamp = lastMsg[0].created_at;
+      }
+      // Now fetch all messages and display them
+      const { data: allMsg } = await supabase
+        .from('chats')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: true });
+      if (allMsg && allMsg.length) {
+        // Clear current chat UI and re‑render
+        if (typeof clearChatUI === 'function') clearChatUI();
+for (const msg of allMsg) {
+    if (msg.role === 'user') {
+        if (typeof addUserMessage === 'function') addUserMessage(msg.content, false);
+    } else if (msg.role === 'assistant') {
+        if (msg.type === 'code') {
+            if (typeof addCodeResponse === 'function') addCodeResponse(msg.content, false);
+        } else if (msg.type === 'image') {
+            if (typeof displayImageResult === 'function') displayImageResult(msg.content, '', false);
+        } else {
+            if (typeof addAIMessage === 'function') addAIMessage(msg.content, false);
+        }
+    }
+}
+        if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
+      }
+      startPolling();
+    } else {
+      if (userDisplayArea) userDisplayArea.innerHTML = '';
+      logoutBtn?.classList.add('hidden');
+      if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+      stopPolling();
+      lastMessageTimestamp = null;
+      // Optionally clear chat UI
+      if (typeof clearChatUI === 'function') clearChatUI();
+    }
+  });
+  
+  // Expose functions and variables globally for other scripts
+window.saveChatMessage = saveChatMessage;
+window.saveWebsiteToCloud = saveWebsiteToCloud;   // already exposed, but ensure it's there
+window.currentUser = currentUser;
 </script>
-
-
 
 
 <!-- Rename Chat Modal -->
