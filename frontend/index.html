@@ -3478,6 +3478,55 @@ setTimeout(() => {
     if (elements.chatMessages) elements.chatMessages.innerHTML = '';
 }
 
+// ==================== GUARD SEND BUTTON: SHOW LOGIN POPUP IF NOT SIGNED IN ====================
+(function() {
+    const sendBtn = document.getElementById('xroga-send-btn');
+    const chatInput = document.getElementById('xroga-chat-input');
+    
+    if (!sendBtn) return;
+    
+    // Override the click event to check sign-in status first
+    const originalClick = sendBtn.onclick;
+    
+    sendBtn.onclick = function(event) {
+        // If user is not signed in (and not already showing modal)
+        if (!window.currentUser) {
+            const modal = document.getElementById('login-modal');
+            if (modal) modal.classList.remove('hidden');
+            // Also show a small toast
+            if (typeof showToast === 'function') {
+                showToast('Please sign in first', 'Welcome');
+            }
+            // Prevent the original sendMessage from running
+            event.stopImmediatePropagation();
+            return false;
+        }
+        // Otherwise, call the original sendMessage (if it exists)
+        if (typeof originalClick === 'function') {
+            originalClick.call(this, event);
+        } else if (typeof sendMessage === 'function') {
+            // fallback: call the global sendMessage function
+            sendMessage();
+        }
+    };
+    
+    // Also intercept Enter key on the input
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                if (!window.currentUser) {
+                    e.preventDefault();
+                    const modal = document.getElementById('login-modal');
+                    if (modal) modal.classList.remove('hidden');
+                    if (typeof showToast === 'function') showToast('Please sign in first', 'Welcome');
+                    return false;
+                }
+                // Let the original sendMessage handle it (it will be called via its own Enter listener)
+            }
+        });
+    }
+})();
+
 // ===================== SIDEBAR & CHAT LIST RENDERING =====================
     function renderChatList(containerId, chats, iconName, colorClass) {
     const container = document.getElementById(containerId);
