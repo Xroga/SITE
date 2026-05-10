@@ -1845,61 +1845,24 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
                         <span class="hidden dark:inline">Dark</span>
                     </span>
                 </button>
-           <!-- User Info & Logout (updated) -->
-<div id="user-info" class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-primary-500/20 to-purple-500/20 dark:from-primary-900/30 dark:to-purple-900/30 backdrop-blur-sm mb-2">
+<!-- User Display (script expects id="user-display") -->
+<div id="user-display" class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-primary-500/20 to-purple-500/20 dark:from-primary-900/30 dark:to-purple-900/30 backdrop-blur-sm mb-2">
     <div class="flex items-center gap-3">
         <div class="p-2 bg-primary-500/30 dark:bg-primary-900/30 rounded-lg">
             <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
         </div>
-        <div>
-            <p class="text-xs text-gray-600 dark:text-gray-400" id="sidebar-status">Not logged in</p>
-        </div>
+        <p class="text-xs text-gray-600 dark:text-gray-400">Not logged in</p>
     </div>
-    <button id="logout-btn" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
+    <button id="logout-btn" type="button" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
 </div>
 
-<!-- Login button (opens email/password modal) -->
+<!-- Login button (redirects to separate signin.html page) -->
 <div class="p-4 border-t border-white/30 dark:border-gray-700/30">
-    <button id="login-show-btn" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
-        <!-- Simple email icon (Lucide will replace data-lucide) -->
+    <a href="https://xroga.com/signin.html" 
+       class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
         <i data-lucide="mail" class="w-5 h-5"></i>
         <span class="font-medium">Sign in with Email</span>
-    </button>
-</div>
-
-<!-- Login Modal (Email / Password, no Google) -->
-<div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
-    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-sm w-full mx-4 border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="p-5">
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="auth-title">Sign In</h3>
-                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4" id="auth-description">
-                Sign in with your email to save chats and sync across devices.
-            </p>
-
-            <!-- Email input -->
-            <input type="email" id="auth-email" placeholder="Email address" 
-                   class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-            <!-- Password input -->
-            <input type="password" id="auth-password" placeholder="Password" 
-                   class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-
-            <!-- Submit button -->
-            <button id="auth-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
-                Sign In
-            </button>
-
-            <!-- Toggle between Sign In / Sign Up -->
-            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
-                <span id="auth-toggle-text">Don't have an account?</span>
-                <button id="auth-toggle-mode" class="text-blue-600 hover:underline ml-1">Sign Up</button>
-            </p>
-        </div>
-    </div>
+    </a>
 </div>
                 
                 <!-- Settings Button (unchanged) -->
