@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Xroga AI – Email Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Open modal button */
+        .open-modal-btn {
+            background: linear-gradient(105deg, #3b82f6, #ffffff);
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 60px;
+            cursor: pointer;
+            color: #0f172a;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .open-modal-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* MODAL */
+        #auth-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            z-index: 100000;
+        }
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 20, 40, 0.6);
+            backdrop-filter: blur(12px);
+            cursor: pointer;
+        }
+        .modal-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            width: 90%;
+            max-width: 420px;
+            padding: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .modal-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.7rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .modal-card p {
+            text-align: center;
+            margin-bottom: 1.25rem;
+            opacity: 0.9;
+        }
+        .modal-card input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            color: white;
+            outline: none;
+            font-size: 1rem;
+        }
+        .modal-card input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .modal-card input:focus {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+        .modal-card button {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 3rem;
+            font-weight: 700;
+            font-size: 1rem;
+            background: linear-gradient(105deg, #2563eb, #ffffff);
+            color: #0f172a;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+            transition: transform 0.2s;
+        }
+        .modal-card button:hover {
+            transform: translateY(-2px);
+        }
+        .privacy-text {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1rem;
+            opacity: 0.7;
+        }
+
+        /* Dark mode (if your site uses .dark class) */
+        .dark .modal-backdrop {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .dark .modal-card {
+            background: rgba(15, 25, 35, 0.75);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .dark .modal-card input {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #f8fafc;
+        }
+        .dark .modal-card button {
+            background: linear-gradient(105deg, #3b82f6, #e2e8f0);
+        }
+    </style>
+</head>
+<body>
+
+    <button class="open-modal-btn" id="openModalBtn">Sign in with Email</button>
+
+    <div id="auth-modal">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-card">
+            <h3>Welcome to Xroga AI</h3>
+            <p>Sign up or sign in with your email.</p>
+            <input type="email" id="email" placeholder="Email address">
+            <input type="password" id="password" placeholder="Password (min 6)">
+            <button id="signupBtn">Sign up</button>
+            <button id="signinBtn">Sign in</button>
+            <div class="privacy-text">We'll never share your email.</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ---------- SUPABASE CONFIG ----------
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ---------- DOM elements ----------
+        const modal = document.getElementById('auth-modal');
+        const backdrop = document.getElementById('modalBackdrop');
+        const openBtn = document.getElementById('openModalBtn');
+        const signupBtn = document.getElementById('signupBtn');
+        const signinBtn = document.getElementById('signinBtn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Helper functions
+        function openModal() {
+            modal.style.display = 'block';
+            emailInput.focus();
+        }
+        function closeModal() {
+            modal.style.display = 'none';
+            emailInput.value = '';
+            passwordInput.value = '';
+        }
+
+        // Open modal
+        openBtn.addEventListener('click', openModal);
+
+        // Close on backdrop click
+        backdrop.addEventListener('click', closeModal);
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // ---------- SIGN UP ----------
+        async function handleSignUp() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            if (!email || !password) {
+                alert('Please fill both fields');
+                return;
+            }
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.textContent = '•••';
+            signinBtn.disabled = true;
+
+            const { data, error } = await supabase.auth.signUp({ email, password });
+
+            signupBtn.disabled = false;
+            signupBtn.textContent = 'Sign up';
+            signinBtn.disabled = false;
+
+            if (error) {
+                alert('Signup error: ' + error.message);
+            } else {
+                if (data.user?.identities?.length === 0) {
+                    alert('User already exists. Try signing in.');
+                } else {
+                    alert('✅ Account created! Please check your email for confirmation (if enabled).');
+                    passwordInput.value = '';
+                }
+            }
+        }
+
+        // ---------- SIGN IN ----------
+        async function handleSignIn() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            if (!email || !password) {
+                alert('Please fill both fields');
+                return;
+            }
+
+            signinBtn.disabled = true;
+            signinBtn.textContent = '•••';
+            signupBtn.disabled = true;
+
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+            signinBtn.disabled = false;
+            signinBtn.textContent = 'Sign in';
+            signupBtn.disabled = false;
+
+            if (error) {
+                alert('Signin error: ' + error.message);
+            } else {
+                alert('✅ Signed in successfully! Redirecting...');
+                // Redirect to your dashboard (change URL as needed)
+                window.location.href = '/dashboard';
+            }
+        }
+
+        // Attach event listeners
+        signupBtn.addEventListener('click', handleSignUp);
+        signinBtn.addEventListener('click', handleSignIn);
+
+        // Enter key in password field triggers sign in
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSignIn();
+        });
+    </script>
+</body>
+</html>
