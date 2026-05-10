@@ -11346,25 +11346,26 @@ if (deepToggle && deepList && deepChevron) {
   const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // 👇 PASTE THE SNIPPET HERE (right after creating supabase)
+  // ==================== MAGIC LINK REDIRECT HANDLER ====================
   (async () => {
+    // If URL has an access_token hash, reload after 1 sec to finalise session
     if (window.location.hash && window.location.hash.includes('access_token')) {
-      console.log('Magic link detected, waiting for session...');
-      setTimeout(() => { window.location.reload(); }, 1000);
+      console.log('🔐 Magic link detected – reloading to apply session');
+      setTimeout(() => { window.location.href = window.location.origin + window.location.pathname; }, 1000);
     }
   })();
-  
+
   // ==================== DOM ELEMENTS ====================
-  const userDisplayArea = document.getElementById('user-display');
+  const userDisplay = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
   const loginShowBtn = document.getElementById('login-show-btn');
   const toastEl = document.getElementById('toast');
   const toastTitle = document.getElementById('toast-title');
   const toastMessage = document.getElementById('toast-message');
 
-  // ==================== TOAST ====================
+  // ==================== TOAST HELPER ====================
   function showToast(title, message, isSuccess = true) {
-    if (!toastEl || !toastTitle || !toastMessage) return;
+    if (!toastEl) return;
     toastTitle.textContent = title;
     toastMessage.textContent = message;
     toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
@@ -11374,14 +11375,14 @@ if (deepToggle && deepList && deepChevron) {
     }, 3000);
   }
 
-  // ==================== UPDATE UI (session) ====================
-  async function updateUIForSession(session) {
-    const user = session?.user || null;
+  // ==================== UPDATE UI BASED ON SESSION ====================
+  async function updateUI(user) {
     if (user) {
+      // Logged in
       const meta = user.user_metadata;
       const name = meta?.full_name || user.email;
       const avatar = meta?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-      userDisplayArea.innerHTML = `
+      userDisplay.innerHTML = `
         <div class="flex items-center gap-2">
           <img src="${avatar}" class="w-8 h-8 rounded-full">
           <span class="text-sm font-medium">${name}</span>
@@ -11389,11 +11390,9 @@ if (deepToggle && deepList && deepChevron) {
       `;
       logoutBtn.classList.remove('hidden');
       if (loginShowBtn) loginShowBtn.classList.add('hidden');
-      window.currentUser = user;
-      // Also trigger any global event
-      window.dispatchEvent(new CustomEvent('xroga-auth-change', { detail: { user } }));
     } else {
-      userDisplayArea.innerHTML = `
+      // Logged out
+      userDisplay.innerHTML = `
         <div class="flex items-center gap-2">
           <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
           <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
@@ -11401,11 +11400,104 @@ if (deepToggle && deepList && deepChevron) {
       `;
       logoutBtn.classList.add('hidden');
       if (loginShowBtn) loginShowBtn.classList.remove('hidden');
-      window.currentUser = null;
-      window.dispatchEvent(new CustomEvent('xroga-auth-change', { detail: { user: null } }));
     }
     if (window.lucide) lucide.createIcons();
   }
+
+  // ==================== POLLING & MESSAGING (your existing code) ====================
+  let currentUser = null;
+  let lastMessageTimestamp = null;
+  let pollInterval = null;
+
+  async function pollNewMessages() {
+    if (!currentUser) return;
+    let query = supabase
+      .from('chats')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: true });
+    if (lastMessageTimestamp) query = query.gt('created_at', lastMessageTimestamp);
+    const { data, error } = await query;
+    if (error) { console.error('Poll error:', error); return; }
+    if (data && data.length) {
+      for (const msg of data) {
+        if (msg.role === 'user' && typeof addUserMessage === 'function')
+          addUserMessage(msg.content, false);
+        else if (msg.role === 'assistant') {
+          if (msg.type === 'code' && typeof addCodeResponse === 'function')
+            addCodeResponse(msg.content, false);
+          else if (msg.type === 'image' && typeof displayImageResult === 'function')
+            displayImageResult(msg.content, '', false);
+          else if (typeof addAIMessage === 'function')
+            addAIMessage(msg.content, false);
+        }
+      }
+      lastMessageTimestamp = data[data.length - 1].created_at;
+    }
+  }
+
+  function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(pollNewMessages, 5000);
+  }
+  function stopPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = null;
+  }
+
+  async function saveChatMessage(role, content, messageId, type = 'text') {
+    if (!currentUser) return;
+    await supabase.from('chats').insert({
+      user_id: currentUser.id, role, content, message_id: messageId,
+      created_at: new Date().toISOString(), type
+    });
+  }
+  window.saveChatMessage = saveChatMessage;
+
+  async function updateChatMessage(messageId, newContent) {
+    if (!currentUser) return;
+    await supabase.from('chats').update({ content: newContent }).eq('message_id', messageId).eq('user_id', currentUser.id);
+  }
+  window.updateChatMessage = updateChatMessage;
+
+  async function deleteChatMessage(messageId) {
+    if (!currentUser) return;
+    await supabase.from('chats').delete().eq('message_id', messageId).eq('user_id', currentUser.id);
+  }
+  window.deleteChatMessage = deleteChatMessage;
+
+  async function uploadToR2(fileBlob, filename, bucketType) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, bucketType })
+    });
+    if (!res.ok) throw new Error('Failed to get upload URL');
+    const { url, key } = await res.json();
+    const uploadRes = await fetch(url, { method: 'PUT', body: fileBlob });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    return key;
+  }
+
+  async function saveWebsiteToCloud(title, codeHtml, subdomain) {
+    if (!currentUser) return;
+    try {
+      const blob = new Blob([codeHtml], { type: 'text/html' });
+      const filename = `${title.replace(/\s/g, '_')}.html`;
+      const r2Key = await uploadToR2(blob, filename, 'website');
+      await supabase.from('websites').insert({
+        user_id: currentUser.id, title, r2_key: r2Key, subdomain
+      });
+      showToast('Website saved to cloud!', 'Success');
+    } catch (err) {
+      console.error('Save website error:', err);
+      showToast('Failed to save website', 'Error', false);
+    }
+  }
+  window.saveWebsiteToCloud = saveWebsiteToCloud;
 
   // ==================== LOGOUT ====================
   logoutBtn?.addEventListener('click', async () => {
@@ -11413,37 +11505,29 @@ if (deepToggle && deepList && deepChevron) {
     showToast('Signed Out', 'You have been logged out.');
   });
 
-  // ==================== GLOBAL VARIABLES (polling) ====================
-  let currentUser = null;
-  let lastMessageTimestamp = null;
-  let pollInterval = null;
-
-  // ==================== POLLING (unchanged, just copy your existing functions) ====================
-  // ... (keep pollNewMessages, startPolling, stopPolling, saveChatMessage, updateChatMessage, deleteChatMessage, uploadToR2, saveWebsiteToCloud exactly as before)
-  // I'll include a placeholder – you must paste your existing implementations here.
-  // For brevity, I'm not repeating them; just copy them from your current script into this new one.
-
   // ==================== AUTH STATE CHANGE ====================
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth event:', event, session?.user?.email);
-    await updateUIForSession(session);
-    currentUser = session?.user || null;
-    if (currentUser) {
-      // Load messages and start polling (same as your original code)
+    const user = session?.user || null;
+    currentUser = user;
+    window.currentUser = user;
+    await updateUI(user);
+
+    if (user) {
+      // Load existing messages
       const { data: lastMsg } = await supabase
         .from('chats')
         .select('created_at')
-        .eq('user_id', currentUser.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1);
-      if (lastMsg && lastMsg.length) lastMessageTimestamp = lastMsg[0].created_at;
+      if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
 
       const { data: allMsg } = await supabase
         .from('chats')
         .select('*')
-        .eq('user_id', currentUser.id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: true });
-      if (allMsg && allMsg.length) {
+      if (allMsg?.length) {
         if (typeof clearChatUI === 'function') clearChatUI();
         for (const msg of allMsg) {
           if (msg.role === 'user' && typeof addUserMessage === 'function')
@@ -11467,35 +11551,12 @@ if (deepToggle && deepList && deepChevron) {
     }
   });
 
-  // ==================== INITIAL SESSION CHECK + FIX FOR MAGIC LINK REDIRECT ====================
-  (async () => {
-    // First, get the current session
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (session) {
-      await updateUIForSession(session);
-      currentUser = session.user;
-      // Manually trigger polling if needed (but onAuthStateChange will also fire)
-    } else {
-      await updateUIForSession(null);
-    }
-
-    // SPECIAL: If the URL contains a hash (which Supabase adds after magic link), force a reload after 2 seconds
-    // This ensures the session is fully applied.
-    if (window.location.hash && window.location.hash.includes('access_token')) {
-      console.log('Magic link redirect detected – refreshing page to ensure session takes effect.');
-      setTimeout(() => {
-        window.location.href = window.location.origin + window.location.pathname;
-      }, 1500);
-    }
-  })();
-
-  // ==================== EXPOSE GLOBAL FUNCTIONS ====================
-  window.saveChatMessage = saveChatMessage;
-  window.updateChatMessage = updateChatMessage;
-  window.deleteChatMessage = deleteChatMessage;
-  window.saveWebsiteToCloud = saveWebsiteToCloud;
+  // ==================== INITIAL SESSION CHECK ====================
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) updateUI(session.user);
+    else updateUI(null);
+  });
 </script>
-
 
 <!-- Rename Chat Modal -->
 <div id="rename-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
