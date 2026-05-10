@@ -1835,8 +1835,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 <!-- ==================== STANDALONE EMAIL LOGIN (WORKS INDEPENDENTLY) ==================== -->
 
 <!-- Button with inline onclick (works even if other scripts fail) -->
-<button id="standalone-email-btn" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200"
-        onclick="document.getElementById('standalone-email-modal').style.display = 'flex'">
+<button id="standalone-email-btn" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200">
     <i data-lucide="mail" class="w-5 h-5"></i>
     <span>Sign in with Email</span>
 </button>
@@ -1844,12 +1843,12 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (function() {
-    // ----- Supabase credentials (replace with your actual env vars later)
+    // Supabase credentials
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ----- DOM elements
+    // DOM elements
     const modal = document.getElementById('standalone-email-modal');
     const backdrop = document.getElementById('modal-backdrop');
     const openBtn = document.getElementById('standalone-email-btn');
@@ -1858,235 +1857,226 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     const emailInput = document.getElementById('standalone-email');
     const passwordInput = document.getElementById('standalone-password');
 
-    // ----- Functions to open/close modal
+    // Helper: clear fields
+    function clearFields() {
+        if (emailInput) emailInput.value = '';
+        if (passwordInput) passwordInput.value = '';
+    }
+
+    // Open modal
     function openModal() {
-      modal.style.display = 'block';
-      emailInput.focus();
-      console.log('Modal opened');
+        if (modal) modal.style.display = 'block';
+        if (emailInput) emailInput.focus();
     }
+    // Close modal
     function closeModal() {
-      modal.style.display = 'none';
-      // Clear fields when closing
-      if (emailInput) emailInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-      console.log('Modal closed');
+        if (modal) modal.style.display = 'none';
+        clearFields();
     }
 
-    // ----- Open button click
+    // Open button
     if (openBtn) {
-      openBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openModal();
-      });
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
     } else {
-      console.error('Button with id="standalone-email-btn" not found');
+        console.error('Button #standalone-email-btn not found');
     }
 
-    // ----- Close when clicking on backdrop (outside card)
+    // Close on backdrop click
     if (backdrop) {
-      backdrop.addEventListener('click', () => {
-        closeModal();
-      });
+        backdrop.addEventListener('click', closeModal);
     } else {
-      console.error('Backdrop element not found');
+        console.error('Backdrop #modal-backdrop not found');
     }
 
-    // ----- Close with ESC key
+    // Close on ESC
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.style.display === 'block') {
-        closeModal();
-      }
+        if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+            closeModal();
+        }
     });
 
-    // ----- Sign Up handler (with alert for debugging)
+    // ---------- SIGN UP ----------
     async function handleSignUp() {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      if (!email || !password) {
-        alert('Please fill both fields');
-        return;
-      }
-      if (password.length < 6) {
-        alert('Password must be at least 6 characters');
-        return;
-      }
-      // Show loading state on buttons
-      signupBtn.disabled = true;
-      signinBtn.disabled = true;
-      signupBtn.textContent = '•••';
-      
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        alert('Signup error: ' + error.message);
-        console.error(error);
-      } else {
-        if (data.user?.identities?.length === 0) {
-          alert('User already exists. Try signing in.');
-        } else {
-          alert('✅ Account created! Check your email for confirmation (if enabled).');
-          passwordInput.value = '';
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+            alert('Please fill both fields');
+            return;
         }
-      }
-      signupBtn.disabled = false;
-      signinBtn.disabled = false;
-      signupBtn.textContent = 'Sign up';
-    }
-
-    // ----- Sign In handler (with alert)
-    async function handleSignIn() {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      if (!email || !password) {
-        alert('Please fill both fields');
-        return;
-      }
-      signinBtn.disabled = true;
-      signupBtn.disabled = true;
-      signinBtn.textContent = '•••';
-      
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        alert('Signin error: ' + error.message);
-        console.error(error);
-        signinBtn.disabled = false;
+        if (password.length < 6) {
+            alert('Password must be at least 6 characters');
+            return;
+        }
+        signupBtn.disabled = true;
+        signupBtn.textContent = '•••';
+        signinBtn.disabled = true;
+        const { data, error } = await supabase.auth.signUp({ email, password });
         signupBtn.disabled = false;
-        signinBtn.textContent = 'Sign in';
-      } else {
-        alert('✅ Signed in successfully! Reloading page...');
-        setTimeout(() => location.reload(), 1000);
-      }
+        signupBtn.textContent = 'Sign up';
+        signinBtn.disabled = false;
+        if (error) {
+            alert('Signup error: ' + error.message);
+        } else {
+            if (data.user?.identities?.length === 0) {
+                alert('User already exists. Try signing in.');
+            } else {
+                alert('✅ Account created! Check your email for confirmation (if enabled).');
+                passwordInput.value = '';
+            }
+        }
     }
 
-    // Attach event listeners
+    // ---------- SIGN IN ----------
+    async function handleSignIn() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+            alert('Please fill both fields');
+            return;
+        }
+        signinBtn.disabled = true;
+        signinBtn.textContent = '•••';
+        signupBtn.disabled = true;
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        signinBtn.disabled = false;
+        signinBtn.textContent = 'Sign in';
+        signupBtn.disabled = false;
+        if (error) {
+            alert('Signin error: ' + error.message);
+        } else {
+            alert('✅ Signed in successfully! Reloading page...');
+            setTimeout(() => location.reload(), 1000);
+        }
+    }
+
+    // Attach listeners
     if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
     if (signinBtn) signinBtn.addEventListener('click', handleSignIn);
     if (passwordInput) {
-      passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSignIn();
-      });
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSignIn();
+        });
     }
   })();
 </script>
+              
 <!-- Modal popup – Glassmorphic + Blue/White gradient + Working close button -->
 <style>
-  /* Glass modal base */
-  #standalone-email-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 20, 40, 0.5);
-    backdrop-filter: blur(12px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100000;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  }
-
-  /* Glass card */
-  #standalone-email-modal > div {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(16px);
-    border-radius: 2rem;
-    max-width: 420px;
-    width: 90%;
-    padding: 1.75rem;
-    box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3);
-  }
-
-  #standalone-email-modal h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.7rem;
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-
-  /* Inputs */
-  #standalone-email, #standalone-password {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 1.5rem;
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    color: white;
-    outline: none;
-    box-sizing: border-box;
-  }
-
-  #standalone-email::placeholder, #standalone-password::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  #standalone-email:focus, #standalone-password:focus {
-    border-color: white;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-  }
-
-  /* Buttons: blue → white gradient */
-  #standalone-signup, #standalone-signin {
-    width: 100%;
-    padding: 0.85rem;
-    border: none;
-    border-radius: 3rem;
-    font-weight: 700;
-    font-size: 1rem;
-    background: linear-gradient(105deg, #2563eb 0%, #ffffff 100%);
-    color: #0f172a;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    margin-bottom: 0.75rem;
-  }
-
-  #standalone-signup:hover, #standalone-signin:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 22px -8px rgba(0, 0, 0, 0.25);
-  }
-
-  /* Privacy text */
-  #standalone-email-modal p:last-of-type {
-    text-align: center;
-    font-size: 0.7rem;
-    margin-top: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  /* Dark mode */
-  .dark #standalone-email-modal {
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(12px);
-  }
-
-  .dark #standalone-email-modal > div {
-    background: rgba(15, 25, 35, 0.65);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-
-  .dark #standalone-email-modal h3 {
-    color: #f1f5f9;
-  }
-
-  .dark #standalone-email, .dark #standalone-password {
-    background: rgba(0, 0, 0, 0.4);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #f8fafc;
-  }
-
-  .dark #standalone-email:focus, .dark #standalone-password:focus {
-    border-color: #60a5fa;
-  }
-
-  .dark #standalone-signup, .dark #standalone-signin {
-    background: linear-gradient(105deg, #3b82f6 0%, #e2e8f0 100%);
-    color: #0f172a;
-  }
-
-  .dark #standalone-email-modal p:last-of-type {
-    color: #94a3b8;
-  }
+    /* Glass modal base */
+    #standalone-email-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 100000;
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    /* Backdrop – click to close */
+    #modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 20, 40, 0.6);
+        backdrop-filter: blur(12px);
+        cursor: pointer;
+    }
+    /* Glass card */
+    .modal-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(16px);
+        border-radius: 2rem;
+        max-width: 420px;
+        width: 90%;
+        padding: 1.75rem;
+        box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+    .modal-card h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1.7rem;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+    }
+    .modal-card p {
+        text-align: center;
+        margin-bottom: 1.25rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    .modal-card input {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+        color: white;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .modal-card input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .modal-card input:focus {
+        border-color: white;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    }
+    .modal-card button {
+        width: 100%;
+        padding: 0.85rem;
+        border: none;
+        border-radius: 3rem;
+        font-weight: 700;
+        font-size: 1rem;
+        background: linear-gradient(105deg, #2563eb 0%, #ffffff 100%);
+        color: #0f172a;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        margin-bottom: 0.75rem;
+    }
+    .modal-card button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 22px -8px rgba(0, 0, 0, 0.25);
+    }
+    .privacy-text {
+        text-align: center;
+        font-size: 0.7rem;
+        margin-top: 1rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    /* Dark mode */
+    .dark #modal-backdrop {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+    }
+    .dark .modal-card {
+        background: rgba(15, 25, 35, 0.65);
+        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .dark .modal-card h3 {
+        color: #f1f5f9;
+    }
+    .dark .modal-card input {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #f8fafc;
+    }
+    .dark .modal-card input:focus {
+        border-color: #60a5fa;
+    }
+    .dark .modal-card button {
+        background: linear-gradient(105deg, #3b82f6 0%, #e2e8f0 100%);
+        color: #0f172a;
+    }
+    .dark .privacy-text {
+        color: #94a3b8;
+    }
 </style>
 
 
@@ -11599,17 +11589,17 @@ if (deepToggle && deepList && deepChevron) {
   <a href="/terms.html" target="_blank">Terms of Service</a>
 </footer>
 
-
-<div id="standalone-email-modal">
-  <div>
-    <h3>Welcome to Xroga AI</h3>
-    <p style="text-align: center; margin-bottom: 1.25rem;">Sign up or sign in with your email.</p>
-    <input type="email" id="standalone-email" placeholder="Email">
-    <input type="password" id="standalone-password" placeholder="Password">
-    <button id="standalone-signup">Sign up</button>
-    <button id="standalone-signin">Sign in</button>
-    <p>We'll never share your email.</p>
-  </div>
+              <div id="standalone-email-modal">
+    <div id="modal-backdrop"></div>
+    <div class="modal-card">
+        <h3>Welcome to Xroga AI</h3>
+        <p>Sign up or sign in with your email.</p>
+        <input type="email" id="standalone-email" placeholder="Email address">
+        <input type="password" id="standalone-password" placeholder="Password (min 6)">
+        <button id="standalone-signup">Sign up</button>
+        <button id="standalone-signin">Sign in</button>
+        <div class="privacy-text">We'll never share your email.</div>
+    </div>
 </div>
 
 </body>
