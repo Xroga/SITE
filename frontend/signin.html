@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Xroga AI – Email Sign In</title>
+    <title>Xroga AI – Sign In</title>
     <style>
         * {
             margin: 0;
@@ -21,65 +21,45 @@
             padding: 20px;
         }
 
-        /* Open modal button */
-        .open-modal-btn {
-            background: linear-gradient(105deg, #3b82f6, #ffffff);
-            border: none;
-            padding: 14px 32px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 60px;
-            cursor: pointer;
-            color: #0f172a;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .open-modal-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-
-        /* MODAL */
-        #auth-modal {
-            position: fixed;
-            inset: 0;
-            display: none;
-            z-index: 100000;
-        }
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 20, 40, 0.6);
-            backdrop-filter: blur(12px);
-            cursor: pointer;
-        }
-        .modal-card {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* Glass card – full page centered */
+        .glass-card {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(16px);
             border-radius: 2rem;
-            width: 90%;
-            max-width: 420px;
-            padding: 1.75rem;
+            width: 100%;
+            max-width: 440px;
+            padding: 2rem 1.75rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.3);
             color: white;
+            text-align: center;
         }
-        .modal-card h3 {
-            margin-bottom: 0.5rem;
-            font-size: 1.7rem;
+
+        /* Logo */
+        .logo {
+            max-width: 140px;
+            margin: 0 auto 1rem;
+        }
+        .logo img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        h1 {
+            font-size: 1.8rem;
             font-weight: 600;
-            text-align: center;
+            margin-bottom: 0.5rem;
         }
-        .modal-card p {
-            text-align: center;
-            margin-bottom: 1.25rem;
+
+        .subtitle {
+            margin-bottom: 1.75rem;
             opacity: 0.9;
+            font-size: 0.95rem;
         }
-        .modal-card input {
+
+        /* Inputs */
+        input {
             width: 100%;
             padding: 0.9rem 1rem;
             margin-bottom: 1rem;
@@ -90,15 +70,18 @@
             color: white;
             outline: none;
             font-size: 1rem;
+            transition: all 0.2s;
         }
-        .modal-card input::placeholder {
+        input::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
-        .modal-card input:focus {
+        input:focus {
             border-color: white;
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
         }
-        .modal-card button {
+
+        /* Buttons */
+        button {
             width: 100%;
             padding: 0.85rem;
             border: none;
@@ -109,164 +92,160 @@
             color: #0f172a;
             cursor: pointer;
             margin-bottom: 0.75rem;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .modal-card button:hover {
+        button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
         }
-        .privacy-text {
-            text-align: center;
-            font-size: 0.7rem;
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Link to homepage */
+        .home-link {
+            display: inline-block;
             margin-top: 1rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
+        }
+        .home-link:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .privacy {
+            font-size: 0.7rem;
+            margin-top: 1.5rem;
             opacity: 0.7;
         }
 
-        /* Dark mode (if your site uses .dark class) */
-        .dark .modal-backdrop {
-            background: rgba(0, 0, 0, 0.7);
-        }
-        .dark .modal-card {
+        /* Dark mode (if you add .dark to body) */
+        .dark .glass-card {
             background: rgba(15, 25, 35, 0.75);
             border-color: rgba(255, 255, 255, 0.15);
         }
-        .dark .modal-card input {
+        .dark input {
             background: rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.2);
             color: #f8fafc;
         }
-        .dark .modal-card button {
+        .dark button {
             background: linear-gradient(105deg, #3b82f6, #e2e8f0);
         }
     </style>
 </head>
 <body>
 
-    <button class="open-modal-btn" id="openModalBtn">Sign in with Email</button>
-
-    <div id="auth-modal">
-        <div class="modal-backdrop" id="modalBackdrop"></div>
-        <div class="modal-card">
-            <h3>Welcome to Xroga AI</h3>
-            <p>Sign up or sign in with your email.</p>
-            <input type="email" id="email" placeholder="Email address">
-            <input type="password" id="password" placeholder="Password (min 6)">
-            <button id="signupBtn">Sign up</button>
-            <button id="signinBtn">Sign in</button>
-            <div class="privacy-text">We'll never share your email.</div>
-        </div>
+<div class="glass-card">
+    <!-- Logo -->
+    <div class="logo">
+        <img src="https://i.postimg.cc/TPjDXhy8/Green-Minimalist-Summer-Big-Sale-Medium-Banner-7-removebg-preview.png" alt="Xroga AI Logo">
     </div>
+    <h1>Welcome to Xroga AI</h1>
+    <div class="subtitle">Sign up or sign in with your email</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // ---------- SUPABASE CONFIG ----------
-        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <input type="email" id="email" placeholder="Email address" autocomplete="email">
+    <input type="password" id="password" placeholder="Password (min 6)" autocomplete="current-password">
 
-        // ---------- DOM elements ----------
-        const modal = document.getElementById('auth-modal');
-        const backdrop = document.getElementById('modalBackdrop');
-        const openBtn = document.getElementById('openModalBtn');
-        const signupBtn = document.getElementById('signupBtn');
-        const signinBtn = document.getElementById('signinBtn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
+    <button id="signupBtn">Sign up</button>
+    <button id="signinBtn">Sign in</button>
 
-        // Helper functions
-        function openModal() {
-            modal.style.display = 'block';
-            emailInput.focus();
+    <a href="https://xroga.com/" target="_blank" class="home-link">Visit Xroga.com</a>
+    <div class="privacy">We'll never share your email.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // ---------- SUPABASE CONFIG ----------
+    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // DOM elements
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const signupBtn = document.getElementById('signupBtn');
+    const signinBtn = document.getElementById('signinBtn');
+
+    // Helper to show messages (you can replace alerts with a toast later)
+    function showMessage(msg, isError = true) {
+        alert(msg);  // Simple for now – works everywhere
+    }
+
+    // ---------- SIGN UP ----------
+    async function handleSignUp() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+            showMessage('Please fill both fields', true);
+            return;
         }
-        function closeModal() {
-            modal.style.display = 'none';
-            emailInput.value = '';
-            passwordInput.value = '';
+        if (password.length < 6) {
+            showMessage('Password must be at least 6 characters', true);
+            return;
         }
 
-        // Open modal
-        openBtn.addEventListener('click', openModal);
+        signupBtn.disabled = true;
+        signupBtn.textContent = '•••';
+        signinBtn.disabled = true;
 
-        // Close on backdrop click
-        backdrop.addEventListener('click', closeModal);
+        const { data, error } = await supabase.auth.signUp({ email, password });
 
-        // Close on ESC key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Sign up';
+        signinBtn.disabled = false;
 
-        // ---------- SIGN UP ----------
-        async function handleSignUp() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            if (!email || !password) {
-                alert('Please fill both fields');
-                return;
-            }
-            if (password.length < 6) {
-                alert('Password must be at least 6 characters');
-                return;
-            }
-
-            signupBtn.disabled = true;
-            signupBtn.textContent = '•••';
-            signinBtn.disabled = true;
-
-            const { data, error } = await supabase.auth.signUp({ email, password });
-
-            signupBtn.disabled = false;
-            signupBtn.textContent = 'Sign up';
-            signinBtn.disabled = false;
-
-            if (error) {
-                alert('Signup error: ' + error.message);
+        if (error) {
+            showMessage('Signup error: ' + error.message, true);
+        } else {
+            if (data.user?.identities?.length === 0) {
+                showMessage('User already exists. Try signing in.', true);
             } else {
-                if (data.user?.identities?.length === 0) {
-                    alert('User already exists. Try signing in.');
-                } else {
-                    alert('✅ Account created! Please check your email for confirmation (if enabled).');
-                    passwordInput.value = '';
-                }
+                showMessage('✅ Account created! Please check your email for confirmation (if enabled).', false);
+                passwordInput.value = '';
             }
         }
+    }
 
-        // ---------- SIGN IN ----------
-        async function handleSignIn() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            if (!email || !password) {
-                alert('Please fill both fields');
-                return;
-            }
-
-            signinBtn.disabled = true;
-            signinBtn.textContent = '•••';
-            signupBtn.disabled = true;
-
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-            signinBtn.disabled = false;
-            signinBtn.textContent = 'Sign in';
-            signupBtn.disabled = false;
-
-            if (error) {
-                alert('Signin error: ' + error.message);
-            } else {
-                alert('✅ Signed in successfully! Redirecting...');
-                // Redirect to your dashboard (change URL as needed)
-                window.location.href = '/dashboard';
-            }
+    // ---------- SIGN IN ----------
+    async function handleSignIn() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) {
+            showMessage('Please fill both fields', true);
+            return;
         }
 
-        // Attach event listeners
-        signupBtn.addEventListener('click', handleSignUp);
-        signinBtn.addEventListener('click', handleSignIn);
+        signinBtn.disabled = true;
+        signinBtn.textContent = '•••';
+        signupBtn.disabled = true;
 
-        // Enter key in password field triggers sign in
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSignIn();
-        });
-    </script>
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+        signinBtn.disabled = false;
+        signinBtn.textContent = 'Sign in';
+        signupBtn.disabled = false;
+
+        if (error) {
+            showMessage('Signin error: ' + error.message, true);
+        } else {
+            showMessage('✅ Signed in successfully! Redirecting to Xroga.com...', false);
+            // Redirect to homepage
+            window.location.href = 'https://xroga.com/';
+        }
+    }
+
+    // Attach listeners
+    signupBtn.addEventListener('click', handleSignUp);
+    signinBtn.addEventListener('click', handleSignIn);
+
+    // Press Enter in password field triggers sign in
+    passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSignIn();
+    });
+</script>
 </body>
 </html>
