@@ -2,164 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Xroga AI – Sign In</title>
+    <title>Xroga Debug – Email Sign</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        /* Glass card – full page centered */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(16px);
-            border-radius: 2rem;
-            width: 100%;
-            max-width: 440px;
-            padding: 2rem 1.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.3);
-            color: white;
-            text-align: center;
-        }
-
-        /* Logo */
-        .logo {
-            max-width: 140px;
-            margin: 0 auto 1rem;
-        }
-        .logo img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            margin-bottom: 1.75rem;
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-
-        /* Inputs */
-        input {
-            width: 100%;
-            padding: 0.9rem 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 1.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
-            color: white;
-            outline: none;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        input:focus {
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-        }
-
-        /* Buttons */
-        button {
-            width: 100%;
-            padding: 0.85rem;
-            border: none;
-            border-radius: 3rem;
-            font-weight: 700;
-            font-size: 1rem;
-            background: linear-gradient(105deg, #2563eb, #ffffff);
-            color: #0f172a;
-            cursor: pointer;
-            margin-bottom: 0.75rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-
-        /* Link to homepage */
-        .home-link {
-            display: inline-block;
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
-        }
-        .home-link:hover {
-            color: white;
-            border-bottom-color: white;
-        }
-
-        .privacy {
-            font-size: 0.7rem;
-            margin-top: 1.5rem;
-            opacity: 0.7;
-        }
-
-        /* Dark mode (if you add .dark to body) */
-        .dark .glass-card {
-            background: rgba(15, 25, 35, 0.75);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        .dark input {
-            background: rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: #f8fafc;
-        }
-        .dark button {
-            background: linear-gradient(105deg, #3b82f6, #e2e8f0);
-        }
+        body { font-family: system-ui; background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 2rem; padding: 2rem; max-width: 400px; width: 100%; color: white; text-align: center; }
+        input, button { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 40px; border: none; font-size: 1rem; }
+        input { background: rgba(255,255,255,0.2); color: white; }
+        button { background: linear-gradient(105deg, #2563eb, #ffffff); font-weight: bold; cursor: pointer; }
+        pre { background: #1e293b; padding: 10px; border-radius: 12px; overflow-x: auto; font-size: 12px; text-align: left; margin-top: 20px; }
     </style>
 </head>
 <body>
-
-<div class="glass-card">
-    <!-- Logo -->
-    <div class="logo">
-        <img src="https://i.postimg.cc/TPjDXhy8/Green-Minimalist-Summer-Big-Sale-Medium-Banner-7-removebg-preview.png" alt="Xroga AI Logo">
-    </div>
-    <h1>Welcome to Xroga AI</h1>
-    <div class="subtitle">Sign up or sign in with your email</div>
-
-    <input type="email" id="email" placeholder="Email address" autocomplete="email">
-    <input type="password" id="password" placeholder="Password (min 6)" autocomplete="current-password">
-
-    <button id="signupBtn">Sign up</button>
-    <button id="signinBtn">Sign in</button>
-
-    <a href="https://xroga.com/" target="_blank" class="home-link">Visit Xroga.com</a>
-    <div class="privacy">We'll never share your email.</div>
+<div class="card">
+    <h2>Xroga AI – Debug Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password (min 6)">
+    <button id="signupBtn">Sign up (debug)</button>
+    <button id="signinBtn">Sign in (debug)</button>
+    <div id="log" style="margin-top: 16px; font-size: 12px; text-align: left; background: #00000055; padding: 8px; border-radius: 12px;"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    // ---------- SUPABASE CONFIG ----------
+    // Supabase config
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -169,83 +34,78 @@
     const passwordInput = document.getElementById('password');
     const signupBtn = document.getElementById('signupBtn');
     const signinBtn = document.getElementById('signinBtn');
+    const logDiv = document.getElementById('log');
 
-    // Helper to show messages (you can replace alerts with a toast later)
-    function showMessage(msg, isError = true) {
-        alert(msg);  // Simple for now – works everywhere
+    function addLog(msg) {
+        const p = document.createElement('div');
+        p.textContent = msg;
+        logDiv.appendChild(p);
+        console.log(msg);
     }
 
-    // ---------- SIGN UP ----------
-    async function handleSignUp() {
+    // SIGN UP
+    signupBtn.onclick = async () => {
+        addLog('➡️ Signup button clicked');
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         if (!email || !password) {
-            showMessage('Please fill both fields', true);
+            addLog('❌ Missing email or password');
             return;
         }
         if (password.length < 6) {
-            showMessage('Password must be at least 6 characters', true);
+            addLog('❌ Password too short (min 6)');
             return;
         }
-
+        addLog(`📧 Attempting signup for ${email}`);
         signupBtn.disabled = true;
-        signupBtn.textContent = '•••';
-        signinBtn.disabled = true;
-
-        const { data, error } = await supabase.auth.signUp({ email, password });
-
-        signupBtn.disabled = false;
-        signupBtn.textContent = 'Sign up';
-        signinBtn.disabled = false;
-
-        if (error) {
-            showMessage('Signup error: ' + error.message, true);
-        } else {
-            if (data.user?.identities?.length === 0) {
-                showMessage('User already exists. Try signing in.', true);
+        signupBtn.textContent = '...';
+        try {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            if (error) {
+                addLog(`❌ Signup error: ${error.message}`);
             } else {
-                showMessage('✅ Account created! Please check your email for confirmation (if enabled).', false);
-                passwordInput.value = '';
+                if (data.user?.identities?.length === 0) {
+                    addLog('⚠️ User already exists – try signing in');
+                } else {
+                    addLog('✅ Signup success! You can now sign in.');
+                    passwordInput.value = '';
+                }
             }
+        } catch (err) {
+            addLog(`🔥 Exception: ${err.message}`);
+        } finally {
+            signupBtn.disabled = false;
+            signupBtn.textContent = 'Sign up (debug)';
         }
-    }
+    };
 
-    // ---------- SIGN IN ----------
-    async function handleSignIn() {
+    // SIGN IN
+    signinBtn.onclick = async () => {
+        addLog('➡️ Signin button clicked');
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         if (!email || !password) {
-            showMessage('Please fill both fields', true);
+            addLog('❌ Missing email or password');
             return;
         }
-
+        addLog(`🔐 Attempting signin for ${email}`);
         signinBtn.disabled = true;
-        signinBtn.textContent = '•••';
-        signupBtn.disabled = true;
-
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-        signinBtn.disabled = false;
-        signinBtn.textContent = 'Sign in';
-        signupBtn.disabled = false;
-
-        if (error) {
-            showMessage('Signin error: ' + error.message, true);
-        } else {
-            showMessage('✅ Signed in successfully! Redirecting to Xroga.com...', false);
-            // Redirect to homepage
-            window.location.href = 'https://xroga.com/';
+        signinBtn.textContent = '...';
+        try {
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                addLog(`❌ Signin error: ${error.message}`);
+            } else {
+                addLog('✅ Signed in! Redirecting to https://xroga.com/ ...');
+                setTimeout(() => { window.location.href = 'https://xroga.com/'; }, 1000);
+            }
+        } catch (err) {
+            addLog(`🔥 Exception: ${err.message}`);
+        } finally {
+            signinBtn.disabled = false;
+            signinBtn.textContent = 'Sign in (debug)';
         }
-    }
-
-    // Attach listeners
-    signupBtn.addEventListener('click', handleSignUp);
-    signinBtn.addEventListener('click', handleSignIn);
-
-    // Press Enter in password field triggers sign in
-    passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSignIn();
-    });
+    };
 </script>
 </body>
 </html>
