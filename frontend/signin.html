@@ -4,219 +4,369 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Xroga AI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- No external CSS that uses eval -->
     <style>
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .glass-card {
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .container {
+            max-width: 28rem;
+            width: 100%;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+            margin-bottom: 0.75rem;
+        }
+        .logo-icon span {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: white;
+        }
+        .logo h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: white;
+        }
+        .logo p {
+            color: #cbd5e1;
+            margin-top: 0.25rem;
+        }
+        .card {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+        @media (min-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
+        }
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            text-align: center;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 0.75rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        input::placeholder {
+            color: #94a3b8;
+        }
+        .forgot-pwd {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+        .forgot-pwd a {
+            font-size: 0.75rem;
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .forgot-pwd a:hover {
+            text-decoration: underline;
+        }
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+            transform: scale(0.98);
+        }
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+        .toggle button {
+            display: inline;
+            width: auto;
+            background: none;
+            color: #60a5fa;
+            font-weight: 500;
+            padding: 0;
+            margin-left: 0.25rem;
+        }
+        .toggle button:hover {
+            background: none;
+            text-decoration: underline;
+            transform: none;
+        }
+        .status {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .status.error {
+            color: #f87171;
+            background: rgba(248,113,113,0.1);
+        }
+        .status.success {
+            color: #4ade80;
+            background: rgba(74,222,128,0.1);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .hidden {
+            display: none;
         }
     </style>
+    <!-- Supabase JS (safe, no eval) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="font-sans antialiased flex items-center justify-center min-h-screen p-4">
-
-<div class="w-full max-w-md">
-    <!-- Logo -->
-    <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-600 shadow-lg mb-3">
-            <span class="text-white text-3xl font-bold">X</span>
-        </div>
-        <h1 class="text-3xl font-bold text-white">Xroga AI</h1>
-        <p class="text-gray-300 mt-1">Your intelligent coding assistant</p>
+<body>
+<div class="container">
+    <div class="logo">
+        <div class="logo-icon"><span>X</span></div>
+        <h1>Xroga AI</h1>
+        <p>Your intelligent coding assistant</p>
     </div>
 
-    <!-- Auth Card -->
-    <div class="glass-card rounded-2xl shadow-2xl p-6 md:p-8">
-        <h2 id="auth-title" class="text-2xl font-semibold text-white text-center mb-2">Sign In</h2>
-        <p id="auth-description" class="text-gray-300 text-center text-sm mb-6">
-            Use your email to continue
-        </p>
+    <div class="card">
+        <div class="title" id="auth-title">Sign In</div>
+        <div class="subtitle" id="auth-description">Use your email to continue</div>
 
-        <!-- Email -->
-        <div class="mb-4">
-            <label class="block text-gray-200 text-sm font-medium mb-1">Email address</label>
-            <input type="email" id="auth-email" autocomplete="email"
-                   class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+        <div class="input-group">
+            <label>Email address</label>
+            <input type="email" id="auth-email" autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="auth-password" autocomplete="current-password" placeholder="••••••••">
         </div>
 
-        <!-- Password -->
-        <div class="mb-2">
-            <label class="block text-gray-200 text-sm font-medium mb-1">Password</label>
-            <input type="password" id="auth-password" autocomplete="current-password"
-                   class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500">
+        <div id="forgot-pwd-container" class="forgot-pwd">
+            <a href="#" id="forgot-pwd-link">Forgot password?</a>
         </div>
 
-        <!-- Forgot Password (only visible in Sign In mode) -->
-        <div id="forgot-pwd-container" class="text-right mb-6">
-            <a href="#" id="forgot-pwd-link" class="text-sm text-blue-400 hover:text-blue-300">Forgot password?</a>
-        </div>
+        <button id="auth-submit-btn">Sign In</button>
 
-        <!-- Submit Button -->
-        <button id="auth-submit-btn"
-                class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold py-3 rounded-xl transition-all duration-200">
-            Sign In
-        </button>
-
-        <!-- Toggle between Sign In / Sign Up -->
-        <div class="text-center mt-6 text-gray-300 text-sm">
+        <div class="toggle">
             <span id="auth-toggle-text">Don't have an account?</span>
-            <button id="auth-toggle-mode" class="text-blue-400 hover:text-blue-300 font-medium ml-1">Sign Up</button>
+            <button id="auth-toggle-mode">Sign Up</button>
         </div>
 
-        <!-- Status / Error Message -->
-        <div id="status-message" class="mt-4 text-sm text-center hidden"></div>
+        <div id="status-message" class="status hidden"></div>
     </div>
 
-    <p class="text-center text-gray-400 text-xs mt-6">
+    <div class="footer">
         By continuing, you agree to our Terms of Service and Privacy Policy.
-    </p>
+    </div>
 </div>
 
 <script>
-    // ==================== Supabase Setup ====================
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    (function() {
+        // --- Supabase config ---
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // DOM elements
-    const authTitle = document.getElementById('auth-title');
-    const authDesc = document.getElementById('auth-description');
-    const emailInput = document.getElementById('auth-email');
-    const passwordInput = document.getElementById('auth-password');
-    const submitBtn = document.getElementById('auth-submit-btn');
-    const toggleModeBtn = document.getElementById('auth-toggle-mode');
-    const toggleTextSpan = document.getElementById('auth-toggle-text');
-    const forgotPwdContainer = document.getElementById('forgot-pwd-container');
-    const forgotPwdLink = document.getElementById('forgot-pwd-link');
-    const statusDiv = document.getElementById('status-message');
+        // DOM elements
+        const authTitle = document.getElementById('auth-title');
+        const authDesc = document.getElementById('auth-description');
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleModeBtn = document.getElementById('auth-toggle-mode');
+        const toggleTextSpan = document.getElementById('auth-toggle-text');
+        const forgotPwdContainer = document.getElementById('forgot-pwd-container');
+        const forgotPwdLink = document.getElementById('forgot-pwd-link');
+        const statusDiv = document.getElementById('status-message');
 
-    let isSignUpMode = false;
+        let isSignUpMode = false;
 
-    function showStatus(message, isError = true) {
-        statusDiv.textContent = message;
-        statusDiv.classList.remove('hidden', 'text-green-400', 'text-red-400');
-        statusDiv.classList.add(isError ? 'text-red-400' : 'text-green-400');
-        setTimeout(() => statusDiv.classList.add('hidden'), 5000);
-    }
-
-    function updateUI() {
-        if (isSignUpMode) {
-            authTitle.textContent = 'Create Account';
-            authDesc.textContent = 'Sign up to save chats and websites';
-            submitBtn.textContent = 'Sign Up';
-            toggleTextSpan.textContent = 'Already have an account?';
-            toggleModeBtn.textContent = 'Sign In';
-            forgotPwdContainer.style.display = 'none';   // hide forgot password on signup
-        } else {
-            authTitle.textContent = 'Sign In';
-            authDesc.textContent = 'Use your email to continue';
-            submitBtn.textContent = 'Sign In';
-            toggleTextSpan.textContent = "Don't have an account?";
-            toggleModeBtn.textContent = 'Sign Up';
-            forgotPwdContainer.style.display = 'block';
-        }
-    }
-
-    async function handleAuth() {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!email || !password) {
-            showStatus('Please enter both email and password.', true);
-            return;
-        }
-        if (password.length < 6) {
-            showStatus('Password must be at least 6 characters.', true);
-            return;
+        function showStatus(message, isError = true) {
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + (isError ? 'error' : 'success');
+            statusDiv.classList.remove('hidden');
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
         }
 
-        submitBtn.disabled = true;
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Processing...';
-
-        try {
+        function updateUI() {
             if (isSignUpMode) {
-                // Sign Up
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) {
-                    showStatus(error.message, true);
-                } else {
-                    if (data.user?.identities?.length === 0) {
-                        showStatus('User already exists. Please sign in instead.', true);
+                authTitle.textContent = 'Create Account';
+                authDesc.textContent = 'Sign up to save chats and websites';
+                submitBtn.textContent = 'Sign Up';
+                toggleTextSpan.textContent = 'Already have an account?';
+                toggleModeBtn.textContent = 'Sign In';
+                forgotPwdContainer.style.display = 'none';
+            } else {
+                authTitle.textContent = 'Sign In';
+                authDesc.textContent = 'Use your email to continue';
+                submitBtn.textContent = 'Sign In';
+                toggleTextSpan.textContent = "Don't have an account?";
+                toggleModeBtn.textContent = 'Sign Up';
+                forgotPwdContainer.style.display = 'block';
+            }
+        }
+
+        async function handleAuth() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showStatus('Please enter both email and password.', true);
+                return;
+            }
+            if (password.length < 6) {
+                showStatus('Password must be at least 6 characters.', true);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                if (isSignUpMode) {
+                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    if (error) {
+                        showStatus(error.message, true);
                     } else {
-                        showStatus('Account created! You can now sign in.', false);
-                        // Switch to Sign In mode automatically
-                        isSignUpMode = false;
-                        updateUI();
-                        emailInput.value = '';
-                        passwordInput.value = '';
+                        if (data.user?.identities?.length === 0) {
+                            showStatus('User already exists. Please sign in instead.', true);
+                        } else {
+                            showStatus('Account created! You can now sign in.', false);
+                            isSignUpMode = false;
+                            updateUI();
+                            emailInput.value = '';
+                            passwordInput.value = '';
+                        }
+                    }
+                } else {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) {
+                        showStatus(error.message, true);
+                    } else {
+                        showStatus('Sign in successful! Redirecting...', false);
+                        setTimeout(() => {
+                            window.location.href = 'https://xroga.com/';
+                        }, 1200);
                     }
                 }
-            } else {
-                // Sign In
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) {
-                    showStatus(error.message, true);
-                } else {
-                    showStatus('Sign in successful! Redirecting...', false);
-                    setTimeout(() => {
-                        window.location.href = 'https://xroga.com/';
-                    }, 1200);
-                }
+            } catch (err) {
+                showStatus('Network error: ' + err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
-        } catch (err) {
-            showStatus('Network error: ' + err.message, true);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
         }
-    }
 
-    async function handleForgotPassword() {
-        const email = emailInput.value.trim();
-        if (!email) {
-            showStatus('Please enter your email address.', true);
-            return;
+        async function handleForgotPassword() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showStatus('Please enter your email address.', true);
+                return;
+            }
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://xroga.com/reset-password',
+            });
+            if (error) {
+                showStatus(error.message, true);
+            } else {
+                showStatus('Password reset email sent! Check your inbox.', false);
+            }
         }
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://xroga.com/reset-password',
+
+        // Event listeners
+        submitBtn.addEventListener('click', handleAuth);
+        toggleModeBtn.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            updateUI();
+            statusDiv.classList.add('hidden');
         });
-        if (error) {
-            showStatus(error.message, true);
-        } else {
-            showStatus('Password reset email sent! Check your inbox.', false);
+        if (forgotPwdLink) {
+            forgotPwdLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleForgotPassword();
+            });
         }
-    }
 
-    // Event listeners
-    submitBtn.addEventListener('click', handleAuth);
-    toggleModeBtn.addEventListener('click', () => {
-        isSignUpMode = !isSignUpMode;
+        // Enter key submit
+        emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+
+        // Redirect if already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'https://xroga.com/';
+        });
+
         updateUI();
-        statusDiv.classList.add('hidden');
-    });
-    if (forgotPwdLink) {
-        forgotPwdLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleForgotPassword();
-        });
-    }
-
-    // Allow Enter key to submit
-    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
-    passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
-
-    // Auto redirect if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = 'https://xroga.com/';
-    });
-
-    // Initial UI
-    updateUI();
+    })();
 </script>
 </body>
 </html>
