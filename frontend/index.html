@@ -11346,6 +11346,14 @@ if (deepToggle && deepList && deepChevron) {
   const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // 👇 PASTE THE SNIPPET HERE (right after creating supabase)
+  (async () => {
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      console.log('Magic link detected, waiting for session...');
+      setTimeout(() => { window.location.reload(); }, 1000);
+    }
+  })();
+  
   // ==================== DOM ELEMENTS ====================
   const userDisplayArea = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
