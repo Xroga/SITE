@@ -1841,19 +1841,13 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     <span>Sign in with Email</span>
 </button>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (function() {
-    console.log("🔥 Script loaded - checking elements...");
-    
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log("✅ Supabase initialized");
 
-    // Get elements
-    const openBtn = document.getElementById('standalone-email-btn');
     const modal = document.getElementById('standalone-email-modal');
     const backdrop = document.getElementById('modal-backdrop');
     const signupBtn = document.getElementById('standalone-signup');
@@ -1861,176 +1855,35 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     const emailInput = document.getElementById('standalone-email');
     const passwordInput = document.getElementById('standalone-password');
 
-    // Debug: log if elements exist
-    console.log("openBtn:", openBtn);
-    console.log("modal:", modal);
-    console.log("signupBtn:", signupBtn);
-    console.log("signinBtn:", signinBtn);
-    console.log("emailInput:", emailInput);
-    console.log("passwordInput:", passwordInput);
+    // Open modal (assuming you have a button with id="standalone-email-btn")
+    const openBtn = document.getElementById('standalone-email-btn');
+    if (openBtn) openBtn.onclick = () => modal.style.display = 'block';
+    if (backdrop) backdrop.onclick = () => modal.style.display = 'none';
 
-    if (!signupBtn) console.error("❌ Signup button NOT found! Check ID: standalone-signup");
-    if (!signinBtn) console.error("❌ Signin button NOT found! Check ID: standalone-signin");
+    signupBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) return alert('Please fill both fields');
+      if (password.length < 6) return alert('Password must be at least 6 characters');
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) alert('Signup error: ' + error.message);
+      else alert('✅ Account created! Check your email to confirm.');
+    };
 
-    function showMessage(msg, isError = true) {
-      let msgDiv = document.getElementById('temp-auth-msg');
-      if (!msgDiv) {
-        msgDiv = document.createElement('div');
-        msgDiv.id = 'temp-auth-msg';
-        msgDiv.style.margin = '12px 0 0';
-        msgDiv.style.padding = '8px';
-        msgDiv.style.borderRadius = '40px';
-        msgDiv.style.fontSize = '0.8rem';
-        msgDiv.style.textAlign = 'center';
-        msgDiv.style.backdropFilter = 'blur(8px)';
-        const card = document.querySelector('.modal-card');
-        const privacy = card.querySelector('.privacy-text');
-        if (card && privacy) card.insertBefore(msgDiv, privacy);
-        else console.error("Could not find .modal-card or .privacy-text");
+    signinBtn.onclick = async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) return alert('Please fill both fields');
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) alert('Signin error: ' + error.message);
+      else {
+        alert('✅ Signed in! Reloading...');
+        location.reload();
       }
-      if (msgDiv) {
-        msgDiv.textContent = msg;
-        msgDiv.style.backgroundColor = isError ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)';
-        msgDiv.style.color = isError ? '#fee2e2' : '#d1fae5';
-        msgDiv.style.border = isError ? '1px solid #ef4444' : '1px solid #22c55e';
-        setTimeout(() => { if (msgDiv) msgDiv.remove(); }, 4000);
-      }
-    }
-
-    function setLoading(btn, isLoading) {
-      if (!btn) return;
-      if (isLoading) {
-        btn.dataset.orig = btn.innerText;
-        btn.innerText = '•••';
-        btn.disabled = true;
-      } else {
-        btn.innerText = btn.dataset.orig || (btn.id === 'standalone-signup' ? 'Sign up' : 'Sign in');
-        btn.disabled = false;
-      }
-    }
-
-    function clearFields() {
-      if (emailInput) emailInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-      const oldMsg = document.getElementById('temp-auth-msg');
-      if (oldMsg) oldMsg.remove();
-    }
-
-    function openModal() {
-      if (modal) {
-        modal.style.display = 'block';
-        emailInput?.focus();
-        console.log("Modal opened");
-      } else console.error("Modal element missing");
-    }
-    function closeModal() {
-      if (modal) {
-        modal.style.display = 'none';
-        clearFields();
-        console.log("Modal closed");
-      }
-    }
-
-    // Open/Close controls
-    if (openBtn) {
-      openBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openModal();
-      });
-    } else console.error("Open button not found");
-
-    if (backdrop) {
-      backdrop.addEventListener('click', closeModal);
-    } else console.error("Backdrop not found");
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal && modal.style.display === 'block') closeModal();
-    });
-
-    // SIGN UP
-    async function handleSignUp() {
-      console.log("Signup clicked");
-      const email = emailInput?.value.trim();
-      const password = passwordInput?.value;
-      console.log("Email:", email);
-      if (!email || !password) {
-        showMessage('Please fill both fields', true);
-        return;
-      }
-      if (password.length < 6) {
-        showMessage('Password must be at least 6 characters', true);
-        return;
-      }
-      setLoading(signupBtn, true);
-      setLoading(signinBtn, true);
-      try {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) {
-          console.error("Signup error:", error);
-          showMessage(error.message, true);
-        } else {
-          console.log("Signup success:", data);
-          if (data.user?.identities?.length === 0) {
-            showMessage('User already exists. Try signing in.', true);
-          } else {
-            showMessage('✅ Check your email to confirm your account!', false);
-            if (passwordInput) passwordInput.value = '';
-          }
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        showMessage('Network error. Check console.', true);
-      } finally {
-        setLoading(signupBtn, false);
-        setLoading(signinBtn, false);
-      }
-    }
-
-    // SIGN IN
-    async function handleSignIn() {
-      console.log("Signin clicked");
-      const email = emailInput?.value.trim();
-      const password = passwordInput?.value;
-      console.log("Email:", email);
-      if (!email || !password) {
-        showMessage('Please enter email and password', true);
-        return;
-      }
-      setLoading(signinBtn, true);
-      setLoading(signupBtn, true);
-      try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          console.error("Signin error:", error);
-          showMessage(error.message, true);
-        } else {
-          console.log("Signin success:", data);
-          showMessage('✅ Signed in! Redirecting...', false);
-          setTimeout(() => {
-            closeModal();
-            location.reload();
-          }, 1200);
-        }
-      } catch (err) {
-        console.error("Unexpected error:", err);
-        showMessage('Network error. Check console.', true);
-      } finally {
-        setLoading(signinBtn, false);
-        setLoading(signupBtn, false);
-      }
-    }
-
-    if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
-    if (signinBtn) signinBtn.addEventListener('click', handleSignIn);
-    if (passwordInput) {
-      passwordInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSignIn();
-      });
-    }
-
-    console.log("✅ Event listeners attached");
+    };
   })();
 </script>
+
 <!-- Modal popup – Glassmorphic + Blue/White gradient + Working close button -->
 <style>
   /* Glass modal base */
