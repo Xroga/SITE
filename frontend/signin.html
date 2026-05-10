@@ -2,110 +2,251 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Xroga Debug – Email Sign</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sign In | Xroga AI</title>
+    <!-- Tailwind CSS CDN (optional but quick styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: system-ui; background: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 2rem; padding: 2rem; max-width: 400px; width: 100%; color: white; text-align: center; }
-        input, button { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 40px; border: none; font-size: 1rem; }
-        input { background: rgba(255,255,255,0.2); color: white; }
-        button { background: linear-gradient(105deg, #2563eb, #ffffff); font-weight: bold; cursor: pointer; }
-        pre { background: #1e293b; padding: 10px; border-radius: 12px; overflow-x: auto; font-size: 12px; text-align: left; margin-top: 20px; }
+        /* Custom background gradient */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .input-field {
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+        }
     </style>
 </head>
-<body>
-<div class="card">
-    <h2>Xroga AI – Debug Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password (min 6)">
-    <button id="signupBtn">Sign up (debug)</button>
-    <button id="signinBtn">Sign in (debug)</button>
-    <div id="log" style="margin-top: 16px; font-size: 12px; text-align: left; background: #00000055; padding: 8px; border-radius: 12px;"></div>
-</div>
+<body class="font-sans antialiased flex items-center justify-center min-h-screen p-4">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    // Supabase config
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <div class="w-full max-w-md">
+        <!-- Logo / Brand -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-600 shadow-lg mb-3">
+                <span class="text-white text-3xl font-bold">X</span>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Xroga AI</h1>
+            <p class="text-gray-300 mt-1">Your intelligent coding assistant</p>
+        </div>
 
-    // DOM elements
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const signupBtn = document.getElementById('signupBtn');
-    const signinBtn = document.getElementById('signinBtn');
-    const logDiv = document.getElementById('log');
+        <!-- Auth Card -->
+        <div class="glass-card rounded-2xl shadow-2xl p-6 md:p-8">
+            <!-- Title (changes with mode) -->
+            <h2 id="auth-title" class="text-2xl font-semibold text-white text-center mb-2">Sign In</h2>
+            <p id="auth-description" class="text-gray-300 text-center text-sm mb-6">
+                Use your email to continue
+            </p>
 
-    function addLog(msg) {
-        const p = document.createElement('div');
-        p.textContent = msg;
-        logDiv.appendChild(p);
-        console.log(msg);
-    }
+            <!-- Email Input -->
+            <div class="mb-4">
+                <label class="block text-gray-200 text-sm font-medium mb-1">Email address</label>
+                <input type="email" id="auth-email" 
+                       class="input-field w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400"
+                       placeholder="you@example.com">
+            </div>
 
-    // SIGN UP
-    signupBtn.onclick = async () => {
-        addLog('➡️ Signup button clicked');
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        if (!email || !password) {
-            addLog('❌ Missing email or password');
-            return;
+            <!-- Password Input -->
+            <div class="mb-4">
+                <label class="block text-gray-200 text-sm font-medium mb-1">Password</label>
+                <input type="password" id="auth-password" 
+                       class="input-field w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400"
+                       placeholder="••••••••">
+            </div>
+
+            <!-- Forgot password link (optional) -->
+            <div class="text-right mb-6">
+                <a href="#" id="forgot-pwd-link" class="text-sm text-blue-400 hover:text-blue-300 transition">Forgot password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button id="auth-submit-btn" 
+                    class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg">
+                Sign In
+            </button>
+
+            <!-- Toggle between Sign In / Sign Up -->
+            <div class="text-center mt-6 text-gray-300 text-sm">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button id="auth-toggle-mode" class="text-blue-400 hover:text-blue-300 font-medium ml-1">Sign Up</button>
+            </div>
+
+            <!-- Status / Error message area -->
+            <div id="status-message" class="mt-4 text-sm text-center hidden"></div>
+        </div>
+
+        <p class="text-center text-gray-400 text-xs mt-6">
+            By continuing, you agree to our Terms of Service and Privacy Policy.
+        </p>
+    </div>
+
+    <script>
+        // ==================== SUPABASE INIT ====================
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // DOM elements
+        const authTitle = document.getElementById('auth-title');
+        const authDescription = document.getElementById('auth-description');
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const toggleModeBtn = document.getElementById('auth-toggle-mode');
+        const toggleTextSpan = document.getElementById('auth-toggle-text');
+        const statusDiv = document.getElementById('status-message');
+        const forgotPwdLink = document.getElementById('forgot-pwd-link');
+
+        let isSignUpMode = false;
+
+        // Helper: show status message (error or success)
+        function showStatus(message, isError = true) {
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('hidden', 'text-green-400', 'text-red-400');
+            statusDiv.classList.add(isError ? 'text-red-400' : 'text-green-400');
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
         }
-        if (password.length < 6) {
-            addLog('❌ Password too short (min 6)');
-            return;
-        }
-        addLog(`📧 Attempting signup for ${email}`);
-        signupBtn.disabled = true;
-        signupBtn.textContent = '...';
-        try {
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            if (error) {
-                addLog(`❌ Signup error: ${error.message}`);
+
+        // Update UI based on mode (Sign In / Sign Up)
+        function updateUIMode() {
+            if (isSignUpMode) {
+                authTitle.textContent = 'Create Account';
+                authDescription.textContent = 'Sign up to save chats and websites';
+                submitBtn.textContent = 'Sign Up';
+                toggleTextSpan.textContent = 'Already have an account?';
+                toggleModeBtn.textContent = 'Sign In';
+                forgotPwdLink.classList.add('hidden');   // hide forgot pwd on signup
             } else {
-                if (data.user?.identities?.length === 0) {
-                    addLog('⚠️ User already exists – try signing in');
+                authTitle.textContent = 'Sign In';
+                authDescription.textContent = 'Welcome back! Enter your credentials';
+                submitBtn.textContent = 'Sign In';
+                toggleTextSpan.textContent = "Don't have an account?";
+                toggleModeBtn.textContent = 'Sign Up';
+                forgotPwdLink.classList.remove('hidden');
+            }
+        }
+
+        // Handle Auth (Sign In / Sign Up)
+        async function handleAuth() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showStatus('Please enter both email and password.', true);
+                return;
+            }
+            if (password.length < 6) {
+                showStatus('Password must be at least 6 characters.', true);
+                return;
+            }
+
+            // Disable button to prevent double submission
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                if (isSignUpMode) {
+                    // SIGN UP
+                    const { data, error } = await supabase.auth.signUp({
+                        email,
+                        password,
+                    });
+                    if (error) {
+                        showStatus(error.message, true);
+                    } else {
+                        if (data.user?.identities?.length === 0) {
+                            showStatus('User already registered. Please sign in instead.', true);
+                        } else {
+                            showStatus('Account created! You can now sign in.', false);
+                            // Optionally switch to sign in mode automatically
+                            isSignUpMode = false;
+                            updateUIMode();
+                            emailInput.value = '';
+                            passwordInput.value = '';
+                        }
+                    }
                 } else {
-                    addLog('✅ Signup success! You can now sign in.');
-                    passwordInput.value = '';
+                    // SIGN IN
+                    const { error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password,
+                    });
+                    if (error) {
+                        showStatus(error.message, true);
+                    } else {
+                        showStatus('Sign in successful! Redirecting...', false);
+                        // Redirect to main site
+                        setTimeout(() => {
+                            window.location.href = 'https://xroga.com/';
+                        }, 1200);
+                    }
                 }
+            } catch (err) {
+                showStatus('Network error: ' + err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
-        } catch (err) {
-            addLog(`🔥 Exception: ${err.message}`);
-        } finally {
-            signupBtn.disabled = false;
-            signupBtn.textContent = 'Sign up (debug)';
         }
-    };
 
-    // SIGN IN
-    signinBtn.onclick = async () => {
-        addLog('➡️ Signin button clicked');
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        if (!email || !password) {
-            addLog('❌ Missing email or password');
-            return;
-        }
-        addLog(`🔐 Attempting signin for ${email}`);
-        signinBtn.disabled = true;
-        signinBtn.textContent = '...';
-        try {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) {
-                addLog(`❌ Signin error: ${error.message}`);
-            } else {
-                addLog('✅ Signed in! Redirecting to https://xroga.com/ ...');
-                setTimeout(() => { window.location.href = 'https://xroga.com/'; }, 1000);
+        // Password Reset (Forgot Password)
+        async function handlePasswordReset() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showStatus('Please enter your email address to reset password.', true);
+                return;
             }
-        } catch (err) {
-            addLog(`🔥 Exception: ${err.message}`);
-        } finally {
-            signinBtn.disabled = false;
-            signinBtn.textContent = 'Sign in (debug)';
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://xroga.com/reset-password', // optional callback URL
+            });
+            if (error) {
+                showStatus(error.message, true);
+            } else {
+                showStatus('Password reset email sent! Check your inbox.', false);
+            }
         }
-    };
-</script>
+
+        // Event listeners
+        submitBtn.addEventListener('click', handleAuth);
+        toggleModeBtn.addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            updateUIMode();
+            // Clear previous status and inputs
+            statusDiv.classList.add('hidden');
+        });
+        forgotPwdLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            handlePasswordReset();
+        });
+
+        // Allow Enter key to submit
+        const inputs = [emailInput, passwordInput];
+        inputs.forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAuth();
+            });
+        });
+
+        // Check if already logged in → redirect immediately
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                window.location.href = 'https://xroga.com/';
+            }
+        });
+    </script>
 </body>
 </html>
