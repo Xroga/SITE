@@ -2,201 +2,362 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign in / Sign up | Xroga AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sign in to Xroga AI</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: system-ui, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at 10% 20%, rgba(15, 23, 42, 1) 0%, rgba(30, 27, 75, 1) 100%);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 1rem;
+            padding: 1.5rem;
         }
-        .container { max-width: 28rem; width: 100%; }
+
+        /* Glassmorphic card */
         .card {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            max-width: 480px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.4);
+            padding: 2rem 2rem 2.5rem;
+            transition: transform 0.2s ease;
         }
-        h2 { color: white; text-align: center; margin-bottom: 0.5rem; }
-        .sub { color: #cbd5e1; text-align: center; margin-bottom: 1.5rem; }
-        input {
-            width: 100%; padding: 0.75rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 0.75rem;
-            color: white;
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* Logo area */
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo-circle {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 1rem;
-            font-size: 1rem;
+            box-shadow: 0 8px 20px rgba(59,130,246,0.3);
         }
+        .logo-circle span {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+        }
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+        .logo p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Headings */
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .sub {
+            text-align: center;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        /* Form elements */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        input::placeholder {
+            color: #64748b;
+        }
+
+        /* Button */
         button {
-            width: 100%; padding: 0.75rem;
-            background: #2563eb; border: none;
-            border-radius: 0.75rem;
-            color: white; font-weight: bold;
-            cursor: pointer;
+            width: 100%;
+            background: linear-gradient(105deg, #2563eb, #3b82f6);
+            border: none;
+            padding: 0.9rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            color: white;
             font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .message { margin-top: 1rem; padding: 0.75rem; border-radius: 0.75rem; text-align: center; font-size: 0.9rem; }
-        .error { color: #f87171; background: rgba(248,113,113,0.15); border-left: 3px solid #f87171; }
-        .success { color: #4ade80; background: rgba(74,222,128,0.1); border-left: 3px solid #4ade80; }
-        .hidden { display: none; }
-        .debug { font-family: monospace; font-size: 0.7rem; margin-top: 1rem; padding: 0.5rem; background: #1e293b; color: #94a3b8; border-radius: 0.5rem; word-break: break-all; }
+        button:hover {
+            background: linear-gradient(105deg, #1d4ed8, #2563eb);
+            transform: scale(0.98);
+        }
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Message area */
+        .message {
+            margin-top: 1.5rem;
+            padding: 0.85rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .message.success {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+            border-left: 3px solid #4ade80;
+        }
+        .message.error {
+            background: rgba(248, 113, 113, 0.12);
+            color: #f87171;
+            border-left: 3px solid #f87171;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .card { padding: 1.5rem; }
+            h2 { font-size: 1.5rem; }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <h2>Welcome to Xroga AI</h2>
-        <div class="sub">Enter your email – we'll send a magic link</div>
-        <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
-        <button id="send-btn">Send magic link</button>
-        <div id="message" class="message hidden"></div>
-        <div id="debug-log" class="debug">Ready. Enter email and click button.</div>
+<div class="card">
+    <div class="logo">
+        <div class="logo-circle"><span>X</span></div>
+        <h1>Xroga AI</h1>
+        <p>Your intelligent coding assistant</p>
+    </div>
+
+    <h2>Welcome back</h2>
+    <div class="sub">Sign in or create an account with just your email</div>
+
+    <div class="input-group">
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+
+    <button id="magic-link-btn">
+        <span>Send magic link</span>
+    </button>
+
+    <div id="messageContainer" class="message hidden"></div>
+
+    <div class="footer">
+        By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+        <br>
+        <span style="font-size: 0.7rem;">We'll email you a one‑time login link.</span>
     </div>
 </div>
+
 <script>
     (function() {
-        // ---- Supabase config ----
+        // ==================== SUPABASE CONFIG ====================
         const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
         
-        // ---- DOM elements ----
-        const emailInput = document.getElementById('email');
-        const sendBtn = document.getElementById('send-btn');
-        const msgDiv = document.getElementById('message');
-        const debugDiv = document.getElementById('debug-log');
-        
-        // ---- Helper: show message in UI (and console) ----
-        function showMessage(text, isError = true) {
-            console.log(`${isError ? '❌' : '✅'} ${text}`);
-            msgDiv.textContent = text;
-            msgDiv.className = `message ${isError ? 'error' : 'success'}`;
-            msgDiv.classList.remove('hidden');
-            // Also update debug log
-            const timestamp = new Date().toLocaleTimeString();
-            debugDiv.innerHTML = `${timestamp}: ${text}<br>${debugDiv.innerHTML.slice(0, 300)}`;
-            // Auto-hide after 6 seconds
-            setTimeout(() => msgDiv.classList.add('hidden'), 6000);
-        }
-        
-        // ---- Show alert as fallback (for critical errors) ----
-        function showAlert(title, details) {
-            console.error(title, details);
-            alert(`${title}\n\n${details}\n\nCheck console for more info.`);
-            debugDiv.innerHTML += `<br>⚠️ ALERT: ${title} - ${details}`;
-        }
-        
-        // ---- Initialize Supabase client (with error handling) ----
         let supabase;
         try {
-            if (!window.supabase) throw new Error('Supabase library not loaded. Check internet or CDN.');
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            debugDiv.innerHTML = `✅ Supabase client initialized at ${new Date().toLocaleTimeString()}<br>${debugDiv.innerHTML}`;
         } catch (err) {
-            showAlert('Supabase Initialization Failed', err.message);
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Error - Reload';
+            showAlert('Initialization Error', 'Failed to load authentication service. Please refresh the page.');
+            console.error(err);
             return;
         }
-        
-        // ---- Check if already logged in ----
-        supabase.auth.getSession().then(({ data: { session }, error }) => {
-            if (error) {
-                console.warn('Session check warning:', error.message);
-                debugDiv.innerHTML += `<br>⚠️ Session check: ${error.message}`;
-            } else if (session) {
-                debugDiv.innerHTML += `<br>🔐 Session found, redirecting...`;
-                window.location.href = 'https://xroga.com/';
+
+        // DOM elements
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.getElementById('magic-link-btn');
+        const messageContainer = document.getElementById('messageContainer');
+        let originalButtonText = 'Send magic link';
+
+        // Helper: show UI message
+        function showMessage(text, type = 'error') {
+            messageContainer.textContent = text;
+            messageContainer.className = `message ${type}`;
+            messageContainer.classList.remove('hidden');
+            // Auto‑hide after 6 seconds
+            setTimeout(() => {
+                messageContainer.classList.add('hidden');
+            }, 6000);
+        }
+
+        // Helper: alert fallback for critical errors
+        function showAlert(title, details) {
+            console.error(title, details);
+            alert(`${title}\n\n${details}`);
+        }
+
+        // Helper: set loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="spinner"></span><span>Sending...</span>`;
             } else {
-                debugDiv.innerHTML += `<br>🔓 No active session.`;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>${originalButtonText}</span>`;
             }
-        }).catch(err => {
-            console.warn('Session check exception:', err);
-            debugDiv.innerHTML += `<br>⚠️ Session exception: ${err.message}`;
-        });
-        
-        // ---- Main login function with full error handling ----
+        }
+
+        // Main magic link function
         async function sendMagicLink() {
             const email = emailInput.value.trim();
+
+            // Validation
             if (!email) {
-                showMessage('Please enter your email address.', true);
+                showMessage('Please enter your email address.', 'error');
                 return;
             }
-            
-            // Basic email format validation
-            if (!email.includes('@') || !email.includes('.')) {
-                showMessage('Please enter a valid email address (e.g., name@domain.com).', true);
+            if (!/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(email)) {
+                showMessage('Enter a valid email address (e.g., name@domain.com).', 'error');
                 return;
             }
-            
-            // Disable button to prevent double click
-            sendBtn.disabled = true;
-            sendBtn.textContent = 'Sending...';
-            showMessage(`Sending magic link to ${email}...`, false);
-            
+
+            setLoading(true);
+            // Clear previous message
+            messageContainer.classList.add('hidden');
+
             try {
-                console.log('Calling supabase.auth.signInWithOtp for', email);
-                const { data, error } = await supabase.auth.signInWithOtp({
+                const { error } = await supabase.auth.signInWithOtp({
                     email: email,
                     options: {
                         shouldCreateUser: true,
+                        // IMPORTANT: this must be exactly one of your allowed redirect URLs in Supabase
                         emailRedirectTo: 'https://xroga.com/'
                     }
                 });
-                
+
                 if (error) {
-                    // Supabase returned an error object
-                    console.error('Supabase error details:', error);
-                    showMessage(`Error: ${error.message} (${error.status || 'unknown code'})`, true);
-                    // If it's a configuration error, show alert for visibility
-                    if (error.message.includes('provider') || error.message.includes('redirect') || error.message.includes('enabled')) {
-                        showAlert('Supabase Configuration Issue', error.message + '\n\nPlease contact support or check email provider settings.');
+                    console.error('Supabase error:', error);
+                    // Provide user‑friendly message based on error
+                    if (error.message.includes('provider') || error.message.includes('enabled')) {
+                        showMessage('Email sign‑in is not enabled. Please contact support.', 'error');
+                        showAlert('Configuration Error', error.message);
+                    } else if (error.message.includes('redirect')) {
+                        showMessage('Redirect URL not configured correctly. Please try again later.', 'error');
+                    } else {
+                        showMessage(`Error: ${error.message}`, 'error');
                     }
-                } else {
-                    // Success
-                    console.log('Magic link sent successfully', data);
-                    showMessage(`✨ Magic link sent to ${email}. Check your inbox (and spam folder).`, false);
-                    emailInput.value = ''; // clear for privacy
-                    // Optionally, disable button for a few seconds to prevent spam
-                    setTimeout(() => {
-                        if (sendBtn.disabled === false) return;
-                        sendBtn.disabled = false;
-                        sendBtn.textContent = 'Send magic link';
-                    }, 3000);
-                    return; // skip re-enabling immediately
+                    setLoading(false);
+                    return;
                 }
+
+                // Success
+                showMessage(`✨ Magic link sent! Check ${email} for a sign‑in link.`, 'success');
+                emailInput.value = '';   // clear for privacy
+                // Keep button disabled for a few seconds to prevent spam
+                setTimeout(() => {
+                    if (submitBtn.disabled) setLoading(false);
+                }, 3000);
             } catch (err) {
-                // Catch network errors, CSP issues, etc.
-                console.error('Uncaught error in sendMagicLink:', err);
-                showMessage(`Network or script error: ${err.message}`, true);
-                showAlert('Unexpected Error', err.message + '\n\nPlease check your internet and reload the page.');
-            } finally {
-                // Re-enable button unless we already scheduled a later enable
-                if (sendBtn.disabled === true) {
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = 'Send magic link';
-                }
+                console.error('Uncaught error:', err);
+                showMessage('Network error. Please check your connection and try again.', 'error');
+                setLoading(false);
             }
         }
-        
+
         // Attach event listeners
-        sendBtn.addEventListener('click', sendMagicLink);
+        submitBtn.addEventListener('click', sendMagicLink);
         emailInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMagicLink();
         });
-        
-        // Additional debug: log when page is fully loaded
-        window.addEventListener('load', () => {
-            debugDiv.innerHTML += `<br>📄 Page loaded at ${new Date().toLocaleTimeString()}`;
-            console.log('Sign-in page ready');
+
+        // Check if already logged in → redirect immediately
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                console.log('Already logged in, redirecting...');
+                window.location.href = 'https://xroga.com/';
+            }
+        }).catch(err => console.warn('Session check failed:', err));
+
+        // Also listen for auth state changes (in case user logs in from another tab)
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || (session && event === 'TOKEN_REFRESHED')) {
+                window.location.href = 'https://xroga.com/';
+            }
         });
     })();
 </script>
