@@ -1831,7 +1831,6 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
         <button id="calendar-confirm" class="mt-4 w-full py-2 bg-pure-gold/30 rounded-full text-pure-gold text-sm">Set Deadline</button>
     </div>
 </div>
-
                 <!-- Theme Toggle (unchanged) -->
                 <button id="theme-toggle" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/50 transition-all duration-200 active:scale-[0.98]">
                     <div class="flex items-center gap-3">
@@ -1846,7 +1845,62 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
                         <span class="hidden dark:inline">Dark</span>
                     </span>
                 </button>
+           <!-- User Info & Logout (updated) -->
+<div id="user-info" class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-primary-500/20 to-purple-500/20 dark:from-primary-900/30 dark:to-purple-900/30 backdrop-blur-sm mb-2">
+    <div class="flex items-center gap-3">
+        <div class="p-2 bg-primary-500/30 dark:bg-primary-900/30 rounded-lg">
+            <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+        </div>
+        <div>
+            <p class="text-xs text-gray-600 dark:text-gray-400" id="sidebar-status">Not logged in</p>
+        </div>
+    </div>
+    <button id="logout-btn" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
+</div>
 
+<!-- Login button (opens email/password modal) -->
+<div class="p-4 border-t border-white/30 dark:border-gray-700/30">
+    <button id="login-show-btn" class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
+        <!-- Simple email icon (Lucide will replace data-lucide) -->
+        <i data-lucide="mail" class="w-5 h-5"></i>
+        <span class="font-medium">Sign in with Email</span>
+    </button>
+</div>
+
+<!-- Login Modal (Email / Password, no Google) -->
+<div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-sm w-full mx-4 border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="p-5">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white" id="auth-title">Sign In</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4" id="auth-description">
+                Sign in with your email to save chats and sync across devices.
+            </p>
+
+            <!-- Email input -->
+            <input type="email" id="auth-email" placeholder="Email address" 
+                   class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            <!-- Password input -->
+            <input type="password" id="auth-password" placeholder="Password" 
+                   class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+
+            <!-- Submit button -->
+            <button id="auth-submit-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
+                Sign In
+            </button>
+
+            <!-- Toggle between Sign In / Sign Up -->
+            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+                <span id="auth-toggle-text">Don't have an account?</span>
+                <button id="auth-toggle-mode" class="text-blue-600 hover:underline ml-1">Sign Up</button>
+            </p>
+        </div>
+    </div>
+</div>
                 
                 <!-- Settings Button (unchanged) -->
                 <button id="settings-btn" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/30 dark:hover:bg-gray-700/50 transition-all duration-200 active:scale-[0.98]">
@@ -1898,7 +1952,6 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 
 
 <div class="flex-0 min-w-0">
-
 
   
   <!-- Dynamic animated text container — modern glass + glow -->
@@ -3000,7 +3053,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
   border-top: 0.5px solid rgba(255,255,255,0.1);
   font-size: 0.3rem;
 ">
-  <a href="/privacy.html" target="_blank" style="color: inherit; text-decoration: none; margin-right: 12px;">Privacy Policy</a>
+  <a href="/privacy.html" target="_blank" style="color: inherit; text-decoration: none; margin-right: 12px;">Privacy</a>
   <a href="/terms.html" target="_blank" style="color: inherit; text-decoration: none;">Terms</a>
 </div>
       </div>
@@ -11321,6 +11374,296 @@ if (deepToggle && deepList && deepChevron) {
 
 
 
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // ==================== SUPABASE CONFIGURATION ====================
+const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==================== DOM Elements ====================
+const loginModal = document.getElementById('login-modal');
+const closeModalBtn = document.getElementById('close-modal');
+const logoutBtn = document.getElementById('logout-btn');
+const userDisplayArea = document.getElementById('user-display');
+const toastEl = document.getElementById('toast');
+const toastTitle = document.getElementById('toast-title');
+const toastMessage = document.getElementById('toast-message');
+const loginShowBtn = document.getElementById('login-show-btn');
+
+// Auth form elements
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+const authSubmitBtn = document.getElementById('auth-submit-btn');
+const authToggleMode = document.getElementById('auth-toggle-mode');
+const authTitle = document.getElementById('auth-title');
+const authToggleText = document.getElementById('auth-toggle-text');
+
+let isSignUpMode = false;
+
+// ==================== Toast Helper ====================
+function showToast(title, message, isSuccess = true) {
+  if (!toastEl || !toastTitle || !toastMessage) return;
+  toastTitle.textContent = title;
+  toastMessage.textContent = message;
+  toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+  setTimeout(() => {
+    toastEl.classList.add('opacity-0', 'translate-y-4');
+    setTimeout(() => toastEl.classList.add('hidden'), 300);
+  }, 3000);
+}
+
+// ==================== Modal Controls ====================
+function openModal() { loginModal?.classList.remove('hidden'); }
+function closeModal() { loginModal?.classList.add('hidden'); }
+
+closeModalBtn?.addEventListener('click', closeModal);
+
+// ==================== Email/Password Auth ====================
+async function handleAuth() {
+  const email = authEmail.value.trim();
+  const password = authPassword.value.trim();
+
+  if (!email || !password) {
+    showToast('Missing info', 'Please enter email and password', false);
+    return;
+  }
+
+  if (isSignUpMode) {
+    // SIGN UP
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      showToast('Sign Up Failed', error.message, false);
+    } else {
+      showToast('Check your email', 'Confirmation link sent (if email confirmation is enabled).');
+      closeModal();
+    }
+  } else {
+    // SIGN IN
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      showToast('Sign In Failed', error.message, false);
+    } else {
+      showToast('Welcome back!', `Signed in as ${email}`);
+      closeModal();
+      authEmail.value = '';
+      authPassword.value = '';
+    }
+  }
+}
+
+authSubmitBtn?.addEventListener('click', handleAuth);
+
+// Toggle between Sign In / Sign Up
+authToggleMode?.addEventListener('click', () => {
+  isSignUpMode = !isSignUpMode;
+  if (isSignUpMode) {
+    authTitle.textContent = 'Sign Up';
+    authSubmitBtn.textContent = 'Sign Up';
+    authToggleText.textContent = 'Already have an account?';
+    authToggleMode.textContent = 'Sign In';
+  } else {
+    authTitle.textContent = 'Sign In';
+    authSubmitBtn.textContent = 'Sign In';
+    authToggleText.textContent = 'Don\'t have an account?';
+    authToggleMode.textContent = 'Sign Up';
+  }
+});
+
+// ==================== Sign Out ====================
+logoutBtn?.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  showToast('Signed Out', 'You have been logged out.');
+});
+
+// ==================== GLOBAL VARIABLES (polling) ====================
+let currentUser = null;
+let lastMessageTimestamp = null;
+let pollInterval = null;
+
+// ==================== POLLING (unchanged) ====================
+async function pollNewMessages() {
+  if (!currentUser) return;
+  let query = supabase
+    .from('chats')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: true });
+  if (lastMessageTimestamp) {
+    query = query.gt('created_at', lastMessageTimestamp);
+  }
+  const { data, error } = await query;
+  if (error) {
+    console.error('Poll error:', error);
+    return;
+  }
+  if (data && data.length) {
+    for (const msg of data) {
+      if (msg.role === 'user') {
+        if (typeof addUserMessage === 'function') addUserMessage(msg.content, false);
+      } else if (msg.role === 'assistant') {
+        if (msg.type === 'code') {
+          if (typeof addCodeResponse === 'function') addCodeResponse(msg.content, false);
+        } else if (msg.type === 'image') {
+          if (typeof displayImageResult === 'function') displayImageResult(msg.content, '', false);
+        } else {
+          if (typeof addAIMessage === 'function') addAIMessage(msg.content, false);
+        }
+      }
+    }
+    lastMessageTimestamp = data[data.length - 1].created_at;
+  }
+}
+
+function startPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(pollNewMessages, 5000);
+}
+function stopPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = null;
+}
+
+// ==================== SAVE / UPDATE / DELETE MESSAGES (unchanged) ====================
+async function saveChatMessage(role, content, messageId, type = 'text') {
+  if (!currentUser) return;
+  await supabase.from('chats').insert({
+    user_id: currentUser.id,
+    role,
+    content,
+    message_id: messageId,
+    created_at: new Date().toISOString(),
+    type
+  });
+}
+window.saveChatMessage = saveChatMessage;
+
+async function updateChatMessage(messageId, newContent) {
+  if (!currentUser) return;
+  await supabase.from('chats').update({ content: newContent }).eq('message_id', messageId).eq('user_id', currentUser.id);
+}
+window.updateChatMessage = updateChatMessage;
+
+async function deleteChatMessage(messageId) {
+  if (!currentUser) return;
+  await supabase.from('chats').delete().eq('message_id', messageId).eq('user_id', currentUser.id);
+}
+window.deleteChatMessage = deleteChatMessage;
+
+// ==================== UPLOAD TO R2 (unchanged) ====================
+async function uploadToR2(fileBlob, filename, bucketType) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error('Not authenticated');
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename, bucketType })
+  });
+  if (!res.ok) throw new Error('Failed to get upload URL');
+  const { url, key } = await res.json();
+  const uploadRes = await fetch(url, { method: 'PUT', body: fileBlob });
+  if (!uploadRes.ok) throw new Error('Upload failed');
+  return key;
+}
+
+// ==================== SAVE WEBSITE (unchanged) ====================
+async function saveWebsiteToCloud(title, codeHtml, subdomain) {
+  if (!currentUser) return;
+  try {
+    const blob = new Blob([codeHtml], { type: 'text/html' });
+    const filename = `${title.replace(/\s/g, '_')}.html`;
+    const r2Key = await uploadToR2(blob, filename, 'website');
+    await supabase.from('websites').insert({
+      user_id: currentUser.id,
+      title,
+      r2_key: r2Key,
+      subdomain
+    });
+    showToast('Website saved to cloud!', 'Success');
+  } catch (err) {
+    console.error('Save website error:', err);
+    showToast('Failed to save website', 'Error', false);
+  }
+}
+window.saveWebsiteToCloud = saveWebsiteToCloud;
+
+// ==================== AUTH STATE CHANGE ====================
+supabase.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user || null;
+  window.currentUser = currentUser;
+
+  if (currentUser) {
+    // Update UI
+    if (userDisplayArea) {
+      const meta = currentUser.user_metadata;
+      userDisplayArea.innerHTML = `
+        <div class="flex items-center gap-2">
+          <img src="${meta?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(meta?.full_name || currentUser.email)}" class="w-8 h-8 rounded-full">
+          <span class="text-sm font-medium">${meta?.full_name || currentUser.email}</span>
+        </div>
+      `;
+    }
+    logoutBtn?.classList.remove('hidden');
+    if (loginShowBtn) loginShowBtn.classList.add('hidden');
+
+    // Load existing messages
+    const { data: lastMsg } = await supabase
+      .from('chats')
+      .select('created_at')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (lastMsg && lastMsg.length) {
+      lastMessageTimestamp = lastMsg[0].created_at;
+    }
+
+    const { data: allMsg } = await supabase
+      .from('chats')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: true });
+    if (allMsg && allMsg.length) {
+      if (typeof clearChatUI === 'function') clearChatUI();
+      for (const msg of allMsg) {
+        if (msg.role === 'user') {
+          if (typeof addUserMessage === 'function') addUserMessage(msg.content, false);
+        } else if (msg.role === 'assistant') {
+          if (msg.type === 'code') {
+            if (typeof addCodeResponse === 'function') addCodeResponse(msg.content, false);
+          } else if (msg.type === 'image') {
+            if (typeof displayImageResult === 'function') displayImageResult(msg.content, '', false);
+          } else {
+            if (typeof addAIMessage === 'function') addAIMessage(msg.content, false);
+          }
+        }
+      }
+      if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
+    }
+    startPolling();
+  } else {
+    if (userDisplayArea) userDisplayArea.innerHTML = '';
+    logoutBtn?.classList.add('hidden');
+    if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+    stopPolling();
+    lastMessageTimestamp = null;
+    if (typeof clearChatUI === 'function') clearChatUI();
+  }
+});
+
+// Make loginShowBtn open the modal
+if (loginShowBtn) loginShowBtn.onclick = openModal;
+</script>
 
 
 <!-- Rename Chat Modal -->
@@ -11340,7 +11683,6 @@ if (deepToggle && deepList && deepChevron) {
   <span style="margin: 0 8px">|</span>
   <a href="/terms.html" target="_blank">Terms of Service</a>
 </footer>
-
 </body>
 </html>
 
@@ -12143,3 +12485,4 @@ if (deepToggle && deepList && deepChevron) {
     </script>
   </section>
 </div>
+
