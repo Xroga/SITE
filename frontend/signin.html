@@ -32,6 +32,7 @@
             border-radius: 0.75rem;
             color: white;
             margin-bottom: 1rem;
+            font-size: 1rem;
         }
         button {
             width: 100%; padding: 0.75rem;
@@ -39,11 +40,14 @@
             border-radius: 0.75rem;
             color: white; font-weight: bold;
             cursor: pointer;
+            font-size: 1rem;
         }
-        .message { margin-top: 1rem; padding: 0.5rem; border-radius: 0.5rem; text-align: center; }
-        .error { color: #f87171; background: rgba(248,113,113,0.1); }
-        .success { color: #4ade80; background: rgba(74,222,128,0.1); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .message { margin-top: 1rem; padding: 0.75rem; border-radius: 0.75rem; text-align: center; font-size: 0.9rem; }
+        .error { color: #f87171; background: rgba(248,113,113,0.15); border-left: 3px solid #f87171; }
+        .success { color: #4ade80; background: rgba(74,222,128,0.1); border-left: 3px solid #4ade80; }
         .hidden { display: none; }
+        .debug { font-family: monospace; font-size: 0.7rem; margin-top: 1rem; padding: 0.5rem; background: #1e293b; color: #94a3b8; border-radius: 0.5rem; word-break: break-all; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -51,59 +55,150 @@
 <div class="container">
     <div class="card">
         <h2>Welcome to Xroga AI</h2>
-        <div class="sub">Enter your email – we’ll send a magic link</div>
-        <input type="email" id="email" placeholder="your@email.com">
+        <div class="sub">Enter your email – we'll send a magic link</div>
+        <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
         <button id="send-btn">Send magic link</button>
         <div id="message" class="message hidden"></div>
+        <div id="debug-log" class="debug">Ready. Enter email and click button.</div>
     </div>
 </div>
 <script>
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const emailInput = document.getElementById('email');
-    const sendBtn = document.getElementById('send-btn');
-    const msgDiv = document.getElementById('message');
-
-    function showMessage(text, isError = true) {
-        msgDiv.textContent = text;
-        msgDiv.className = `message ${isError ? 'error' : 'success'}`;
-        msgDiv.classList.remove('hidden');
-        setTimeout(() => msgDiv.classList.add('hidden'), 6000);
-    }
-
-    sendBtn.onclick = async () => {
-        const email = emailInput.value.trim();
-        if (!email) return showMessage('Please enter your email');
-
-        sendBtn.disabled = true;
-        sendBtn.textContent = 'Sending...';
-
-        const { error } = await supabase.auth.signInWithOtp({
-            email: email,
-            options: {
-                shouldCreateUser: true,
-                emailRedirectTo: 'https://xroga.com/'   // ← MUST match allowed URL
-            }
-        });
-
-        sendBtn.disabled = false;
-        sendBtn.textContent = 'Send magic link';
-
-        if (error) {
-            showMessage(error.message);
-            console.error(error);
-        } else {
-            showMessage(`✨ Magic link sent to ${email}. Check your inbox & spam.`, false);
-            emailInput.value = '';
+    (function() {
+        // ---- Supabase config ----
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        
+        // ---- DOM elements ----
+        const emailInput = document.getElementById('email');
+        const sendBtn = document.getElementById('send-btn');
+        const msgDiv = document.getElementById('message');
+        const debugDiv = document.getElementById('debug-log');
+        
+        // ---- Helper: show message in UI (and console) ----
+        function showMessage(text, isError = true) {
+            console.log(`${isError ? '❌' : '✅'} ${text}`);
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+            msgDiv.classList.remove('hidden');
+            // Also update debug log
+            const timestamp = new Date().toLocaleTimeString();
+            debugDiv.innerHTML = `${timestamp}: ${text}<br>${debugDiv.innerHTML.slice(0, 300)}`;
+            // Auto-hide after 6 seconds
+            setTimeout(() => msgDiv.classList.add('hidden'), 6000);
         }
-    };
-
-    // Auto‑redirect if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) location.href = 'https://xroga.com/';
-    });
+        
+        // ---- Show alert as fallback (for critical errors) ----
+        function showAlert(title, details) {
+            console.error(title, details);
+            alert(`${title}\n\n${details}\n\nCheck console for more info.`);
+            debugDiv.innerHTML += `<br>⚠️ ALERT: ${title} - ${details}`;
+        }
+        
+        // ---- Initialize Supabase client (with error handling) ----
+        let supabase;
+        try {
+            if (!window.supabase) throw new Error('Supabase library not loaded. Check internet or CDN.');
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            debugDiv.innerHTML = `✅ Supabase client initialized at ${new Date().toLocaleTimeString()}<br>${debugDiv.innerHTML}`;
+        } catch (err) {
+            showAlert('Supabase Initialization Failed', err.message);
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Error - Reload';
+            return;
+        }
+        
+        // ---- Check if already logged in ----
+        supabase.auth.getSession().then(({ data: { session }, error }) => {
+            if (error) {
+                console.warn('Session check warning:', error.message);
+                debugDiv.innerHTML += `<br>⚠️ Session check: ${error.message}`;
+            } else if (session) {
+                debugDiv.innerHTML += `<br>🔐 Session found, redirecting...`;
+                window.location.href = 'https://xroga.com/';
+            } else {
+                debugDiv.innerHTML += `<br>🔓 No active session.`;
+            }
+        }).catch(err => {
+            console.warn('Session check exception:', err);
+            debugDiv.innerHTML += `<br>⚠️ Session exception: ${err.message}`;
+        });
+        
+        // ---- Main login function with full error handling ----
+        async function sendMagicLink() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showMessage('Please enter your email address.', true);
+                return;
+            }
+            
+            // Basic email format validation
+            if (!email.includes('@') || !email.includes('.')) {
+                showMessage('Please enter a valid email address (e.g., name@domain.com).', true);
+                return;
+            }
+            
+            // Disable button to prevent double click
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            showMessage(`Sending magic link to ${email}...`, false);
+            
+            try {
+                console.log('Calling supabase.auth.signInWithOtp for', email);
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        shouldCreateUser: true,
+                        emailRedirectTo: 'https://xroga.com/'
+                    }
+                });
+                
+                if (error) {
+                    // Supabase returned an error object
+                    console.error('Supabase error details:', error);
+                    showMessage(`Error: ${error.message} (${error.status || 'unknown code'})`, true);
+                    // If it's a configuration error, show alert for visibility
+                    if (error.message.includes('provider') || error.message.includes('redirect') || error.message.includes('enabled')) {
+                        showAlert('Supabase Configuration Issue', error.message + '\n\nPlease contact support or check email provider settings.');
+                    }
+                } else {
+                    // Success
+                    console.log('Magic link sent successfully', data);
+                    showMessage(`✨ Magic link sent to ${email}. Check your inbox (and spam folder).`, false);
+                    emailInput.value = ''; // clear for privacy
+                    // Optionally, disable button for a few seconds to prevent spam
+                    setTimeout(() => {
+                        if (sendBtn.disabled === false) return;
+                        sendBtn.disabled = false;
+                        sendBtn.textContent = 'Send magic link';
+                    }, 3000);
+                    return; // skip re-enabling immediately
+                }
+            } catch (err) {
+                // Catch network errors, CSP issues, etc.
+                console.error('Uncaught error in sendMagicLink:', err);
+                showMessage(`Network or script error: ${err.message}`, true);
+                showAlert('Unexpected Error', err.message + '\n\nPlease check your internet and reload the page.');
+            } finally {
+                // Re-enable button unless we already scheduled a later enable
+                if (sendBtn.disabled === true) {
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = 'Send magic link';
+                }
+            }
+        }
+        
+        // Attach event listeners
+        sendBtn.addEventListener('click', sendMagicLink);
+        emailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMagicLink();
+        });
+        
+        // Additional debug: log when page is fully loaded
+        window.addEventListener('load', () => {
+            debugDiv.innerHTML += `<br>📄 Page loaded at ${new Date().toLocaleTimeString()}`;
+            console.log('Sign-in page ready');
+        });
+    })();
 </script>
 </body>
 </html>
