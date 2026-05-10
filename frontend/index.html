@@ -1844,46 +1844,129 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (function() {
+    // ----- Supabase credentials (replace with your actual env vars later)
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // ----- DOM elements
     const modal = document.getElementById('standalone-email-modal');
     const backdrop = document.getElementById('modal-backdrop');
+    const openBtn = document.getElementById('standalone-email-btn');
     const signupBtn = document.getElementById('standalone-signup');
     const signinBtn = document.getElementById('standalone-signin');
     const emailInput = document.getElementById('standalone-email');
     const passwordInput = document.getElementById('standalone-password');
 
-    // Open modal (assuming you have a button with id="standalone-email-btn")
-    const openBtn = document.getElementById('standalone-email-btn');
-    if (openBtn) openBtn.onclick = () => modal.style.display = 'block';
-    if (backdrop) backdrop.onclick = () => modal.style.display = 'none';
+    // ----- Functions to open/close modal
+    function openModal() {
+      modal.style.display = 'block';
+      emailInput.focus();
+      console.log('Modal opened');
+    }
+    function closeModal() {
+      modal.style.display = 'none';
+      // Clear fields when closing
+      if (emailInput) emailInput.value = '';
+      if (passwordInput) passwordInput.value = '';
+      console.log('Modal closed');
+    }
 
-    signupBtn.onclick = async () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      if (!email || !password) return alert('Please fill both fields');
-      if (password.length < 6) return alert('Password must be at least 6 characters');
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) alert('Signup error: ' + error.message);
-      else alert('✅ Account created! Check your email to confirm.');
-    };
+    // ----- Open button click
+    if (openBtn) {
+      openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+    } else {
+      console.error('Button with id="standalone-email-btn" not found');
+    }
 
-    signinBtn.onclick = async () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
-      if (!email || !password) return alert('Please fill both fields');
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) alert('Signin error: ' + error.message);
-      else {
-        alert('✅ Signed in! Reloading...');
-        location.reload();
+    // ----- Close when clicking on backdrop (outside card)
+    if (backdrop) {
+      backdrop.addEventListener('click', () => {
+        closeModal();
+      });
+    } else {
+      console.error('Backdrop element not found');
+    }
+
+    // ----- Close with ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.style.display === 'block') {
+        closeModal();
       }
-    };
+    });
+
+    // ----- Sign Up handler (with alert for debugging)
+    async function handleSignUp() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) {
+        alert('Please fill both fields');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters');
+        return;
+      }
+      // Show loading state on buttons
+      signupBtn.disabled = true;
+      signinBtn.disabled = true;
+      signupBtn.textContent = '•••';
+      
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        alert('Signup error: ' + error.message);
+        console.error(error);
+      } else {
+        if (data.user?.identities?.length === 0) {
+          alert('User already exists. Try signing in.');
+        } else {
+          alert('✅ Account created! Check your email for confirmation (if enabled).');
+          passwordInput.value = '';
+        }
+      }
+      signupBtn.disabled = false;
+      signinBtn.disabled = false;
+      signupBtn.textContent = 'Sign up';
+    }
+
+    // ----- Sign In handler (with alert)
+    async function handleSignIn() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) {
+        alert('Please fill both fields');
+        return;
+      }
+      signinBtn.disabled = true;
+      signupBtn.disabled = true;
+      signinBtn.textContent = '•••';
+      
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        alert('Signin error: ' + error.message);
+        console.error(error);
+        signinBtn.disabled = false;
+        signupBtn.disabled = false;
+        signinBtn.textContent = 'Sign in';
+      } else {
+        alert('✅ Signed in successfully! Reloading page...');
+        setTimeout(() => location.reload(), 1000);
+      }
+    }
+
+    // Attach event listeners
+    if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
+    if (signinBtn) signinBtn.addEventListener('click', handleSignIn);
+    if (passwordInput) {
+      passwordInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleSignIn();
+      });
+    }
   })();
 </script>
-
 <!-- Modal popup – Glassmorphic + Blue/White gradient + Working close button -->
 <style>
   /* Glass modal base */
