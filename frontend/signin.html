@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | Xroga AI</title>
-    <!-- No external CSS that uses eval -->
+    <title>Sign in / Sign up | Xroga AI</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +11,7 @@
             box-sizing: border-box;
         }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             display: flex;
             align-items: center;
@@ -58,29 +57,24 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 1rem;
-            padding: 1.5rem;
+            padding: 2rem;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
         }
-        @media (min-width: 768px) {
-            .card {
-                padding: 2rem;
-            }
-        }
-        .title {
+        h2 {
             font-size: 1.5rem;
             font-weight: 600;
             color: white;
             text-align: center;
             margin-bottom: 0.5rem;
         }
-        .subtitle {
+        .sub {
             color: #cbd5e1;
             text-align: center;
             font-size: 0.875rem;
             margin-bottom: 1.5rem;
         }
         .input-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         label {
             display: block;
@@ -97,26 +91,10 @@
             border-radius: 0.75rem;
             color: white;
             font-size: 1rem;
-            transition: all 0.2s;
         }
         input:focus {
             outline: none;
             border-color: #3b82f6;
-        }
-        input::placeholder {
-            color: #94a3b8;
-        }
-        .forgot-pwd {
-            text-align: right;
-            margin-bottom: 1.5rem;
-        }
-        .forgot-pwd a {
-            font-size: 0.75rem;
-            color: #60a5fa;
-            text-decoration: none;
-        }
-        .forgot-pwd a:hover {
-            text-decoration: underline;
         }
         button {
             width: 100%;
@@ -128,50 +106,28 @@
             color: white;
             font-size: 1rem;
             cursor: pointer;
-            transition: all 0.2s;
+            margin-top: 0.5rem;
         }
         button:hover {
             background: linear-gradient(135deg, #1d4ed8, #2563eb);
-            transform: scale(0.98);
         }
-        button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-        .toggle {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: #cbd5e1;
-        }
-        .toggle button {
-            display: inline;
-            width: auto;
-            background: none;
-            color: #60a5fa;
-            font-weight: 500;
-            padding: 0;
-            margin-left: 0.25rem;
-        }
-        .toggle button:hover {
-            background: none;
-            text-decoration: underline;
-            transform: none;
-        }
-        .status {
+        .message {
             margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
             font-size: 0.875rem;
             text-align: center;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
         }
-        .status.error {
+        .error {
             color: #f87171;
             background: rgba(248,113,113,0.1);
         }
-        .status.success {
+        .success {
             color: #4ade80;
             background: rgba(74,222,128,0.1);
+        }
+        .hidden {
+            display: none;
         }
         .footer {
             text-align: center;
@@ -179,11 +135,7 @@
             font-size: 0.75rem;
             color: #64748b;
         }
-        .hidden {
-            display: none;
-        }
     </style>
-    <!-- Supabase JS (safe, no eval) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -195,178 +147,83 @@
     </div>
 
     <div class="card">
-        <div class="title" id="auth-title">Sign In</div>
-        <div class="subtitle" id="auth-description">Use your email to continue</div>
+        <h2>Welcome</h2>
+        <div class="sub">Enter your email to sign in or create an account</div>
 
         <div class="input-group">
             <label>Email address</label>
-            <input type="email" id="auth-email" autocomplete="email" placeholder="you@example.com">
-        </div>
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="auth-password" autocomplete="current-password" placeholder="••••••••">
+            <input type="email" id="email" autocomplete="email" placeholder="you@example.com">
         </div>
 
-        <div id="forgot-pwd-container" class="forgot-pwd">
-            <a href="#" id="forgot-pwd-link">Forgot password?</a>
-        </div>
+        <button id="send-link-btn">Send magic link</button>
 
-        <button id="auth-submit-btn">Sign In</button>
-
-        <div class="toggle">
-            <span id="auth-toggle-text">Don't have an account?</span>
-            <button id="auth-toggle-mode">Sign Up</button>
-        </div>
-
-        <div id="status-message" class="status hidden"></div>
+        <div id="message" class="message hidden"></div>
     </div>
-
     <div class="footer">
         By continuing, you agree to our Terms of Service and Privacy Policy.
     </div>
 </div>
 
 <script>
-    (function() {
-        // --- Supabase config ---
-        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Supabase config
+    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // DOM elements
-        const authTitle = document.getElementById('auth-title');
-        const authDesc = document.getElementById('auth-description');
-        const emailInput = document.getElementById('auth-email');
-        const passwordInput = document.getElementById('auth-password');
-        const submitBtn = document.getElementById('auth-submit-btn');
-        const toggleModeBtn = document.getElementById('auth-toggle-mode');
-        const toggleTextSpan = document.getElementById('auth-toggle-text');
-        const forgotPwdContainer = document.getElementById('forgot-pwd-container');
-        const forgotPwdLink = document.getElementById('forgot-pwd-link');
-        const statusDiv = document.getElementById('status-message');
+    const emailInput = document.getElementById('email');
+    const sendBtn = document.getElementById('send-link-btn');
+    const messageDiv = document.getElementById('message');
 
-        let isSignUpMode = false;
+    function showMessage(msg, isError = true) {
+        messageDiv.textContent = msg;
+        messageDiv.className = `message ${isError ? 'error' : 'success'}`;
+        messageDiv.classList.remove('hidden');
+        setTimeout(() => messageDiv.classList.add('hidden'), 6000);
+    }
 
-        function showStatus(message, isError = true) {
-            statusDiv.textContent = message;
-            statusDiv.className = 'status ' + (isError ? 'error' : 'success');
-            statusDiv.classList.remove('hidden');
-            setTimeout(() => {
-                statusDiv.classList.add('hidden');
-            }, 5000);
+    async function sendMagicLink() {
+        const email = emailInput.value.trim();
+        if (!email) {
+            showMessage('Please enter your email address.');
+            return;
         }
 
-        function updateUI() {
-            if (isSignUpMode) {
-                authTitle.textContent = 'Create Account';
-                authDesc.textContent = 'Sign up to save chats and websites';
-                submitBtn.textContent = 'Sign Up';
-                toggleTextSpan.textContent = 'Already have an account?';
-                toggleModeBtn.textContent = 'Sign In';
-                forgotPwdContainer.style.display = 'none';
-            } else {
-                authTitle.textContent = 'Sign In';
-                authDesc.textContent = 'Use your email to continue';
-                submitBtn.textContent = 'Sign In';
-                toggleTextSpan.textContent = "Don't have an account?";
-                toggleModeBtn.textContent = 'Sign Up';
-                forgotPwdContainer.style.display = 'block';
-            }
-        }
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Sending...';
 
-        async function handleAuth() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-
-            if (!email || !password) {
-                showStatus('Please enter both email and password.', true);
-                return;
-            }
-            if (password.length < 6) {
-                showStatus('Password must be at least 6 characters.', true);
-                return;
-            }
-
-            submitBtn.disabled = true;
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Processing...';
-
-            try {
-                if (isSignUpMode) {
-                    const { data, error } = await supabase.auth.signUp({ email, password });
-                    if (error) {
-                        showStatus(error.message, true);
-                    } else {
-                        if (data.user?.identities?.length === 0) {
-                            showStatus('User already exists. Please sign in instead.', true);
-                        } else {
-                            showStatus('Account created! You can now sign in.', false);
-                            isSignUpMode = false;
-                            updateUI();
-                            emailInput.value = '';
-                            passwordInput.value = '';
-                        }
-                    }
-                } else {
-                    const { error } = await supabase.auth.signInWithPassword({ email, password });
-                    if (error) {
-                        showStatus(error.message, true);
-                    } else {
-                        showStatus('Sign in successful! Redirecting...', false);
-                        setTimeout(() => {
-                            window.location.href = 'https://xroga.com/';
-                        }, 1200);
-                    }
+        try {
+            // Magic link – works for both new and existing users
+            const { error } = await supabase.auth.signInWithOtp({
+                email: email,
+                options: {
+                    shouldCreateUser: true,   // automatically create user if doesn't exist
+                    emailRedirectTo: window.location.origin + '/dashboard.html' // or your main page
                 }
-            } catch (err) {
-                showStatus('Network error: ' + err.message, true);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }
-        }
-
-        async function handleForgotPassword() {
-            const email = emailInput.value.trim();
-            if (!email) {
-                showStatus('Please enter your email address.', true);
-                return;
-            }
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: 'https://xroga.com/reset-password',
             });
+
             if (error) {
-                showStatus(error.message, true);
+                console.error('Magic link error:', error);
+                showMessage(error.message);
             } else {
-                showStatus('Password reset email sent! Check your inbox.', false);
+                showMessage(`✨ Magic link sent to ${email}. Check your inbox (and spam folder).`, false);
+                emailInput.value = '';
             }
+        } catch (err) {
+            console.error('Unexpected error:', err);
+            showMessage('Network error. Please try again.');
+        } finally {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send magic link';
         }
+    }
 
-        // Event listeners
-        submitBtn.addEventListener('click', handleAuth);
-        toggleModeBtn.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
-            updateUI();
-            statusDiv.classList.add('hidden');
-        });
-        if (forgotPwdLink) {
-            forgotPwdLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleForgotPassword();
-            });
-        }
+    sendBtn.addEventListener('click', sendMagicLink);
+    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMagicLink(); });
 
-        // Enter key submit
-        emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
-        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
-
-        // Redirect if already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) window.location.href = 'https://xroga.com/';
-        });
-
-        updateUI();
-    })();
+    // Optional: auto‑redirect if already logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) window.location.href = 'https://xroga.com/';
+    });
 </script>
 </body>
 </html>
