@@ -1845,165 +1845,181 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (function() {
-    // ==================== SUPABASE ====================
+    console.log("🔥 Script loaded - checking elements...");
+    
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log("✅ Supabase initialized");
 
-    // ==================== DOM ELEMENTS ====================
+    // Get elements
     const openBtn = document.getElementById('standalone-email-btn');
-    const modalContainer = document.getElementById('standalone-email-modal');
+    const modal = document.getElementById('standalone-email-modal');
     const backdrop = document.getElementById('modal-backdrop');
     const signupBtn = document.getElementById('standalone-signup');
     const signinBtn = document.getElementById('standalone-signin');
     const emailInput = document.getElementById('standalone-email');
     const passwordInput = document.getElementById('standalone-password');
 
-    // Helper: show message inside modal
-    function showModalMessage(message, isError = false) {
-      let msgEl = document.getElementById('modal-auth-message');
-      if (!msgEl) {
-        msgEl = document.createElement('div');
-        msgEl.id = 'modal-auth-message';
-        msgEl.style.margin = '12px 0 0';
-        msgEl.style.fontSize = '0.8rem';
-        msgEl.style.textAlign = 'center';
-        msgEl.style.padding = '8px 12px';
-        msgEl.style.borderRadius = '40px';
-        msgEl.style.backdropFilter = 'blur(8px)';
+    // Debug: log if elements exist
+    console.log("openBtn:", openBtn);
+    console.log("modal:", modal);
+    console.log("signupBtn:", signupBtn);
+    console.log("signinBtn:", signinBtn);
+    console.log("emailInput:", emailInput);
+    console.log("passwordInput:", passwordInput);
+
+    if (!signupBtn) console.error("❌ Signup button NOT found! Check ID: standalone-signup");
+    if (!signinBtn) console.error("❌ Signin button NOT found! Check ID: standalone-signin");
+
+    function showMessage(msg, isError = true) {
+      let msgDiv = document.getElementById('temp-auth-msg');
+      if (!msgDiv) {
+        msgDiv = document.createElement('div');
+        msgDiv.id = 'temp-auth-msg';
+        msgDiv.style.margin = '12px 0 0';
+        msgDiv.style.padding = '8px';
+        msgDiv.style.borderRadius = '40px';
+        msgDiv.style.fontSize = '0.8rem';
+        msgDiv.style.textAlign = 'center';
+        msgDiv.style.backdropFilter = 'blur(8px)';
         const card = document.querySelector('.modal-card');
-        const privacy = card.querySelector('div:last-child');
-        card.insertBefore(msgEl, privacy);
+        const privacy = card.querySelector('.privacy-text');
+        if (card && privacy) card.insertBefore(msgDiv, privacy);
+        else console.error("Could not find .modal-card or .privacy-text");
       }
-      msgEl.textContent = message;
-      msgEl.style.backgroundColor = isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)';
-      msgEl.style.color = isError ? '#fee2e2' : '#d1fae5';
-      msgEl.style.border = isError ? '1px solid #ef4444' : '1px solid #22c55e';
-      setTimeout(() => {
-        if (msgEl && msgEl.parentNode) {
-          msgEl.style.opacity = '0';
-          setTimeout(() => msgEl.remove(), 300);
-        }
-      }, 4000);
+      if (msgDiv) {
+        msgDiv.textContent = msg;
+        msgDiv.style.backgroundColor = isError ? 'rgba(239,68,68,0.2)' : 'rgba(34,197,94,0.2)';
+        msgDiv.style.color = isError ? '#fee2e2' : '#d1fae5';
+        msgDiv.style.border = isError ? '1px solid #ef4444' : '1px solid #22c55e';
+        setTimeout(() => { if (msgDiv) msgDiv.remove(); }, 4000);
+      }
     }
 
-    // Button loading state
-    function setButtonLoading(button, isLoading) {
-      if (!button) return;
+    function setLoading(btn, isLoading) {
+      if (!btn) return;
       if (isLoading) {
-        button.dataset.originalText = button.innerText;
-        button.innerText = '•••';
-        button.disabled = true;
+        btn.dataset.orig = btn.innerText;
+        btn.innerText = '•••';
+        btn.disabled = true;
       } else {
-        button.innerText = button.dataset.originalText || (button.id === 'standalone-signup' ? 'Sign up' : 'Sign in');
-        button.disabled = false;
+        btn.innerText = btn.dataset.orig || (btn.id === 'standalone-signup' ? 'Sign up' : 'Sign in');
+        btn.disabled = false;
       }
     }
 
     function clearFields() {
       if (emailInput) emailInput.value = '';
       if (passwordInput) passwordInput.value = '';
-      const oldMsg = document.getElementById('modal-auth-message');
+      const oldMsg = document.getElementById('temp-auth-msg');
       if (oldMsg) oldMsg.remove();
     }
 
     function openModal() {
-      modalContainer.style.display = 'block';
-      setTimeout(() => emailInput?.focus(), 100);
+      if (modal) {
+        modal.style.display = 'block';
+        emailInput?.focus();
+        console.log("Modal opened");
+      } else console.error("Modal element missing");
     }
-
     function closeModal() {
-      modalContainer.style.display = 'none';
-      clearFields();
+      if (modal) {
+        modal.style.display = 'none';
+        clearFields();
+        console.log("Modal closed");
+      }
     }
 
-    // Open modal
-    if (openBtn) openBtn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
-    if (backdrop) backdrop.addEventListener('click', closeModal);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modalContainer.style.display === 'block') closeModal(); });
+    // Open/Close controls
+    if (openBtn) {
+      openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal();
+      });
+    } else console.error("Open button not found");
 
-    // ==================== SIGN UP ====================
+    if (backdrop) {
+      backdrop.addEventListener('click', closeModal);
+    } else console.error("Backdrop not found");
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && modal.style.display === 'block') closeModal();
+    });
+
+    // SIGN UP
     async function handleSignUp() {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      console.log("Signup clicked");
+      const email = emailInput?.value.trim();
+      const password = passwordInput?.value;
+      console.log("Email:", email);
       if (!email || !password) {
-        showModalMessage('Please fill both fields', true);
+        showMessage('Please fill both fields', true);
         return;
       }
       if (password.length < 6) {
-        showModalMessage('Password must be at least 6 characters', true);
+        showMessage('Password must be at least 6 characters', true);
         return;
       }
-
-      setButtonLoading(signupBtn, true);
-      setButtonLoading(signinBtn, true);
-
+      setLoading(signupBtn, true);
+      setLoading(signinBtn, true);
       try {
-        const { data, error } = await supabase.auth.signUp({ 
-          email, 
-          password,
-          options: {
-            emailRedirectTo: window.location.origin // optional
-          }
-        });
-        
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) {
-          console.error('Signup error:', error);
-          showModalMessage(error.message, true);
+          console.error("Signup error:", error);
+          showMessage(error.message, true);
         } else {
-          console.log('Signup success:', data);
-          if (data.user && data.user.identities && data.user.identities.length === 0) {
-            showModalMessage('User already exists. Please sign in instead.', true);
+          console.log("Signup success:", data);
+          if (data.user?.identities?.length === 0) {
+            showMessage('User already exists. Try signing in.', true);
           } else {
-            showModalMessage('✅ Check your email to confirm your account!', false);
-            // Clear password but keep email
-            passwordInput.value = '';
+            showMessage('✅ Check your email to confirm your account!', false);
+            if (passwordInput) passwordInput.value = '';
           }
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        showModalMessage('Network error. Try again.', true);
+        console.error("Unexpected error:", err);
+        showMessage('Network error. Check console.', true);
       } finally {
-        setButtonLoading(signupBtn, false);
-        setButtonLoading(signinBtn, false);
+        setLoading(signupBtn, false);
+        setLoading(signinBtn, false);
       }
     }
 
-    // ==================== SIGN IN ====================
+    // SIGN IN
     async function handleSignIn() {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      console.log("Signin clicked");
+      const email = emailInput?.value.trim();
+      const password = passwordInput?.value;
+      console.log("Email:", email);
       if (!email || !password) {
-        showModalMessage('Please enter email and password', true);
+        showMessage('Please enter email and password', true);
         return;
       }
-
-      setButtonLoading(signinBtn, true);
-      setButtonLoading(signupBtn, true);
-
+      setLoading(signinBtn, true);
+      setLoading(signupBtn, true);
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          console.error('Signin error:', error);
-          showModalMessage(error.message, true);
+          console.error("Signin error:", error);
+          showMessage(error.message, true);
         } else {
-          console.log('Signin success:', data);
-          showModalMessage('✅ Signed in! Redirecting...', false);
+          console.log("Signin success:", data);
+          showMessage('✅ Signed in! Redirecting...', false);
           setTimeout(() => {
             closeModal();
-            location.reload(); // or redirect to dashboard
+            location.reload();
           }, 1200);
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        showModalMessage('Network error. Try again.', true);
+        console.error("Unexpected error:", err);
+        showMessage('Network error. Check console.', true);
       } finally {
-        setButtonLoading(signinBtn, false);
-        setButtonLoading(signupBtn, false);
+        setLoading(signinBtn, false);
+        setLoading(signupBtn, false);
       }
     }
 
-    // Attach listeners
     if (signupBtn) signupBtn.addEventListener('click', handleSignUp);
     if (signinBtn) signinBtn.addEventListener('click', handleSignIn);
     if (passwordInput) {
@@ -2011,9 +2027,10 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
         if (e.key === 'Enter') handleSignIn();
       });
     }
+
+    console.log("✅ Event listeners attached");
   })();
 </script>
-
 <!-- Modal popup – Glassmorphic + Blue/White gradient + Working close button -->
 <style>
   /* Glass modal base */
