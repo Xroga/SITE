@@ -11337,7 +11337,7 @@ if (deepToggle && deepList && deepChevron) {
     const logoutBtn = document.getElementById('logout-btn');
     const loginShowBtn = document.getElementById('login-show-btn');
 
-    async function updateUI(user) {
+    function updateUI(user) {
       if (user) {
         const name = user.user_metadata?.full_name || user.email;
         const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
@@ -11362,7 +11362,7 @@ if (deepToggle && deepList && deepChevron) {
       if (window.lucide) lucide.createIcons();
     }
 
-    // If there's a magic link hash, show loading spinner immediately
+    // If magic link hash is present, show loading spinner immediately
     if (window.location.hash && window.location.hash.includes('access_token')) {
       if (loginShowBtn) loginShowBtn.classList.add('hidden');
       if (logoutBtn) logoutBtn.classList.remove('hidden');
@@ -11377,18 +11377,17 @@ if (deepToggle && deepList && deepChevron) {
       }
     }
 
-    // Listen to auth state changes (Supabase will fire SIGNED_IN when session is ready)
+    // Listen to Supabase auth state changes – this is the "interconnection"
     if (typeof supabase !== 'undefined') {
       supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN') {
           updateUI(session.user);
-          // The hash is automatically removed by Supabase – we don't touch it.
         } else if (event === 'SIGNED_OUT') {
           updateUI(null);
         }
       });
 
-      // Also check once in case the session already exists (e.g., page reload)
+      // Also check current session on page load (in case already logged in)
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) updateUI(session.user);
       });
@@ -11407,7 +11406,7 @@ if (deepToggle && deepList && deepChevron) {
       });
     }
 
-    // Logout handler
+    // Logout button handler
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
         if (typeof supabase !== 'undefined') {
