@@ -11367,8 +11367,7 @@ if (deepToggle && deepList && deepChevron) {
 
   // ==================== UPDATE UI ====================
   async function updateUIWithSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) console.error('Session error:', error);
+    const { data: { session } } = await supabase.auth.getSession();
     const user = session?.user || null;
     if (user) {
       const meta = user.user_metadata;
@@ -11401,36 +11400,127 @@ if (deepToggle && deepList && deepChevron) {
     return session?.user?.id || null;
   }
 
-  // ==================== SAVE CHAT (always fetch user ID) ====================
-  async function saveChatMessage(role, content, messageId, type = 'text') {
+  // ==================== CHAT METADATA (CLOUD) ====================
+  let currentChatUUID = null;
+
+  async function loadUserChatList() {
+    const userId = await getCurrentUserId();
+    if (!userId) return [];
+    const { data, error } = await supabase
+      .from('chat_metadata')
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false });
+    if (error) {
+      console.error('Error loading chat list:', error);
+      return [];
+    }
+    return data;
+  }
+
+  async function createNewChatInCloud(title = 'New Chat') {
+    const userId = await getCurrentUserId();
+    if (!userId) return null;
+    const { data, error } = await supabase
+      .from('chat_metadata')
+      .insert({
+        user_id: userId,
+        title: title,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+    if (error) {
+      console.error('Failed to create new chat:', error);
+      showToast('Failed to create new chat', 'Error', false);
+      return null;
+    }
+    currentChatUUID = data.id;
+    if (window.xroga && window.xroga.state) {
+      window.xroga.state.currentChatId = currentChatUUID;
+      window.xroga.state.chats = window.xroga.state.chats || [];
+      window.xroga.state.chats.unshift({
+        id: currentChatUUID,
+        title: data.title,
+        timestamp: data.created_at,
+        pinned: false,
+        type: 'code',
+        messages: []
+      });
+      if (typeof window.xroga.loadChatHistory === 'function') window.xroga.loadChatHistory();
+    }
+    return data;
+  }
+
+  async function loadMessagesForChat(chatId) {
+    const { data, error } = await supabase
+      .from('chats')
+      .select('*')
+      .eq('chat_id', chatId)
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.error('Error loading messages:', error);
+      return [];
+    }
+    return data;
+  }
+
+  async function switchToChat(chatId) {
+    currentChatUUID = chatId;
+    if (window.xroga && window.xroga.state) {
+      window.xroga.state.currentChatId = chatId;
+    }
+    if (typeof clearChatUI === 'function') clearChatUI();
+    const messages = await loadMessagesForChat(chatId);
+    for (const msg of messages) {
+      if (msg.role === 'user' && typeof addUserMessage === 'function')
+        addUserMessage(msg.content, false);
+      else if (msg.role === 'assistant') {
+        if (msg.type === 'code' && typeof addCodeResponse === 'function')
+          addCodeResponse(msg.content, false);
+        else if (msg.type === 'image' && typeof displayImageResult === 'function')
+          displayImageResult(msg.content, '', false);
+        else if (typeof addAIMessage === 'function')
+          addAIMessage(msg.content, false);
+      }
+    }
+    lastMessageTimestamp = messages.length ? messages[messages.length-1].created_at : null;
+  }
+
+  // ==================== SAVE CHAT MESSAGE (with chat_id) ====================
+  window.saveChatMessage = async function(role, content, messageId, type = 'text') {
     const userId = await getCurrentUserId();
     if (!userId) {
       console.error('❌ Not authenticated – cannot save');
       return;
     }
+    if (!currentChatUUID) {
+      const newChat = await createNewChatInCloud();
+      if (!newChat) return;
+    }
     const { error } = await supabase.from('chats').insert({
       user_id: userId,
+      chat_id: currentChatUUID,
       role,
       content,
       message_id: messageId,
       created_at: new Date().toISOString(),
       type
     });
-    if (error) console.error('Save error:', error);
-  }
-  window.saveChatMessage = saveChatMessage;
+    if (error) console.error('Save chat error:', error);
+  };
 
-  // ==================== POLL MESSAGES ====================
+  // ==================== POLL MESSAGES (for current chat) ====================
   let lastMessageTimestamp = null;
   let pollInterval = null;
 
   async function pollNewMessages() {
-    const userId = await getCurrentUserId();
-    if (!userId) return;
+    if (!currentChatUUID) return;
     let query = supabase
       .from('chats')
       .select('*')
-      .eq('user_id', userId)
+      .eq('chat_id', currentChatUUID)
       .order('created_at', { ascending: true });
     if (lastMessageTimestamp) query = query.gt('created_at', lastMessageTimestamp);
     const { data, error } = await query;
@@ -11461,21 +11551,19 @@ if (deepToggle && deepList && deepChevron) {
     pollInterval = null;
   }
 
-  // ==================== UPDATE / DELETE / WEBSITE ====================
-  async function updateChatMessage(messageId, newContent) {
+  // ==================== UPDATE / DELETE MESSAGE ====================
+  window.updateChatMessage = async function(messageId, newContent) {
     const userId = await getCurrentUserId();
     if (!userId) return;
     await supabase.from('chats').update({ content: newContent }).eq('message_id', messageId).eq('user_id', userId);
-  }
-  window.updateChatMessage = updateChatMessage;
-
-  async function deleteChatMessage(messageId) {
+  };
+  window.deleteChatMessage = async function(messageId) {
     const userId = await getCurrentUserId();
     if (!userId) return;
     await supabase.from('chats').delete().eq('message_id', messageId).eq('user_id', userId);
-  }
-  window.deleteChatMessage = deleteChatMessage;
+  };
 
+  // ==================== UPLOAD & WEBSITE ====================
   async function uploadToR2(fileBlob, filename, bucketType) {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
@@ -11492,7 +11580,7 @@ if (deepToggle && deepList && deepChevron) {
     return key;
   }
 
-  async function saveWebsiteToCloud(title, codeHtml, subdomain) {
+  window.saveWebsiteToCloud = async function(title, codeHtml, subdomain) {
     const userId = await getCurrentUserId();
     if (!userId) return;
     try {
@@ -11510,94 +11598,119 @@ if (deepToggle && deepList && deepChevron) {
       console.error('Save website error:', err);
       showToast('Failed to save website', 'Error', false);
     }
-  }
-  window.saveWebsiteToCloud = saveWebsiteToCloud;
+  };
 
   // ==================== LOGOUT ====================
   logoutBtn?.addEventListener('click', async () => {
     await supabase.auth.signOut();
     showToast('Signed Out', 'You have been logged out.');
+    currentChatUUID = null;
+    stopPolling();
+    lastMessageTimestamp = null;
+    if (typeof clearChatUI === 'function') clearChatUI();
     await updateUIWithSession();
   });
 
-// ==================== HANDLE MAGIC LINK (let Supabase do its job) ====================
-(async () => {
-  // Wait a moment for Supabase to process the hash automatically
-  await new Promise(resolve => setTimeout(resolve, 500));
-  // Then update UI based on the session
-  await updateUIWithSession();
-  const userId = await getCurrentUserId();
-  if (userId) {
-    // Load messages and start polling (same as before)
-    const { data: lastMsg } = await supabase
-      .from('chats')
-      .select('created_at')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(1);
-    if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
-
-    const { data: allMsg } = await supabase
-      .from('chats')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: true });
-    if (allMsg?.length) {
-      if (typeof clearChatUI === 'function') clearChatUI();
-      for (const msg of allMsg) {
-        if (msg.role === 'user' && typeof addUserMessage === 'function')
-          addUserMessage(msg.content, false);
-        else if (msg.role === 'assistant') {
-          if (msg.type === 'code' && typeof addCodeResponse === 'function')
-            addCodeResponse(msg.content, false);
-          else if (msg.type === 'image' && typeof displayImageResult === 'function')
-            displayImageResult(msg.content, '', false);
-          else if (typeof addAIMessage === 'function')
-            addAIMessage(msg.content, false);
-        }
-      }
-      if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
+  // ==================== INITIALIZE: MAGIC LINK & RESTORE SESSION ====================
+  (async () => {
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      console.log('🔐 Magic link detected – waiting for session');
+      await new Promise(r => setTimeout(r, 1000));
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }
-    startPolling();
-  }
-})();
+    await updateUIWithSession();
+    const userId = await getCurrentUserId();
+    if (userId) {
+      const userChats = await loadUserChatList();
+      if (userChats.length > 0) {
+        const latestChat = userChats[0];
+        currentChatUUID = latestChat.id;
+        if (window.xroga && window.xroga.state) {
+          window.xroga.state.chats = userChats.map(c => ({
+            id: c.id,
+            title: c.title,
+            timestamp: c.created_at,
+            pinned: false,
+            type: 'code',
+            messages: []
+          }));
+          window.xroga.state.currentChatId = currentChatUUID;
+          if (typeof window.xroga.loadChatHistory === 'function') window.xroga.loadChatHistory();
+        }
+        const messages = await loadMessagesForChat(currentChatUUID);
+        if (messages.length) {
+          if (typeof clearChatUI === 'function') clearChatUI();
+          for (const m of messages) {
+            if (m.role === 'user' && typeof addUserMessage === 'function')
+              addUserMessage(m.content, false);
+            else if (m.role === 'assistant') {
+              if (m.type === 'code' && typeof addCodeResponse === 'function')
+                addCodeResponse(m.content, false);
+              else if (m.type === 'image' && typeof displayImageResult === 'function')
+                displayImageResult(m.content, '', false);
+              else if (typeof addAIMessage === 'function')
+                addAIMessage(m.content, false);
+            }
+          }
+          lastMessageTimestamp = messages[messages.length-1].created_at;
+        }
+      } else {
+        await createNewChatInCloud('My first chat');
+      }
+      startPolling();
+    }
+  })();
 
-  // ==================== AUTH STATE CHANGE (backup) ====================
+  // ==================== AUTH STATE CHANGE ====================
   supabase.auth.onAuthStateChange(async (event, session) => {
     console.log('Auth event:', event);
     await updateUIWithSession();
     if (event === 'SIGNED_IN') {
-      // Reload messages and start polling
       const userId = session?.user?.id;
       if (userId) {
-        const { data: allMsg } = await supabase
-          .from('chats')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: true });
-        if (allMsg?.length) {
-          if (typeof clearChatUI === 'function') clearChatUI();
-          for (const msg of allMsg) {
-            if (msg.role === 'user' && typeof addUserMessage === 'function')
-              addUserMessage(msg.content, false);
-            else if (msg.role === 'assistant') {
-              if (msg.type === 'code' && typeof addCodeResponse === 'function')
-                addCodeResponse(msg.content, false);
-              else if (msg.type === 'image' && typeof displayImageResult === 'function')
-                displayImageResult(msg.content, '', false);
-              else if (typeof addAIMessage === 'function')
-                addAIMessage(msg.content, false);
-            }
+        const userChats = await loadUserChatList();
+        if (userChats.length > 0) {
+          currentChatUUID = userChats[0].id;
+          if (window.xroga && window.xroga.state) {
+            window.xroga.state.chats = userChats.map(c => ({ id: c.id, title: c.title, timestamp: c.created_at, pinned: false, type: 'code', messages: [] }));
+            window.xroga.state.currentChatId = currentChatUUID;
+            if (typeof window.xroga.loadChatHistory === 'function') window.xroga.loadChatHistory();
           }
+          const messages = await loadMessagesForChat(currentChatUUID);
+          if (messages.length) {
+            if (typeof clearChatUI === 'function') clearChatUI();
+            for (const m of messages) {
+              if (m.role === 'user' && typeof addUserMessage === 'function')
+                addUserMessage(m.content, false);
+              else if (m.role === 'assistant') {
+                if (m.type === 'code' && typeof addCodeResponse === 'function')
+                  addCodeResponse(m.content, false);
+                else if (m.type === 'image' && typeof displayImageResult === 'function')
+                  displayImageResult(m.content, '', false);
+                else if (typeof addAIMessage === 'function')
+                  addAIMessage(m.content, false);
+              }
+            }
+            lastMessageTimestamp = messages[messages.length-1].created_at;
+          }
+        } else {
+          await createNewChatInCloud('My first chat');
         }
         startPolling();
       }
     } else if (event === 'SIGNED_OUT') {
       stopPolling();
+      currentChatUUID = null;
       lastMessageTimestamp = null;
       if (typeof clearChatUI === 'function') clearChatUI();
     }
   });
+
+  // Expose functions for main script
+  window.createNewChatInCloud = createNewChatInCloud;
+  window.switchToChat = switchToChat;
+  window.loadUserChatList = loadUserChatList;
+  window.getCurrentChatUUID = () => currentChatUUID;
 </script>
               
 <!-- Rename Chat Modal -->
@@ -12419,3 +12532,5 @@ if (deepToggle && deepList && deepChevron) {
     </script>
   </section>
 </div>
+
+
