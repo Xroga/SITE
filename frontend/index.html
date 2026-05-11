@@ -11340,220 +11340,103 @@ if (deepToggle && deepList && deepChevron) {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// ==================== SUPABASE CONFIG ====================
-const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // ==================== SUPABASE CONFIG ====================
+  const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+  const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==================== MAGIC LINK REDIRECT HANDLER ====================
-(async () => {
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-    console.log('🔐 Magic link detected – reloading to apply session');
-    setTimeout(() => { window.location.href = window.location.origin + window.location.pathname; }, 1000);
+  // ==================== DOM ELEMENTS ====================
+  const userDisplay = document.getElementById('user-display');
+  const logoutBtn = document.getElementById('logout-btn');
+  const loginShowBtn = document.getElementById('login-show-btn');
+  const toastEl = document.getElementById('toast');
+  const toastTitle = document.getElementById('toast-title');
+  const toastMessage = document.getElementById('toast-message');
+
+  function showToast(title, message, isSuccess = true) {
+    if (!toastEl) return;
+    toastTitle.textContent = title;
+    toastMessage.textContent = message;
+    toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+    setTimeout(() => {
+      toastEl.classList.add('opacity-0', 'translate-y-4');
+      setTimeout(() => toastEl.classList.add('hidden'), 300);
+    }, 3000);
   }
-})();
 
-// ==================== DOM ELEMENTS ====================
-const userDisplay = document.getElementById('user-display');
-const logoutBtn = document.getElementById('logout-btn');
-const loginShowBtn = document.getElementById('login-show-btn');
-const toastEl = document.getElementById('toast');
-const toastTitle = document.getElementById('toast-title');
-const toastMessage = document.getElementById('toast-message');
-
-function showToast(title, message, isSuccess = true) {
-  if (!toastEl) return;
-  toastTitle.textContent = title;
-  toastMessage.textContent = message;
-  toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
-  setTimeout(() => {
-    toastEl.classList.add('opacity-0', 'translate-y-4');
-    setTimeout(() => toastEl.classList.add('hidden'), 300);
-  }, 3000);
-}
-
-// ==================== UPDATE UI BASED ON SESSION ====================
-async function updateUI(user) {
-  if (user) {
-    const meta = user.user_metadata;
-    const name = meta?.full_name || user.email;
-    const avatar = meta?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-    userDisplay.innerHTML = `
-      <div class="flex items-center gap-2">
-        <img src="${avatar}" class="w-8 h-8 rounded-full">
-        <span class="text-sm font-medium">${name}</span>
-      </div>
-    `;
-    logoutBtn.classList.remove('hidden');
-    if (loginShowBtn) loginShowBtn.classList.add('hidden');
-  } else {
-    userDisplay.innerHTML = `
-      <div class="flex items-center gap-2">
-        <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
-        <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
-      </div>
-    `;
-    logoutBtn.classList.add('hidden');
-    if (loginShowBtn) loginShowBtn.classList.remove('hidden');
-  }
-  if (window.lucide) lucide.createIcons();
-}
-
-// ==================== HELPER: ALWAYS GET USER ID FROM SESSION ====================
-async function getCurrentUserId() {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.user?.id || null;
-}
-
-// ==================== SAVE CHAT (ALWAYS FETCH USER ID) ====================
-async function saveChatMessage(role, content, messageId, type = 'text') {
-  const userId = await getCurrentUserId();
-  if (!userId) {
-    console.error('❌ Not authenticated – cannot save chat');
-    return;
-  }
-  const { error } = await supabase.from('chats').insert({
-    user_id: userId,
-    role,
-    content,
-    message_id: messageId,
-    created_at: new Date().toISOString(),
-    type
-  });
-  if (error) console.error('Save chat error:', error);
-}
-window.saveChatMessage = saveChatMessage;
-
-// ==================== POLL NEW MESSAGES (ALWAYS USE SESSION USER) ====================
-let lastMessageTimestamp = null;
-let pollInterval = null;
-
-async function pollNewMessages() {
-  const userId = await getCurrentUserId();
-  if (!userId) return;
-  let query = supabase
-    .from('chats')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: true });
-  if (lastMessageTimestamp) {
-    query = query.gt('created_at', lastMessageTimestamp);
-  }
-  const { data, error } = await query;
-  if (error) { console.error('Poll error:', error); return; }
-  if (data && data.length) {
-    for (const msg of data) {
-      if (msg.role === 'user' && typeof addUserMessage === 'function')
-        addUserMessage(msg.content, false);
-      else if (msg.role === 'assistant') {
-        if (msg.type === 'code' && typeof addCodeResponse === 'function')
-          addCodeResponse(msg.content, false);
-        else if (msg.type === 'image' && typeof displayImageResult === 'function')
-          displayImageResult(msg.content, '', false);
-        else if (typeof addAIMessage === 'function')
-          addAIMessage(msg.content, false);
-      }
+  // ==================== UPDATE UI ====================
+  async function updateUIWithSession() {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) console.error('Session error:', error);
+    const user = session?.user || null;
+    if (user) {
+      const meta = user.user_metadata;
+      const name = meta?.full_name || user.email;
+      const avatar = meta?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+      if (userDisplay) userDisplay.innerHTML = `
+        <div class="flex items-center gap-2">
+          <img src="${avatar}" class="w-8 h-8 rounded-full">
+          <span class="text-sm font-medium">${name}</span>
+        </div>
+      `;
+      if (logoutBtn) logoutBtn.classList.remove('hidden');
+      if (loginShowBtn) loginShowBtn.classList.add('hidden');
+    } else {
+      if (userDisplay) userDisplay.innerHTML = `
+        <div class="flex items-center gap-2">
+          <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+          <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
+        </div>
+      `;
+      if (logoutBtn) logoutBtn.classList.add('hidden');
+      if (loginShowBtn) loginShowBtn.classList.remove('hidden');
     }
-    lastMessageTimestamp = data[data.length - 1].created_at;
+    if (window.lucide) lucide.createIcons();
   }
-}
 
-function startPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(pollNewMessages, 5000);
-}
-function stopPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = null;
-}
+  // ==================== HELPER: GET USER ID ====================
+  async function getCurrentUserId() {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user?.id || null;
+  }
 
-// ==================== OTHER DATABASE FUNCTIONS ====================
-async function updateChatMessage(messageId, newContent) {
-  const userId = await getCurrentUserId();
-  if (!userId) return;
-  await supabase.from('chats').update({ content: newContent }).eq('message_id', messageId).eq('user_id', userId);
-}
-window.updateChatMessage = updateChatMessage;
-
-async function deleteChatMessage(messageId) {
-  const userId = await getCurrentUserId();
-  if (!userId) return;
-  await supabase.from('chats').delete().eq('message_id', messageId).eq('user_id', userId);
-}
-window.deleteChatMessage = deleteChatMessage;
-
-async function uploadToR2(fileBlob, filename, bucketType) {
-  const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-  if (!token) throw new Error('Not authenticated');
-  const res = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ filename, bucketType })
-  });
-  if (!res.ok) throw new Error('Failed to get upload URL');
-  const { url, key } = await res.json();
-  const uploadRes = await fetch(url, { method: 'PUT', body: fileBlob });
-  if (!uploadRes.ok) throw new Error('Upload failed');
-  return key;
-}
-
-async function saveWebsiteToCloud(title, codeHtml, subdomain) {
-  const userId = await getCurrentUserId();
-  if (!userId) return;
-  try {
-    const blob = new Blob([codeHtml], { type: 'text/html' });
-    const filename = `${title.replace(/\s/g, '_')}.html`;
-    const r2Key = await uploadToR2(blob, filename, 'website');
-    await supabase.from('websites').insert({
+  // ==================== SAVE CHAT (always fetch user ID) ====================
+  async function saveChatMessage(role, content, messageId, type = 'text') {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      console.error('❌ Not authenticated – cannot save');
+      return;
+    }
+    const { error } = await supabase.from('chats').insert({
       user_id: userId,
-      title,
-      r2_key: r2Key,
-      subdomain
+      role,
+      content,
+      message_id: messageId,
+      created_at: new Date().toISOString(),
+      type
     });
-    showToast('Website saved to cloud!', 'Success');
-  } catch (err) {
-    console.error('Save website error:', err);
-    showToast('Failed to save website', 'Error', false);
+    if (error) console.error('Save error:', error);
   }
-}
-window.saveWebsiteToCloud = saveWebsiteToCloud;
+  window.saveChatMessage = saveChatMessage;
 
-// ==================== LOGOUT ====================
-logoutBtn?.addEventListener('click', async () => {
-  await supabase.auth.signOut();
-  showToast('Signed Out', 'You have been logged out.');
-});
+  // ==================== POLL MESSAGES ====================
+  let lastMessageTimestamp = null;
+  let pollInterval = null;
 
-// ==================== AUTH STATE CHANGE ====================
-let currentUser = null;
-window.currentUser = null;
-
-supabase.auth.onAuthStateChange(async (event, session) => {
-  const user = session?.user || null;
-  currentUser = user;
-  window.currentUser = user;
-  await updateUI(user);
-
-  if (user) {
-    // Load all messages for this user
-    const { data: lastMsg } = await supabase
-      .from('chats')
-      .select('created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1);
-    if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
-
-    const { data: allMsg } = await supabase
+  async function pollNewMessages() {
+    const userId = await getCurrentUserId();
+    if (!userId) return;
+    let query = supabase
       .from('chats')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('created_at', { ascending: true });
-    if (allMsg?.length) {
-      if (typeof clearChatUI === 'function') clearChatUI();
-      for (const msg of allMsg) {
+    if (lastMessageTimestamp) query = query.gt('created_at', lastMessageTimestamp);
+    const { data, error } = await query;
+    if (error) { console.error('Poll error:', error); return; }
+    if (data && data.length) {
+      for (const msg of data) {
         if (msg.role === 'user' && typeof addUserMessage === 'function')
           addUserMessage(msg.content, false);
         else if (msg.role === 'assistant') {
@@ -11565,23 +11448,166 @@ supabase.auth.onAuthStateChange(async (event, session) => {
             addAIMessage(msg.content, false);
         }
       }
-      if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
+      lastMessageTimestamp = data[data.length - 1].created_at;
     }
-    startPolling();
-  } else {
-    stopPolling();
-    lastMessageTimestamp = null;
-    if (typeof clearChatUI === 'function') clearChatUI();
   }
-});
 
-// ==================== INITIAL CHECK ====================
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) updateUI(session.user);
-  else updateUI(null);
-});
+  function startPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(pollNewMessages, 5000);
+  }
+  function stopPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = null;
+  }
+
+  // ==================== UPDATE / DELETE / WEBSITE ====================
+  async function updateChatMessage(messageId, newContent) {
+    const userId = await getCurrentUserId();
+    if (!userId) return;
+    await supabase.from('chats').update({ content: newContent }).eq('message_id', messageId).eq('user_id', userId);
+  }
+  window.updateChatMessage = updateChatMessage;
+
+  async function deleteChatMessage(messageId) {
+    const userId = await getCurrentUserId();
+    if (!userId) return;
+    await supabase.from('chats').delete().eq('message_id', messageId).eq('user_id', userId);
+  }
+  window.deleteChatMessage = deleteChatMessage;
+
+  async function uploadToR2(fileBlob, filename, bucketType) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) throw new Error('Not authenticated');
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filename, bucketType })
+    });
+    if (!res.ok) throw new Error('Failed to get upload URL');
+    const { url, key } = await res.json();
+    const uploadRes = await fetch(url, { method: 'PUT', body: fileBlob });
+    if (!uploadRes.ok) throw new Error('Upload failed');
+    return key;
+  }
+
+  async function saveWebsiteToCloud(title, codeHtml, subdomain) {
+    const userId = await getCurrentUserId();
+    if (!userId) return;
+    try {
+      const blob = new Blob([codeHtml], { type: 'text/html' });
+      const filename = `${title.replace(/\s/g, '_')}.html`;
+      const r2Key = await uploadToR2(blob, filename, 'website');
+      await supabase.from('websites').insert({
+        user_id: userId,
+        title,
+        r2_key: r2Key,
+        subdomain
+      });
+      showToast('Website saved to cloud!', 'Success');
+    } catch (err) {
+      console.error('Save website error:', err);
+      showToast('Failed to save website', 'Error', false);
+    }
+  }
+  window.saveWebsiteToCloud = saveWebsiteToCloud;
+
+  // ==================== LOGOUT ====================
+  logoutBtn?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    showToast('Signed Out', 'You have been logged out.');
+    await updateUIWithSession();
+  });
+
+  // ==================== HANDLE MAGIC LINK REDIRECT ====================
+  (async () => {
+    // If there's a hash with access_token, wait for Supabase to process it, then reload clean.
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      console.log('🔐 Magic link detected – waiting for session...');
+      // Give Supabase 1 second to exchange the token
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Force reload without the hash
+      window.location.href = window.location.origin + window.location.pathname;
+      return;
+    }
+
+    // Normal page load: check session and update UI
+    await updateUIWithSession();
+    const userId = await getCurrentUserId();
+    if (userId) {
+      // Load existing messages and start polling
+      const { data: lastMsg } = await supabase
+        .from('chats')
+        .select('created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+      if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
+
+      const { data: allMsg } = await supabase
+        .from('chats')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true });
+      if (allMsg?.length) {
+        if (typeof clearChatUI === 'function') clearChatUI();
+        for (const msg of allMsg) {
+          if (msg.role === 'user' && typeof addUserMessage === 'function')
+            addUserMessage(msg.content, false);
+          else if (msg.role === 'assistant') {
+            if (msg.type === 'code' && typeof addCodeResponse === 'function')
+              addCodeResponse(msg.content, false);
+            else if (msg.type === 'image' && typeof displayImageResult === 'function')
+              displayImageResult(msg.content, '', false);
+            else if (typeof addAIMessage === 'function')
+              addAIMessage(msg.content, false);
+          }
+        }
+        if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
+      }
+      startPolling();
+    }
+  })();
+
+  // ==================== AUTH STATE CHANGE (backup) ====================
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth event:', event);
+    await updateUIWithSession();
+    if (event === 'SIGNED_IN') {
+      // Reload messages and start polling
+      const userId = session?.user?.id;
+      if (userId) {
+        const { data: allMsg } = await supabase
+          .from('chats')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: true });
+        if (allMsg?.length) {
+          if (typeof clearChatUI === 'function') clearChatUI();
+          for (const msg of allMsg) {
+            if (msg.role === 'user' && typeof addUserMessage === 'function')
+              addUserMessage(msg.content, false);
+            else if (msg.role === 'assistant') {
+              if (msg.type === 'code' && typeof addCodeResponse === 'function')
+                addCodeResponse(msg.content, false);
+              else if (msg.type === 'image' && typeof displayImageResult === 'function')
+                displayImageResult(msg.content, '', false);
+              else if (typeof addAIMessage === 'function')
+                addAIMessage(msg.content, false);
+            }
+          }
+        }
+        startPolling();
+      }
+    } else if (event === 'SIGNED_OUT') {
+      stopPolling();
+      lastMessageTimestamp = null;
+      if (typeof clearChatUI === 'function') clearChatUI();
+    }
+  });
 </script>
-
+              
 <!-- Rename Chat Modal -->
 <div id="rename-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
     <div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl animate-fade-in border border-white/30 dark:border-gray-700/30">
