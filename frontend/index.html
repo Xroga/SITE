@@ -10038,15 +10038,7 @@ function expandSectionForMode(mode) {
         }
     }
 }
-        function logout() { state.token = null; state.username = 'Guest'; localStorage.removeItem('token'); localStorage.removeItem('username'); updateAuthUI(); showToast('Logged out'); }
-        function updateAuthUI() {
-            const sidebarUsername = document.getElementById('sidebar-username');
-            const sidebarStatus = document.getElementById('sidebar-status');
-            const logoutBtn = document.getElementById('logout-btn');
-            if (state.token) { if (sidebarUsername) sidebarUsername.textContent = state.username; if (sidebarStatus) sidebarStatus.textContent = 'Logged in'; if (logoutBtn) logoutBtn.classList.remove('hidden'); }
-            else { if (sidebarUsername) sidebarUsername.textContent = 'Guest'; if (sidebarStatus) sidebarStatus.textContent = 'Not logged in'; if (logoutBtn) logoutBtn.classList.add('hidden'); }
-        }
-        if (elements.logoutBtn) elements.logoutBtn.addEventListener('click', logout);
+        
 
         // Settings and event listeners
         elements.settingsBtn?.addEventListener('click', () => elements.settingsModal?.classList.remove('hidden'));
