@@ -11333,87 +11333,78 @@ if (deepToggle && deepList && deepChevron) {
 
 <script>
   (function() {
-    // DOM elements (must exist)
     const userDisplay = document.getElementById('user-display');
     const logoutBtn = document.getElementById('logout-btn');
     const loginShowBtn = document.getElementById('login-show-btn');
 
-    // Helper: update UI based on actual session
-    async function updateUIBasedOnSession() {
-      // Wait for supabase client to be ready
-      if (typeof supabase === 'undefined') return;
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user || null;
-
+    async function updateUI(user) {
       if (user) {
         const name = user.user_metadata?.full_name || user.email;
         const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-        if (userDisplay) {
-          userDisplay.innerHTML = `
-            <div class="flex items-center gap-2">
-              <img src="${avatar}" class="w-8 h-8 rounded-full">
-              <span class="text-sm font-medium">${name}</span>
-            </div>
-          `;
-        }
+        if (userDisplay) userDisplay.innerHTML = `
+          <div class="flex items-center gap-2">
+            <img src="${avatar}" class="w-8 h-8 rounded-full">
+            <span class="text-sm font-medium">${name}</span>
+          </div>
+        `;
         if (logoutBtn) logoutBtn.classList.remove('hidden');
         if (loginShowBtn) loginShowBtn.classList.add('hidden');
       } else {
-        if (userDisplay) {
-          userDisplay.innerHTML = `
-            <div class="flex items-center gap-2">
-              <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
-              <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
-            </div>
-          `;
-        }
+        if (userDisplay) userDisplay.innerHTML = `
+          <div class="flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+            <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
+          </div>
+        `;
         if (logoutBtn) logoutBtn.classList.add('hidden');
         if (loginShowBtn) loginShowBtn.classList.remove('hidden');
       }
       if (window.lucide) lucide.createIcons();
     }
 
-    // Force UI based on magic link hash (instant)
-    function forceUIByHash() {
-      if (window.location.hash && window.location.hash.includes('access_token')) {
-        console.log('🔐 Magic link hash detected – hiding sign-in button, showing logout');
-        if (loginShowBtn) loginShowBtn.classList.add('hidden');
-        if (logoutBtn) logoutBtn.classList.remove('hidden');
-        if (userDisplay) {
-          userDisplay.innerHTML = `
-            <div class="flex items-center gap-2">
-              <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-              <span class="text-sm">Signing in...</span>
-            </div>
-          `;
-          if (window.lucide) lucide.createIcons();
-        }
-        // Remove hash after a short delay (clean URL)
-        setTimeout(() => {
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }, 1500);
-        return true;
+    // If there's a magic link hash, show loading spinner immediately
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      if (loginShowBtn) loginShowBtn.classList.add('hidden');
+      if (logoutBtn) logoutBtn.classList.remove('hidden');
+      if (userDisplay) {
+        userDisplay.innerHTML = `
+          <div class="flex items-center gap-2">
+            <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+            <span class="text-sm">Signing in...</span>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
       }
-      return false;
     }
 
-    // Initialise
-    const hashHandled = forceUIByHash();
+    // Listen to auth state changes (Supabase will fire SIGNED_IN when session is ready)
+    if (typeof supabase !== 'undefined') {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+          updateUI(session.user);
+          // The hash is automatically removed by Supabase – we don't touch it.
+        } else if (event === 'SIGNED_OUT') {
+          updateUI(null);
+        }
+      });
 
-    if (hashHandled) {
-      // After hash cleaned, fetch real session data
-      setTimeout(() => {
-        if (typeof supabase !== 'undefined') updateUIBasedOnSession();
-      }, 2000);
+      // Also check once in case the session already exists (e.g., page reload)
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) updateUI(session.user);
+      });
     } else {
-      // Normal page load
-      if (typeof supabase !== 'undefined') {
-        updateUIBasedOnSession();
-      } else {
-        window.addEventListener('load', () => {
-          if (typeof supabase !== 'undefined') updateUIBasedOnSession();
-        });
-      }
+      // Fallback: wait for supabase to load
+      window.addEventListener('load', () => {
+        if (typeof supabase !== 'undefined') {
+          supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') updateUI(session.user);
+            else if (event === 'SIGNED_OUT') updateUI(null);
+          });
+          supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) updateUI(session.user);
+          });
+        }
+      });
     }
 
     // Logout handler
@@ -11421,19 +11412,7 @@ if (deepToggle && deepList && deepChevron) {
       logoutBtn.addEventListener('click', async () => {
         if (typeof supabase !== 'undefined') {
           await supabase.auth.signOut();
-          updateUIBasedOnSession();
-        } else {
-          // Fallback (no supabase) – just toggle UI
-          if (loginShowBtn) loginShowBtn.classList.remove('hidden');
-          if (logoutBtn) logoutBtn.classList.add('hidden');
-          if (userDisplay) {
-            userDisplay.innerHTML = `
-              <div class="flex items-center gap-2">
-                <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
-                <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
-              </div>
-            `;
-          }
+          updateUI(null);
         }
       });
     }
@@ -11651,9 +11630,9 @@ if (deepToggle && deepList && deepChevron) {
   (async () => {
     // Wait a moment for the standalone UI to possibly clean the hash
     if (window.location.hash && window.location.hash.includes('access_token')) {
-      await new Promise(r => setTimeout(r, 1000));
-      window.history.replaceState(null, '', window.location.pathname + window.location.search);
-    }
+  await new Promise(r => setTimeout(r, 1000));
+  window.history.replaceState(null, '', window.location.pathname + window.location.search);
+}
     const userId = await getCurrentUserId();
     if (userId) {
       const userChats = await loadUserChatList();
