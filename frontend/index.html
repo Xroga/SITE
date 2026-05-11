@@ -1845,7 +1845,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
                         <span class="hidden dark:inline">Dark</span>
                     </span>
                 </button>
-<!-- User Display (script expects id="user-display") -->
+<!-- User Display -->
 <div id="user-display" class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-primary-500/20 to-purple-500/20 dark:from-primary-900/30 dark:to-purple-900/30 backdrop-blur-sm mb-2">
     <div class="flex items-center gap-3">
         <div class="p-2 bg-primary-500/30 dark:bg-primary-900/30 rounded-lg">
@@ -1856,7 +1856,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     <button id="logout-btn" type="button" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
 </div>
 
-<!-- Login button (redirects to separate signin.html page) -->
+<!-- Login button -->
 <div class="p-4 border-t border-white/30 dark:border-gray-700/30">
     <a href="https://xroga.com/signin.html" id="login-show-btn"
        class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
@@ -11336,33 +11336,40 @@ if (deepToggle && deepList && deepChevron) {
   const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
   const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   // ==================== DOM ELEMENTS ====================
   const userDisplay = document.getElementById('user-display');
   const logoutBtn = document.getElementById('logout-btn');
   const loginShowBtn = document.getElementById('login-show-btn');
-  const toastEl = document.getElementById('toast');
-  const toastTitle = document.getElementById('toast-title');
-  const toastMessage = document.getElementById('toast-message');
 
-  function showToast(title, message, isSuccess = true) {
-    if (!toastEl) return;
-    toastTitle.textContent = title;
-    toastMessage.textContent = message;
-    toastEl.classList.remove('hidden', 'opacity-0', 'translate-y-4');
+  // ==================== FORCE UI UPDATE BASED ON HASH (INSTANT FIX) ====================
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    console.log('🔐 Magic link hash detected – hiding sign-in button, showing logout');
+    if (loginShowBtn) loginShowBtn.classList.add('hidden');
+    if (logoutBtn) logoutBtn.classList.remove('hidden');
+    if (userDisplay) {
+      userDisplay.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+          <span class="text-sm">Signing in...</span>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+    // Clean the hash after a short delay
     setTimeout(() => {
-      toastEl.classList.add('opacity-0', 'translate-y-4');
-      setTimeout(() => toastEl.classList.add('hidden'), 300);
-    }, 3000);
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }, 1500);
   }
 
-  // ==================== UPDATE UI ====================
+  // ==================== UPDATE UI WITH REAL SESSION DATA ====================
   async function updateUIWithSession() {
     const { data: { session } } = await supabase.auth.getSession();
     const user = session?.user || null;
     if (user) {
-      const meta = user.user_metadata;
-      const name = meta?.full_name || user.email;
-      const avatar = meta?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+      const name = user.user_metadata?.full_name || user.email;
+      const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
       if (userDisplay) userDisplay.innerHTML = `
         <div class="flex items-center gap-2">
           <img src="${avatar}" class="w-8 h-8 rounded-full">
@@ -11372,14 +11379,16 @@ if (deepToggle && deepList && deepChevron) {
       if (logoutBtn) logoutBtn.classList.remove('hidden');
       if (loginShowBtn) loginShowBtn.classList.add('hidden');
     } else {
-      if (userDisplay) userDisplay.innerHTML = `
-        <div class="flex items-center gap-2">
-          <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
-          <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
-        </div>
-      `;
-      if (logoutBtn) logoutBtn.classList.add('hidden');
-      if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+      if (!window.location.hash || !window.location.hash.includes('access_token')) {
+        if (userDisplay) userDisplay.innerHTML = `
+          <div class="flex items-center gap-2">
+            <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+            <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
+          </div>
+        `;
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+      }
     }
     if (window.lucide) lucide.createIcons();
   }
@@ -11423,13 +11432,11 @@ if (deepToggle && deepList && deepChevron) {
       .single();
     if (error) {
       console.error('Failed to create new chat:', error);
-      showToast('Failed to create new chat', 'Error', false);
       return null;
     }
     currentChatUUID = data.id;
     if (window.xroga && window.xroga.state) {
       window.xroga.state.currentChatId = currentChatUUID;
-      window.xroga.state.chats = window.xroga.state.chats || [];
       window.xroga.state.chats.unshift({
         id: currentChatUUID,
         title: data.title,
@@ -11458,9 +11465,7 @@ if (deepToggle && deepList && deepChevron) {
 
   async function switchToChat(chatId) {
     currentChatUUID = chatId;
-    if (window.xroga && window.xroga.state) {
-      window.xroga.state.currentChatId = chatId;
-    }
+    if (window.xroga && window.xroga.state) window.xroga.state.currentChatId = chatId;
     if (typeof clearChatUI === 'function') clearChatUI();
     const messages = await loadMessagesForChat(chatId);
     for (const msg of messages) {
@@ -11501,7 +11506,7 @@ if (deepToggle && deepList && deepChevron) {
     if (error) console.error('Save chat error:', error);
   };
 
-  // ==================== POLL MESSAGES (for current chat) ====================
+  // ==================== POLL MESSAGES ====================
   let lastMessageTimestamp = null;
   let pollInterval = null;
 
@@ -11583,28 +11588,24 @@ if (deepToggle && deepList && deepChevron) {
         r2_key: r2Key,
         subdomain
       });
-      showToast('Website saved to cloud!', 'Success');
     } catch (err) {
       console.error('Save website error:', err);
-      showToast('Failed to save website', 'Error', false);
     }
   };
 
   // ==================== LOGOUT ====================
   logoutBtn?.addEventListener('click', async () => {
     await supabase.auth.signOut();
-    showToast('Signed Out', 'You have been logged out.');
-    currentChatUUID = null;
     stopPolling();
+    currentChatUUID = null;
     lastMessageTimestamp = null;
     if (typeof clearChatUI === 'function') clearChatUI();
     await updateUIWithSession();
   });
 
-  // ==================== INITIALIZE: MAGIC LINK & RESTORE SESSION ====================
+  // ==================== INITIALIZE ====================
   (async () => {
     if (window.location.hash && window.location.hash.includes('access_token')) {
-      console.log('🔐 Magic link detected – waiting for session');
       await new Promise(r => setTimeout(r, 1000));
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }
@@ -11613,8 +11614,7 @@ if (deepToggle && deepList && deepChevron) {
     if (userId) {
       const userChats = await loadUserChatList();
       if (userChats.length > 0) {
-        const latestChat = userChats[0];
-        currentChatUUID = latestChat.id;
+        currentChatUUID = userChats[0].id;
         if (window.xroga && window.xroga.state) {
           window.xroga.state.chats = userChats.map(c => ({
             id: c.id,
@@ -11651,9 +11651,7 @@ if (deepToggle && deepList && deepChevron) {
     }
   })();
 
-  // ==================== AUTH STATE CHANGE ====================
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('Auth event:', event);
     await updateUIWithSession();
     if (event === 'SIGNED_IN') {
       const userId = session?.user?.id;
@@ -11696,7 +11694,6 @@ if (deepToggle && deepList && deepChevron) {
     }
   });
 
-  // Expose functions for main script
   window.createNewChatInCloud = createNewChatInCloud;
   window.switchToChat = switchToChat;
   window.loadUserChatList = loadUserChatList;
