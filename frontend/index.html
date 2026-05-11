@@ -11520,55 +11520,54 @@ if (deepToggle && deepList && deepChevron) {
     await updateUIWithSession();
   });
 
-  // ==================== HANDLE MAGIC LINK REDIRECT ====================
-  (async () => {
-    // If there's a hash with access_token, wait for Supabase to process it, then reload clean.
-    if (window.location.hash && window.location.hash.includes('access_token')) {
-      console.log('🔐 Magic link detected – waiting for session...');
-      // Give Supabase 1 second to exchange the token
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Force reload without the hash
-      window.location.href = window.location.origin + window.location.pathname;
-      return;
-    }
+// ==================== HANDLE MAGIC LINK REDIRECT ====================
+(async () => {
+  // If there's a hash with access_token, remove it instantly without reloading
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    console.log('🔐 Magic link detected – removing hash and processing session');
+    // Remove the hash from the URL (does not reload the page)
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    // Give Supabase a moment to exchange the token (it reads the hash before we removed it)
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
 
-    // Normal page load: check session and update UI
-    await updateUIWithSession();
-    const userId = await getCurrentUserId();
-    if (userId) {
-      // Load existing messages and start polling
-      const { data: lastMsg } = await supabase
-        .from('chats')
-        .select('created_at')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(1);
-      if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
+  // Now check the session and update UI
+  await updateUIWithSession();
+  const userId = await getCurrentUserId();
+  if (userId) {
+    // Load existing messages and start polling
+    const { data: lastMsg } = await supabase
+      .from('chats')
+      .select('created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (lastMsg?.length) lastMessageTimestamp = lastMsg[0].created_at;
 
-      const { data: allMsg } = await supabase
-        .from('chats')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: true });
-      if (allMsg?.length) {
-        if (typeof clearChatUI === 'function') clearChatUI();
-        for (const msg of allMsg) {
-          if (msg.role === 'user' && typeof addUserMessage === 'function')
-            addUserMessage(msg.content, false);
-          else if (msg.role === 'assistant') {
-            if (msg.type === 'code' && typeof addCodeResponse === 'function')
-              addCodeResponse(msg.content, false);
-            else if (msg.type === 'image' && typeof displayImageResult === 'function')
-              displayImageResult(msg.content, '', false);
-            else if (typeof addAIMessage === 'function')
-              addAIMessage(msg.content, false);
-          }
+    const { data: allMsg } = await supabase
+      .from('chats')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true });
+    if (allMsg?.length) {
+      if (typeof clearChatUI === 'function') clearChatUI();
+      for (const msg of allMsg) {
+        if (msg.role === 'user' && typeof addUserMessage === 'function')
+          addUserMessage(msg.content, false);
+        else if (msg.role === 'assistant') {
+          if (msg.type === 'code' && typeof addCodeResponse === 'function')
+            addCodeResponse(msg.content, false);
+          else if (msg.type === 'image' && typeof displayImageResult === 'function')
+            displayImageResult(msg.content, '', false);
+          else if (typeof addAIMessage === 'function')
+            addAIMessage(msg.content, false);
         }
-        if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
       }
-      startPolling();
+      if (allMsg.length) lastMessageTimestamp = allMsg[allMsg.length-1].created_at;
     }
-  })();
+    startPolling();
+  }
+})();
 
   // ==================== AUTH STATE CHANGE (backup) ====================
   supabase.auth.onAuthStateChange(async (event, session) => {
