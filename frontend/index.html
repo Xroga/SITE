@@ -11520,22 +11520,15 @@ if (deepToggle && deepList && deepChevron) {
     await updateUIWithSession();
   });
 
-// ==================== HANDLE MAGIC LINK REDIRECT ====================
+// ==================== HANDLE MAGIC LINK (let Supabase do its job) ====================
 (async () => {
-  // If there's a hash with access_token, remove it instantly without reloading
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-    console.log('🔐 Magic link detected – removing hash and processing session');
-    // Remove the hash from the URL (does not reload the page)
-    window.history.replaceState(null, '', window.location.pathname + window.location.search);
-    // Give Supabase a moment to exchange the token (it reads the hash before we removed it)
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-
-  // Now check the session and update UI
+  // Wait a moment for Supabase to process the hash automatically
+  await new Promise(resolve => setTimeout(resolve, 500));
+  // Then update UI based on the session
   await updateUIWithSession();
   const userId = await getCurrentUserId();
   if (userId) {
-    // Load existing messages and start polling
+    // Load messages and start polling (same as before)
     const { data: lastMsg } = await supabase
       .from('chats')
       .select('created_at')
