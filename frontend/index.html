@@ -11332,66 +11332,120 @@ if (deepToggle && deepList && deepChevron) {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+  (function() {
+    // DOM elements (must exist)
+    const userDisplay = document.getElementById('user-display');
+    const logoutBtn = document.getElementById('logout-btn');
+    const loginShowBtn = document.getElementById('login-show-btn');
+
+    // Helper: update UI based on actual session
+    async function updateUIBasedOnSession() {
+      // Wait for supabase client to be ready
+      if (typeof supabase === 'undefined') return;
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user || null;
+
+      if (user) {
+        const name = user.user_metadata?.full_name || user.email;
+        const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+        if (userDisplay) {
+          userDisplay.innerHTML = `
+            <div class="flex items-center gap-2">
+              <img src="${avatar}" class="w-8 h-8 rounded-full">
+              <span class="text-sm font-medium">${name}</span>
+            </div>
+          `;
+        }
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (loginShowBtn) loginShowBtn.classList.add('hidden');
+      } else {
+        if (userDisplay) {
+          userDisplay.innerHTML = `
+            <div class="flex items-center gap-2">
+              <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
+            </div>
+          `;
+        }
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Force UI based on magic link hash (instant)
+    function forceUIByHash() {
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        console.log('🔐 Magic link hash detected – hiding sign-in button, showing logout');
+        if (loginShowBtn) loginShowBtn.classList.add('hidden');
+        if (logoutBtn) logoutBtn.classList.remove('hidden');
+        if (userDisplay) {
+          userDisplay.innerHTML = `
+            <div class="flex items-center gap-2">
+              <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+              <span class="text-sm">Signing in...</span>
+            </div>
+          `;
+          if (window.lucide) lucide.createIcons();
+        }
+        // Remove hash after a short delay (clean URL)
+        setTimeout(() => {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }, 1500);
+        return true;
+      }
+      return false;
+    }
+
+    // Initialise
+    const hashHandled = forceUIByHash();
+
+    if (hashHandled) {
+      // After hash cleaned, fetch real session data
+      setTimeout(() => {
+        if (typeof supabase !== 'undefined') updateUIBasedOnSession();
+      }, 2000);
+    } else {
+      // Normal page load
+      if (typeof supabase !== 'undefined') {
+        updateUIBasedOnSession();
+      } else {
+        window.addEventListener('load', () => {
+          if (typeof supabase !== 'undefined') updateUIBasedOnSession();
+        });
+      }
+    }
+
+    // Logout handler
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        if (typeof supabase !== 'undefined') {
+          await supabase.auth.signOut();
+          updateUIBasedOnSession();
+        } else {
+          // Fallback (no supabase) – just toggle UI
+          if (loginShowBtn) loginShowBtn.classList.remove('hidden');
+          if (logoutBtn) logoutBtn.classList.add('hidden');
+          if (userDisplay) {
+            userDisplay.innerHTML = `
+              <div class="flex items-center gap-2">
+                <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+                <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
+              </div>
+            `;
+          }
+        }
+      });
+    }
+  })();
+</script>
+              
+<script>
   // ==================== SUPABASE CONFIG ====================
   const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
   const WORKER_URL = 'https://r2-upload.evanderthorne-help.workers.dev';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // ==================== DOM ELEMENTS ====================
-  const userDisplay = document.getElementById('user-display');
-  const logoutBtn = document.getElementById('logout-btn');
-  const loginShowBtn = document.getElementById('login-show-btn');
-
-  // ==================== FORCE UI UPDATE BASED ON HASH (INSTANT FIX) ====================
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-    console.log('🔐 Magic link hash detected – hiding sign-in button, showing logout');
-    if (loginShowBtn) loginShowBtn.classList.add('hidden');
-    if (logoutBtn) logoutBtn.classList.remove('hidden');
-    if (userDisplay) {
-      userDisplay.innerHTML = `
-        <div class="flex items-center gap-2">
-          <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-          <span class="text-sm">Signing in...</span>
-        </div>
-      `;
-      if (window.lucide) lucide.createIcons();
-    }
-    // Clean the hash after a short delay
-    setTimeout(() => {
-      window.history.replaceState(null, '', window.location.pathname + window.location.search);
-    }, 1500);
-  }
-
-  // ==================== UPDATE UI WITH REAL SESSION DATA ====================
-  async function updateUIWithSession() {
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user || null;
-    if (user) {
-      const name = user.user_metadata?.full_name || user.email;
-      const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-      if (userDisplay) userDisplay.innerHTML = `
-        <div class="flex items-center gap-2">
-          <img src="${avatar}" class="w-8 h-8 rounded-full">
-          <span class="text-sm font-medium">${name}</span>
-        </div>
-      `;
-      if (logoutBtn) logoutBtn.classList.remove('hidden');
-      if (loginShowBtn) loginShowBtn.classList.add('hidden');
-    } else {
-      if (!window.location.hash || !window.location.hash.includes('access_token')) {
-        if (userDisplay) userDisplay.innerHTML = `
-          <div class="flex items-center gap-2">
-            <i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
-            <span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span>
-          </div>
-        `;
-        if (logoutBtn) logoutBtn.classList.add('hidden');
-        if (loginShowBtn) loginShowBtn.classList.remove('hidden');
-      }
-    }
-    if (window.lucide) lucide.createIcons();
-  }
 
   // ==================== HELPER: GET USER ID ====================
   async function getCurrentUserId() {
@@ -11593,23 +11647,13 @@ if (deepToggle && deepList && deepChevron) {
     }
   };
 
-  // ==================== LOGOUT ====================
-  logoutBtn?.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    stopPolling();
-    currentChatUUID = null;
-    lastMessageTimestamp = null;
-    if (typeof clearChatUI === 'function') clearChatUI();
-    await updateUIWithSession();
-  });
-
-  // ==================== INITIALIZE ====================
+  // ==================== INITIALISE CLOUD CHATS ====================
   (async () => {
+    // Wait a moment for the standalone UI to possibly clean the hash
     if (window.location.hash && window.location.hash.includes('access_token')) {
       await new Promise(r => setTimeout(r, 1000));
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
     }
-    await updateUIWithSession();
     const userId = await getCurrentUserId();
     if (userId) {
       const userChats = await loadUserChatList();
@@ -11651,8 +11695,9 @@ if (deepToggle && deepList && deepChevron) {
     }
   })();
 
+  // ==================== AUTH STATE CHANGE (backup) ====================
   supabase.auth.onAuthStateChange(async (event, session) => {
-    await updateUIWithSession();
+    // Do NOT update UI here – the standalone controller handles that.
     if (event === 'SIGNED_IN') {
       const userId = session?.user?.id;
       if (userId) {
