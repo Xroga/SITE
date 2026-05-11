@@ -11362,69 +11362,21 @@ if (deepToggle && deepList && deepChevron) {
       if (window.lucide) lucide.createIcons();
     }
 
-    // If magic link hash is present, show spinner and start polling
-    if (window.location.hash && window.location.hash.includes('access_token')) {
-      // Immediate UI: hide sign-in button, show logout, show spinner
-      if (loginShowBtn) loginShowBtn.classList.add('hidden');
-      if (logoutBtn) logoutBtn.classList.remove('hidden');
-      if (userDisplay) {
-        userDisplay.innerHTML = `
-          <div class="flex items-center gap-2">
-            <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-            <span class="text-sm">Signing in...</span>
-          </div>
-        `;
-        if (window.lucide) lucide.createIcons();
-      }
-
-      // Poll for session every 500ms, up to 10 seconds
-      let attempts = 0;
-      const maxAttempts = 20;
-      const pollInterval = setInterval(async () => {
-        attempts++;
-        if (typeof supabase !== 'undefined') {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            clearInterval(pollInterval);
-            updateUI(session.user);
-            // Optionally clean the hash after session is confirmed
-            if (window.location.hash) {
-              window.history.replaceState(null, '', window.location.pathname + window.location.search);
-            }
-          } else if (attempts >= maxAttempts) {
-            clearInterval(pollInterval);
-            updateUI(null);
-            if (window.location.hash) {
-              window.history.replaceState(null, '', window.location.pathname + window.location.search);
-            }
-          }
-        } else if (attempts >= maxAttempts) {
-          clearInterval(pollInterval);
-          updateUI(null);
-        }
-      }, 500);
-    } else {
-      // No hash – just check existing session
-      const checkSession = async () => {
-        if (typeof supabase !== 'undefined') {
-          const { data: { session } } = await supabase.auth.getSession();
-          updateUI(session?.user || null);
-        } else {
-          setTimeout(checkSession, 200);
-        }
-      };
-      checkSession();
+    if (typeof supabase !== 'undefined') {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) updateUI(session.user);
+        else updateUI(null);
+      });
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') updateUI(session.user);
+        else if (event === 'SIGNED_OUT') updateUI(null);
+      });
     }
 
-    // Logout handler
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {
-        if (typeof supabase !== 'undefined') {
-          await supabase.auth.signOut();
-          updateUI(null);
-        } else {
-          updateUI(null);
-        }
+        await supabase.auth.signOut();
+        updateUI(null);
       });
     }
   })();
@@ -11639,7 +11591,7 @@ if (deepToggle && deepList && deepChevron) {
 
   // ==================== INITIALISE CLOUD CHATS ====================
   (async () => {
-    // Wait a moment for the standalone UI to possibly clean the hash
+    // REMOVED: hash cleaning block (no longer needed for email/password auth)
     const userId = await getCurrentUserId();
     if (userId) {
       const userChats = await loadUserChatList();
