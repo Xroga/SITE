@@ -11603,7 +11603,7 @@ if (deepToggle && deepList && deepChevron) {
   (function() {
     const userDisplay = document.getElementById('user-display');
     const logoutBtn = document.getElementById('logout-btn');
-    const loginShowBtn = document.getElementById('login-show-btn');
+    const googleSigninBtn = document.getElementById('google-signin-btn');
 
     async function updateUI() {
       if (!window.supabase) return;
@@ -11613,20 +11613,28 @@ if (deepToggle && deepList && deepChevron) {
         const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
         userDisplay.innerHTML = `<div class="flex items-center gap-2"><img src="${avatar}" class="w-8 h-8 rounded-full"><span class="text-sm font-medium">${name}</span></div>`;
         logoutBtn.classList.remove('hidden');
-        loginShowBtn.classList.add('hidden');
+        if (googleSigninBtn) googleSigninBtn.classList.add('hidden');
       } else {
         userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
         logoutBtn.classList.add('hidden');
-        loginShowBtn.classList.remove('hidden');
+        if (googleSigninBtn) googleSigninBtn.classList.remove('hidden');
       }
       if (window.lucide) lucide.createIcons();
     }
 
+    // Run once
     updateUI();
 
+    // Listen for storage changes (in case token is set from another tab)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'supabase_token') updateUI();
+    });
+
+    // Logout handler
     logoutBtn?.addEventListener('click', () => {
       localStorage.removeItem('supabase_token');
       localStorage.removeItem('supabase_user_id');
+      // Optionally, you can also sign out from Firebase here, but not required.
       window.location.href = 'https://xroga.com/';
     });
   })();
