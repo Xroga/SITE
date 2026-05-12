@@ -1,71 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Sign in to Xroga AI</title>
-    <style>
-        /* (keep your existing CSS – unchanged) */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; background: radial-gradient(circle at 10% 20%, #0f172a, #1e1b4b); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-        .card { max-width: 480px; width: 100%; background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1); padding: 2rem; }
-        input, button { width: 100%; padding: 0.9rem; margin-bottom: 1rem; border-radius: 1rem; border: none; font-size: 1rem; }
-        input { background: rgba(255,255,255,0.08); color: white; }
-        button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
-        .message { margin-top: 1rem; padding: 0.5rem; border-radius: 0.5rem; text-align: center; }
-        .error { color: #f87171; background: rgba(248,113,113,0.1); }
-        .success { color: #4ade80; background: rgba(74,222,128,0.1); }
-        .hidden { display: none; }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="card">
-    <h2>Welcome to Xroga AI</h2>
-    <input type="email" id="email" placeholder="Email" autocomplete="email">
-    <button id="magic-link-btn">Send magic link</button>
-    <div id="message" class="message hidden"></div>
-</div>
-<script>
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const emailInput = document.getElementById('email');
-    const btn = document.getElementById('magic-link-btn');
-    const msgDiv = document.getElementById('message');
-
-    function showMessage(text, isError = true) {
-        msgDiv.textContent = text;
-        msgDiv.className = `message ${isError ? 'error' : 'success'}`;
-        msgDiv.classList.remove('hidden');
-        setTimeout(() => msgDiv.classList.add('hidden'), 5000);
-    }
-
-    async function sendMagicLink() {
-        const email = emailInput.value.trim();
-        if (!email) return showMessage('Please enter your email');
-        if (!/^\S+@\S+\.\S+$/.test(email)) return showMessage('Invalid email address');
-
-        btn.disabled = true;
-        btn.textContent = 'Sending...';
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: { shouldCreateUser: true, emailRedirectTo: 'https://xroga.com/' }
-        });
-        btn.disabled = false;
-        btn.textContent = 'Send magic link';
-
-        if (error) {
-            showMessage(error.message);
-        } else {
-            showMessage(`✨ Magic link sent to ${email}. Check your inbox (and spam).`, false);
-            emailInput.value = '';
-        }
-    }
-
-    btn.addEventListener('click', sendMagicLink);
-    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMagicLink(); });
-</script>
+  <input type="email" id="email2" placeholder="Email">
+  <button id="send2">Send magic link</button>
+  <script>
+    const supabase = window.supabase.createClient(
+      'https://nzenxdfumxrnsmybazmo.supabase.co',
+      'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl'
+    );
+    document.getElementById('send2').onclick = async () => {
+      const email = document.getElementById('email2').value;
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: 'https://xroga.com/' }
+      });
+      if (error) alert(error.message);
+      else alert('Link sent!');
+    };
+  </script>
 </body>
 </html>
