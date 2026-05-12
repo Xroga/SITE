@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign in / Sign up | Xroga AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sign in to Xroga AI</title>
     <style>
         /* (keep your existing CSS – unchanged) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,88 +23,49 @@
 <div class="card">
     <h2>Welcome to Xroga AI</h2>
     <input type="email" id="email" placeholder="Email" autocomplete="email">
-    <input type="password" id="password" placeholder="Password (min 6 characters)">
-    <button id="signin-btn">Sign In</button>
-    <button id="signup-btn">Sign Up</button>
+    <button id="magic-link-btn">Send magic link</button>
     <div id="message" class="message hidden"></div>
-    <p style="text-align:center; margin-top:1rem; font-size:0.8rem;">
-        <a href="#" id="show-signup" style="color:#60a5fa;">Create new account</a>
-    </p>
 </div>
 <script>
     const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    let isSignUp = false;
 
     const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const signinBtn = document.getElementById('signin-btn');
-    const signupBtn = document.getElementById('signup-btn');
-    const messageDiv = document.getElementById('message');
-    const showSignupLink = document.getElementById('show-signup');
+    const btn = document.getElementById('magic-link-btn');
+    const msgDiv = document.getElementById('message');
 
     function showMessage(text, isError = true) {
-        messageDiv.textContent = text;
-        messageDiv.className = `message ${isError ? 'error' : 'success'}`;
-        messageDiv.classList.remove('hidden');
-        setTimeout(() => messageDiv.classList.add('hidden'), 5000);
+        msgDiv.textContent = text;
+        msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+        msgDiv.classList.remove('hidden');
+        setTimeout(() => msgDiv.classList.add('hidden'), 5000);
     }
 
-    async function handleAuth() {
+    async function sendMagicLink() {
         const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        if (!email || !password) return showMessage('Please enter email and password');
-        if (password.length < 6) return showMessage('Password must be at least 6 characters');
+        if (!email) return showMessage('Please enter your email');
+        if (!/^\S+@\S+\.\S+$/.test(email)) return showMessage('Invalid email address');
 
-        const btn = isSignUp ? signupBtn : signinBtn;
-        const originalText = btn.textContent;
         btn.disabled = true;
-        btn.textContent = 'Processing...';
+        btn.textContent = 'Sending...';
+        const { error } = await supabase.auth.signInWithOtp({
+            email,
+            options: { shouldCreateUser: true, emailRedirectTo: 'https://xroga.com/' }
+        });
+        btn.disabled = false;
+        btn.textContent = 'Send magic link';
 
-        try {
-            if (isSignUp) {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) throw error;
-                showMessage('Account created! Please check your email to confirm (if enabled). Then sign in.', false);
-                // Switch to sign in mode automatically
-                isSignUp = false;
-                signinBtn.style.display = 'block';
-                signupBtn.style.display = 'none';
-                showSignupLink.textContent = 'Create new account';
-                emailInput.value = '';
-                passwordInput.value = '';
-            } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                showMessage('Signed in! Redirecting...', false);
-                setTimeout(() => { window.location.href = 'https://xroga.com/'; }, 1200);
-            }
-        } catch (err) {
-            showMessage(err.message);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = originalText;
+        if (error) {
+            showMessage(error.message);
+        } else {
+            showMessage(`✨ Magic link sent to ${email}. Check your inbox (and spam).`, false);
+            emailInput.value = '';
         }
     }
 
-    signinBtn.addEventListener('click', () => handleAuth());
-    signupBtn.addEventListener('click', () => handleAuth());
-    showSignupLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        isSignUp = !isSignUp;
-        if (isSignUp) {
-            signinBtn.style.display = 'none';
-            signupBtn.style.display = 'block';
-            showSignupLink.textContent = 'Back to Sign In';
-        } else {
-            signinBtn.style.display = 'block';
-            signupBtn.style.display = 'none';
-            showSignupLink.textContent = 'Create new account';
-        }
-    });
-    // Initially hide signup button
-    signupBtn.style.display = 'none';
+    btn.addEventListener('click', sendMagicLink);
+    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMagicLink(); });
 </script>
 </body>
 </html>
