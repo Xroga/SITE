@@ -1,25 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta charset="UTF-8">
+    <title>Sign in / Sign up | Xroga AI</title>
+    <style>
+        /* (same styling as before) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; background: radial-gradient(circle at 10% 20%, #0f172a, #1e1b4b); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .card { max-width: 480px; width: 100%; background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1); padding: 2rem; }
+        input, button { width: 100%; padding: 0.9rem; margin-bottom: 1rem; border-radius: 1rem; border: none; font-size: 1rem; }
+        input { background: rgba(255,255,255,0.08); color: white; }
+        button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
+        .message { margin-top: 1rem; padding: 0.5rem; border-radius: 0.5rem; text-align: center; }
+        .error { color: #f87171; background: rgba(248,113,113,0.1); }
+        .success { color: #4ade80; background: rgba(74,222,128,0.1); }
+        .hidden { display: none; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <input type="email" id="email2" placeholder="Email">
-  <button id="send2">Send magic link</button>
-  <script>
-    const supabase = window.supabase.createClient(
-      'https://nzenxdfumxrnsmybazmo.supabase.co',
-      'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl'
-    );
-    document.getElementById('send2').onclick = async () => {
-      const email = document.getElementById('email2').value;
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: 'https://xroga.com/' }
-      });
-      if (error) alert(error.message);
-      else alert('Link sent!');
-    };
-  </script>
+<div class="card">
+    <h2 id="form-title">Sign In</h2>
+    <input type="email" id="email" placeholder="Email" autocomplete="email">
+    <input type="password" id="password" placeholder="Password (min 6 chars)" autocomplete="current-password">
+    <button id="submit-btn">Sign In</button>
+    <div id="message" class="message hidden"></div>
+    <p style="text-align:center; margin-top:1rem;">
+        <a href="#" id="toggle-mode">Create new account</a>
+    </p>
+</div>
+<script>
+    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let isSignUp = false;
+    const titleEl = document.getElementById('form-title');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submit-btn');
+    const msgDiv = document.getElementById('message');
+    const toggleLink = document.getElementById('toggle-mode');
+
+    function showMessage(text, isError = true) {
+        msgDiv.textContent = text;
+        msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+        msgDiv.classList.remove('hidden');
+        setTimeout(() => msgDiv.classList.add('hidden'), 5000);
+    }
+
+    async function handleAuth() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) return showMessage('Please enter email and password');
+        if (password.length < 6) return showMessage('Password must be at least 6 characters');
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+
+        try {
+            if (isSignUp) {
+                const { error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                showMessage('Account created! You can now sign in.', false);
+                // Switch to sign in mode
+                isSignUp = false;
+                titleEl.textContent = 'Sign In';
+                submitBtn.textContent = 'Sign In';
+                toggleLink.textContent = 'Create new account';
+                emailInput.value = '';
+                passwordInput.value = '';
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                showMessage('Signed in! Redirecting...', false);
+                setTimeout(() => { window.location.href = 'https://xroga.com/'; }, 1200);
+            }
+        } catch (err) {
+            showMessage(err.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+        }
+    }
+
+    toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        isSignUp = !isSignUp;
+        if (isSignUp) {
+            titleEl.textContent = 'Sign Up';
+            submitBtn.textContent = 'Sign Up';
+            toggleLink.textContent = 'Back to Sign In';
+        } else {
+            titleEl.textContent = 'Sign In';
+            submitBtn.textContent = 'Sign In';
+            toggleLink.textContent = 'Create new account';
+        }
+    });
+
+    submitBtn.addEventListener('click', handleAuth);
+    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+    passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+</script>
 </body>
 </html>
