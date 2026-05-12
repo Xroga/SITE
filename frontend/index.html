@@ -11329,20 +11329,7 @@ if (deepToggle && deepList && deepChevron) {
     })();
 </script>
 
-              <script>
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    let supabase;
-    const storedToken = localStorage.getItem('supabase_token');
-    if (storedToken) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            global: { headers: { Authorization: `Bearer ${storedToken}` } }
-        });
-    } else {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-    window.supabase = supabase;
-</script>
+
 
               <script>
   (function() {
