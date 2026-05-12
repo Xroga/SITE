@@ -150,114 +150,134 @@
 </div>
 
 <script>
-    // ========== SUPABASE CONFIG ==========
-    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // ========== DOM ELEMENTS ==========
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const submitBtn = document.getElementById('submit-btn');
-    const msgDiv = document.getElementById('message');
-    const forgotBtn = document.getElementById('forgot-btn');
-
-    function showMessage(text, isError = true) {
-        msgDiv.textContent = text;
-        msgDiv.className = `message ${isError ? 'error' : 'success'}`;
-        msgDiv.classList.remove('hidden');
-        setTimeout(() => msgDiv.classList.add('hidden'), 5000);
-    }
-
-    function setLoading(loading) {
-        submitBtn.disabled = loading;
-        submitBtn.textContent = loading ? 'Processing...' : 'Continue';
-    }
-
-    // Forgot password
-    async function forgotPassword() {
-        const email = emailInput.value.trim();
-        if (!email) {
-            showMessage('Please enter your email address first.');
-            return;
-        }
-        setLoading(true);
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: 'https://xroga.com/update-password.html',
-        });
-        setLoading(false);
-        if (error) {
-            showMessage(error.message);
-        } else {
-            showMessage('📧 Password reset email sent! Check your inbox (and spam).', false);
-        }
-    }
-
-    // Unified sign‑in / sign‑up
-    async function handleAuth() {
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!email || !password) {
-            showMessage('Please enter both email and password.');
-            return;
-        }
-        if (password.length < 6) {
-            showMessage('Password must be at least 6 characters.');
-            return;
-        }
-
-        setLoading(true);
+    (function() {
+        // ========== SUPABASE CONFIG ==========
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        
+        let supabase;
         try {
-            // Try to sign in first
-            const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabase client created');
+        } catch (err) {
+            console.error('❌ Supabase client error:', err);
+            alert('Failed to initialize auth. Please refresh the page.');
+            return;
+        }
 
-            if (!signInError) {
-                // Success – user signed in
-                showMessage('🎉 Signed in! Redirecting...', false);
-                setTimeout(() => {
-                    window.location.href = 'https://xroga.com/';
-                }, 1200);
+        // ========== DOM ELEMENTS ==========
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submit-btn');
+        const msgDiv = document.getElementById('message');
+        const forgotBtn = document.getElementById('forgot-btn');
+
+        if (!emailInput || !passwordInput || !submitBtn || !msgDiv || !forgotBtn) {
+            console.error('❌ Missing DOM elements');
+            return;
+        }
+
+        function showMessage(text, isError = true) {
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+            msgDiv.classList.remove('hidden');
+            setTimeout(() => msgDiv.classList.add('hidden'), 5000);
+        }
+
+        function setLoading(loading) {
+            submitBtn.disabled = loading;
+            submitBtn.textContent = loading ? 'Processing...' : 'Continue';
+        }
+
+        // Forgot password
+        async function forgotPassword() {
+            const email = emailInput.value.trim();
+            if (!email) {
+                showMessage('Please enter your email address first.');
+                return;
+            }
+            setLoading(true);
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://xroga.com/update-password.html',
+                });
+                if (error) throw error;
+                showMessage('📧 Password reset email sent! Check your inbox (and spam).', false);
+            } catch (err) {
+                showMessage(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Unified sign‑in / sign‑up
+        async function handleAuth() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showMessage('Please enter both email and password.');
+                return;
+            }
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters.');
                 return;
             }
 
-            // If sign-in fails because user doesn't exist, sign them up
-            if (signInError.message.includes('Invalid login credentials')) {
-                const { error: signUpError } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: { emailRedirectTo: 'https://xroga.com/' }
-                });
-                if (signUpError) throw signUpError;
-                showMessage(
-                    '✅ Account created! ' +
-                    (window.confirmEmailEnabled === undefined
-                        ? 'Please check your email to confirm (if confirmation is enabled). You can then sign in.'
-                        : 'You can now sign in with your email and password.'),
-                    false
-                );
-                // Clear password field
-                passwordInput.value = '';
-            } else {
-                // Other error (e.g., email not confirmed)
-                throw signInError;
-            }
-        } catch (err) {
-            let message = err.message;
-            if (message.includes('Email not confirmed')) {
-                message = 'Please confirm your email address before signing in. Check your inbox.';
-            }
-            showMessage(message);
-        } finally {
-            setLoading(false);
-        }
-    }
+            setLoading(true);
+            try {
+                // Try to sign in first
+                console.log('Attempting sign in for:', email);
+                const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
-    // Event listeners
-    submitBtn.addEventListener('click', handleAuth);
-    forgotBtn.addEventListener('click', forgotPassword);
-    emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
-    passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+                if (!signInError) {
+                    console.log('✅ Sign in successful');
+                    showMessage('🎉 Signed in! Redirecting...', false);
+                    setTimeout(() => {
+                        window.location.href = 'https://xroga.com/';
+                    }, 1200);
+                    return;
+                }
+
+                console.log('Sign in error:', signInError.message);
+                // If sign-in fails because user doesn't exist, sign them up
+                if (signInError.message.includes('Invalid login credentials')) {
+                    console.log('User not found, attempting sign up...');
+                    const { error: signUpError } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: { emailRedirectTo: 'https://xroga.com/' }
+                    });
+                    if (signUpError) throw signUpError;
+                    showMessage(
+                        '✅ Account created! Please check your email to confirm (if confirmation is enabled). You can then sign in.',
+                        false
+                    );
+                    passwordInput.value = '';
+                } else {
+                    // Other error (e.g., email not confirmed)
+                    throw signInError;
+                }
+            } catch (err) {
+                console.error('Auth error:', err);
+                let message = err.message;
+                if (message.includes('Email not confirmed')) {
+                    message = 'Please confirm your email address before signing in. Check your inbox.';
+                }
+                showMessage(message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Attach event listeners
+        submitBtn.addEventListener('click', handleAuth);
+        forgotBtn.addEventListener('click', forgotPassword);
+        emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+
+        console.log('✅ All event listeners attached');
+    })();
 </script>
 </body>
 </html>
