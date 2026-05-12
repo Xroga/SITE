@@ -11318,6 +11318,54 @@ if (deepToggle && deepList && deepChevron) {
     })();
 </script>
 
+              <script>
+    const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+    let supabase;
+    const storedToken = localStorage.getItem('supabase_token');
+    if (storedToken) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            global: { headers: { Authorization: `Bearer ${storedToken}` } }
+        });
+    } else {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    window.supabase = supabase;
+</script>
+
+              <script>
+  (function() {
+    const userDisplay = document.getElementById('user-display');
+    const logoutBtn = document.getElementById('logout-btn');
+    const loginShowBtn = document.getElementById('login-show-btn');
+
+    async function updateUI() {
+      if (!window.supabase) return;
+      const { data: { user }, error } = await window.supabase.auth.getUser();
+      if (user && !error) {
+        const name = user.user_metadata?.full_name || user.email;
+        const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+        userDisplay.innerHTML = `<div class="flex items-center gap-2"><img src="${avatar}" class="w-8 h-8 rounded-full"><span class="text-sm font-medium">${name}</span></div>`;
+        logoutBtn.classList.remove('hidden');
+        loginShowBtn.classList.add('hidden');
+      } else {
+        userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
+        logoutBtn.classList.add('hidden');
+        loginShowBtn.classList.remove('hidden');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    updateUI();
+
+    logoutBtn?.addEventListener('click', () => {
+      localStorage.removeItem('supabase_token');
+      localStorage.removeItem('supabase_user_id');
+      window.location.href = 'https://xroga.com/';
+    });
+  })();
+</script>
+
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
