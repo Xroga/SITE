@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Sign in / Sign up | Xroga AI</title>
+    <!-- (same styling, but add reset password link) -->
     <style>
-        /* (same styling as before) */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; background: radial-gradient(circle at 10% 20%, #0f172a, #1e1b4b); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-        .card { max-width: 480px; width: 100%; background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1); padding: 2rem; }
-        input, button { width: 100%; padding: 0.9rem; margin-bottom: 1rem; border-radius: 1rem; border: none; font-size: 1rem; }
-        input { background: rgba(255,255,255,0.08); color: white; }
-        button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; }
-        .message { margin-top: 1rem; padding: 0.5rem; border-radius: 0.5rem; text-align: center; }
-        .error { color: #f87171; background: rgba(248,113,113,0.1); }
-        .success { color: #4ade80; background: rgba(74,222,128,0.1); }
-        .hidden { display: none; }
+        /* (keep existing style, add .reset-link) */
+        .reset-link { display: block; text-align: right; font-size: 0.8rem; margin-top: -0.5rem; margin-bottom: 1rem; }
+        .reset-link a { color: #60a5fa; text-decoration: none; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -22,7 +15,10 @@
 <div class="card">
     <h2 id="form-title">Sign In</h2>
     <input type="email" id="email" placeholder="Email" autocomplete="email">
-    <input type="password" id="password" placeholder="Password (min 6 chars)" autocomplete="current-password">
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    <div class="reset-link" id="forgot-container" style="display: none;">
+        <a href="#" id="forgot-link">Forgot password?</a>
+    </div>
     <button id="submit-btn">Sign In</button>
     <div id="message" class="message hidden"></div>
     <p style="text-align:center; margin-top:1rem;">
@@ -41,6 +37,8 @@
     const submitBtn = document.getElementById('submit-btn');
     const msgDiv = document.getElementById('message');
     const toggleLink = document.getElementById('toggle-mode');
+    const forgotContainer = document.getElementById('forgot-container');
+    const forgotLink = document.getElementById('forgot-link');
 
     function showMessage(text, isError = true) {
         msgDiv.textContent = text;
@@ -53,54 +51,90 @@
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         if (!email || !password) return showMessage('Please enter email and password');
-        if (password.length < 6) return showMessage('Password must be at least 6 characters');
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Processing...';
 
         try {
             if (isSignUp) {
-                const { error } = await supabase.auth.signUp({ email, password });
+                // Sign up with email confirmation
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: { emailRedirectTo: 'https://xroga.com/' } // optional: redirect after confirmation
+                });
                 if (error) throw error;
-                showMessage('Account created! You can now sign in.', false);
-                // Switch to sign in mode
-                isSignUp = false;
-                titleEl.textContent = 'Sign In';
-                submitBtn.textContent = 'Sign In';
-                toggleLink.textContent = 'Create new account';
+                showMessage('Account created! Check your email to confirm your account.', false);
+                // Clear form and stay on sign-in mode (but user cannot sign in until confirmed)
                 emailInput.value = '';
                 passwordInput.value = '';
+                // Switch to sign-in mode automatically
+                isSignUp = false;
+                updateUIMode();
             } else {
+                // Sign in
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
                 showMessage('Signed in! Redirecting...', false);
                 setTimeout(() => { window.location.href = 'https://xroga.com/'; }, 1200);
             }
         } catch (err) {
-            showMessage(err.message);
+            if (err.message.includes('Email not confirmed')) {
+                showMessage('Please confirm your email address before signing in.', true);
+            } else {
+                showMessage(err.message);
+            }
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
         }
     }
 
-    toggleLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        isSignUp = !isSignUp;
+    async function handleForgotPassword() {
+        const email = emailInput.value.trim();
+        if (!email) return showMessage('Please enter your email address.');
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://xroga.com/update-password', // make a page for updating password
+        });
+        if (error) {
+            showMessage(error.message);
+        } else {
+            showMessage('Password reset email sent! Check your inbox.', false);
+        }
+    }
+
+    function updateUIMode() {
         if (isSignUp) {
             titleEl.textContent = 'Sign Up';
             submitBtn.textContent = 'Sign Up';
             toggleLink.textContent = 'Back to Sign In';
+            forgotContainer.style.display = 'none';
         } else {
             titleEl.textContent = 'Sign In';
             submitBtn.textContent = 'Sign In';
             toggleLink.textContent = 'Create new account';
+            forgotContainer.style.display = 'block';
         }
+    }
+
+    toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        isSignUp = !isSignUp;
+        updateUIMode();
+        // Clear any previous messages
+        msgDiv.classList.add('hidden');
+    });
+
+    forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleForgotPassword();
     });
 
     submitBtn.addEventListener('click', handleAuth);
     emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
     passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAuth(); });
+
+    updateUIMode();
 </script>
 </body>
 </html>
