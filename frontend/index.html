@@ -1831,6 +1831,9 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
         <button id="calendar-confirm" class="mt-4 w-full py-2 bg-pure-gold/30 rounded-full text-pure-gold text-sm">Set Deadline</button>
     </div>
 </div>
+              <!-- Logout button (hidden by default, shown when logged in) -->
+<button id="logout-btn" type="button" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
+              
               <a href="https://xroga.com/login.html" id="google-signin-btn" 
    class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
     <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -11574,46 +11577,27 @@ if (deepToggle && deepList && deepChevron) {
   (function() {
     const googleBtn = document.getElementById('google-signin-btn');
     const logoutBtn = document.getElementById('logout-btn');
-    const userDisplay = document.getElementById('user-display'); // optional, keep as is
+    const token = localStorage.getItem('supabase_token');
 
     function updateUI() {
-      const token = localStorage.getItem('supabase_token');
       if (token && token.startsWith('eyJ')) {
-        // Logged in
         if (googleBtn) googleBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-        // Optionally, you can show a simple "Logged in" text in user display
-        if (userDisplay && userDisplay.innerHTML.includes('Not logged in')) {
-          userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Logged in</span></div>`;
-          if (window.lucide) lucide.createIcons();
-        }
       } else {
-        // Logged out
         if (googleBtn) googleBtn.style.display = 'inline-flex';
         if (logoutBtn) logoutBtn.style.display = 'none';
-        if (userDisplay && !userDisplay.innerHTML.includes('Not logged in')) {
-          userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
-          if (window.lucide) lucide.createIcons();
-        }
       }
     }
 
-    // Initial UI update
     updateUI();
 
-    // Logout button click handler
     if (logoutBtn) {
       logoutBtn.onclick = () => {
         localStorage.removeItem('supabase_token');
         localStorage.removeItem('supabase_user_id');
-        updateUI(); // update UI immediately without reload
-        // Optionally, reload the page to reset all state:
-        // window.location.reload();
+        window.location.reload();
       };
     }
-
-    // Optional: listen for storage changes (in case token is set from another tab)
-    window.addEventListener('storage', updateUI);
   })();
 </script>
               
