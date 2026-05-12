@@ -1831,8 +1831,25 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
         <button id="calendar-confirm" class="mt-4 w-full py-2 bg-pure-gold/30 rounded-full text-pure-gold text-sm">Set Deadline</button>
     </div>
 </div>
-              <!-- Logout button (hidden by default, shown when logged in) -->
-<button id="logout-btn" type="button" class="text-xs px-2 py-1 bg-white/30 dark:bg-gray-700/50 rounded-md hidden">Logout</button>
+              <!-- Logout button – modern, animated, hidden by default -->
+<button id="logout-btn" type="button" 
+        class="w-full hidden group bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 
+               border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 
+               flex items-center justify-center gap-3 font-medium 
+               shadow-md hover:shadow-lg active:scale-[0.98] 
+               transition-all duration-300 ease-out
+               hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/30 dark:hover:to-red-900/20
+               hover:border-red-300 dark:hover:border-red-500/50
+               text-gray-700 dark:text-gray-200">
+    <!-- Elegant logout icon (door with arrow) -->
+    <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
+         viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 16L21 12L17 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M9 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9 20H5C4.46957 20 3.96086 19.7893 3.58579 19.4142C3.21071 19.0391 3 18.5304 3 18L3 6C3 5.46957 3.21071 4.96086 3.58579 4.58579C3.96086 4.21071 4.46957 4 5 4H9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="font-medium">Logout</span>
+</button>
               
               <a href="https://xroga.com/login.html" id="google-signin-btn" 
    class="w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg py-3 px-4 flex items-center justify-center gap-3 font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-[0.98]">
