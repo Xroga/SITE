@@ -11326,7 +11326,21 @@ if (deepToggle && deepList && deepChevron) {
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+              
+<script>
+  const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+  const storedToken = localStorage.getItem('supabase_token');
+  let supabase;
+  if (storedToken) {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: `Bearer ${storedToken}` } }
+    });
+  } else {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  window.supabase = supabase;
+</script>
 <script>
   // ==================== SUPABASE CONFIG (with stored token support) ====================
   const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
