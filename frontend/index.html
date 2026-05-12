@@ -11322,39 +11322,7 @@ if (deepToggle && deepList && deepChevron) {
 
 
 
-              <script>
-  (function() {
-    const userDisplay = document.getElementById('user-display');
-    const logoutBtn = document.getElementById('logout-btn');
-    const loginShowBtn = document.getElementById('login-show-btn');
-
-    async function updateUI() {
-      if (!window.supabase) return;
-      const { data: { user }, error } = await window.supabase.auth.getUser();
-      if (user && !error) {
-        const name = user.user_metadata?.full_name || user.email;
-        const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-        userDisplay.innerHTML = `<div class="flex items-center gap-2"><img src="${avatar}" class="w-8 h-8 rounded-full"><span class="text-sm font-medium">${name}</span></div>`;
-        logoutBtn.classList.remove('hidden');
-        loginShowBtn.classList.add('hidden');
-      } else {
-        userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
-        logoutBtn.classList.add('hidden');
-        loginShowBtn.classList.remove('hidden');
-      }
-      if (window.lucide) lucide.createIcons();
-    }
-
-    updateUI();
-
-    logoutBtn?.addEventListener('click', () => {
-      localStorage.removeItem('supabase_token');
-      localStorage.removeItem('supabase_user_id');
-      window.location.href = 'https://xroga.com/';
-    });
-  })();
-</script>
-
+             
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11590,42 +11558,68 @@ if (deepToggle && deepList && deepChevron) {
 
 <script>
   (function() {
+    // DOM elements
     const userDisplay = document.getElementById('user-display');
     const logoutBtn = document.getElementById('logout-btn');
     const googleSigninBtn = document.getElementById('google-signin-btn');
 
-    async function updateUI() {
-      if (!window.supabase) return;
-      const { data: { user }, error } = await window.supabase.auth.getUser();
-      if (user && !error) {
-        const name = user.user_metadata?.full_name || user.email;
-        const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
-        userDisplay.innerHTML = `<div class="flex items-center gap-2"><img src="${avatar}" class="w-8 h-8 rounded-full"><span class="text-sm font-medium">${name}</span></div>`;
-        logoutBtn.classList.remove('hidden');
-        if (googleSigninBtn) googleSigninBtn.classList.add('hidden');
-      } else {
-        userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
-        logoutBtn.classList.add('hidden');
+    // Helper to update UI based on token and session
+    async function updateAuthUI() {
+      const token = localStorage.getItem('supabase_token');
+      if (!token || !window.supabase) {
+        // No token or Supabase not ready → logged out UI
         if (googleSigninBtn) googleSigninBtn.classList.remove('hidden');
+        if (logoutBtn) logoutBtn.classList.add('hidden');
+        if (userDisplay) {
+          userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
+        }
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      // Try to get user from Supabase
+      try {
+        const { data: { user }, error } = await window.supabase.auth.getUser();
+        if (error || !user) {
+          // Invalid token – clear it
+          localStorage.removeItem('supabase_token');
+          if (googleSigninBtn) googleSigninBtn.classList.remove('hidden');
+          if (logoutBtn) logoutBtn.classList.add('hidden');
+          if (userDisplay) {
+            userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
+          }
+        } else {
+          // Valid user – logged in UI
+          const name = user.user_metadata?.full_name || user.email;
+          const avatar = user.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
+          if (userDisplay) {
+            userDisplay.innerHTML = `<div class="flex items-center gap-2"><img src="${avatar}" class="w-8 h-8 rounded-full"><span class="text-sm font-medium">${name}</span></div>`;
+          }
+          if (logoutBtn) logoutBtn.classList.remove('hidden');
+          if (googleSigninBtn) googleSigninBtn.classList.add('hidden');
+        }
+      } catch (err) {
+        console.warn('Auth check failed', err);
+        if (googleSigninBtn) googleSigninBtn.classList.remove('hidden');
+        if (logoutBtn) logoutBtn.classList.add('hidden');
       }
       if (window.lucide) lucide.createIcons();
     }
 
-    // Run once
-    updateUI();
+    // Run once when page loads
+    updateAuthUI();
 
-    // Listen for storage changes (in case token is set from another tab)
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'supabase_token') updateUI();
-    });
+    // Also listen for storage changes (in case token is set in another tab)
+    window.addEventListener('storage', updateAuthUI);
 
     // Logout handler
-    logoutBtn?.addEventListener('click', () => {
-      localStorage.removeItem('supabase_token');
-      localStorage.removeItem('supabase_user_id');
-      // Optionally, you can also sign out from Firebase here, but not required.
-      window.location.href = 'https://xroga.com/';
-    });
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('supabase_token');
+        localStorage.removeItem('supabase_user_id');
+        window.location.href = 'https://xroga.com/';
+      });
+    }
   })();
 </script>
               
