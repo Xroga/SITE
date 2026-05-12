@@ -11574,23 +11574,46 @@ if (deepToggle && deepList && deepChevron) {
   (function() {
     const googleBtn = document.getElementById('google-signin-btn');
     const logoutBtn = document.getElementById('logout-btn');
-    const token = localStorage.getItem('supabase_token');
+    const userDisplay = document.getElementById('user-display'); // optional, keep as is
 
-    if (token && token.startsWith('eyJ')) {
-      if (googleBtn) googleBtn.style.display = 'none';
-      if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-    } else {
-      if (googleBtn) googleBtn.style.display = 'inline-flex';
-      if (logoutBtn) logoutBtn.style.display = 'none';
+    function updateUI() {
+      const token = localStorage.getItem('supabase_token');
+      if (token && token.startsWith('eyJ')) {
+        // Logged in
+        if (googleBtn) googleBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+        // Optionally, you can show a simple "Logged in" text in user display
+        if (userDisplay && userDisplay.innerHTML.includes('Not logged in')) {
+          userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Logged in</span></div>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      } else {
+        // Logged out
+        if (googleBtn) googleBtn.style.display = 'inline-flex';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        if (userDisplay && !userDisplay.innerHTML.includes('Not logged in')) {
+          userDisplay.innerHTML = `<div class="flex items-center gap-2"><i data-lucide="user" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i><span class="text-xs text-gray-600 dark:text-gray-400">Not logged in</span></div>`;
+          if (window.lucide) lucide.createIcons();
+        }
+      }
     }
 
+    // Initial UI update
+    updateUI();
+
+    // Logout button click handler
     if (logoutBtn) {
       logoutBtn.onclick = () => {
         localStorage.removeItem('supabase_token');
         localStorage.removeItem('supabase_user_id');
-        window.location.reload();
+        updateUI(); // update UI immediately without reload
+        // Optionally, reload the page to reset all state:
+        // window.location.reload();
       };
     }
+
+    // Optional: listen for storage changes (in case token is set from another tab)
+    window.addEventListener('storage', updateUI);
   })();
 </script>
               
