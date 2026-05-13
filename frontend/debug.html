@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Xroga Debug – Supabase Connection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: monospace; background: #0f172a; color: white; padding: 2rem; }
+        .card { background: #1e293b; padding: 1rem; border-radius: 1rem; margin-bottom: 1rem; }
+        button { background: #3b82f6; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; color: white; cursor: pointer; }
+        pre { background: #0f172a; padding: 0.5rem; border-radius: 0.5rem; overflow-x: auto; }
+        .error { color: #f87171; }
+        .success { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <h1>Xroga AI – Debug Panel</h1>
+    <div class="card">
+        <h3>Authentication Status</h3>
+        <div id="authStatus">Checking...</div>
+    </div>
+    <div class="card">
+        <h3>Current Chat UUID</h3>
+        <div id="chatUUID">Unknown</div>
+    </div>
+    <div class="card">
+        <h3>Test Supabase Insert</h3>
+        <button id="testInsertBtn">Insert Test Message</button>
+        <div id="insertResult"></div>
+    </div>
+    <div class="card">
+        <h3>Chats in Supabase (latest 5)</h3>
+        <button id="fetchChatsBtn">Fetch Latest Chats</button>
+        <pre id="chatsList">Click button to fetch</pre>
+    </div>
+
+    <script>
+        // Initialize Supabase client using stored token
+        const SUPABASE_URL = 'https://nzenxdfumxrnsmybazmo.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_K1uE4mTqb5q3OexAuKF91Q_xbHnlxwl';
+        const storedToken = localStorage.getItem('supabase_token');
+        let supabase;
+        if (storedToken && storedToken.startsWith('eyJ')) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                global: { headers: { Authorization: `Bearer ${storedToken}` } }
+            });
+        } else {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+        window.supabase = supabase;
+
+        // Show auth status
+        async function updateAuthStatus() {
+            const authDiv = document.getElementById('authStatus');
+            const token = localStorage.getItem('supabase_token');
+            if (!token) {
+                authDiv.innerHTML = '❌ Not logged in (no token)';
+                return;
+            }
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error || !user) {
+                    authDiv.innerHTML = `❌ Token invalid: ${error?.message || 'No user'}`;
+                } else {
+                    authDiv.innerHTML = `✅ Logged in as <strong>${user.email}</strong> (user_id: ${user.id})`;
+                }
+            } catch (err) {
+                authDiv.innerHTML = `❌ Error: ${err.message}`;
+            }
+        }
+
+        // Show current chat UUID (if any)
+        function updateChatUUID() {
+            const uuidDiv = document.getElementById('chatUUID');
+            const uuid = window.getCurrentChatUUID ? window.getCurrentChatUUID() : null;
+            uuidDiv.innerHTML = uuid ? `✅ ${uuid}` : '❌ No active chat – create a chat first';
+        }
+
+        // Insert test message
+        async function insertTestMessage() {
+            const resultDiv = document.getElementById('insertResult');
+            resultDiv.innerHTML = 'Inserting...';
+            try {
+                const token = localStorage.getItem('supabase_token');
+                if (!token) throw new Error('Not logged in');
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error('Invalid session');
+                const userId = user.id;
+                const chatUUID = window.getCurrentChatUUID ? window.getCurrentChatUUID() : null;
+                if (!chatUUID) throw new Error('No active chat. Create a new chat first.');
+                
+                const testMsg = {
+                    user_id: userId,
+                    chat_id: chatUUID,
+                    role: 'user',
+                    content: 'Test message from debug panel – ' + new Date().toLocaleTimeString(),
+                    created_at: new Date().toISOString(),
+                    type: 'text'
+                };
+                const { error } = await supabase.from('chats').insert(testMsg);
+                if (error) throw error;
+                resultDiv.innerHTML = '<span class="success">✅ Test message inserted successfully!</span>';
+            } catch (err) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+            }
+        }
+
+        // Fetch latest 5 chats
+        async function fetchLatestChats() {
+            const pre = document.getElementById('chatsList');
+            pre.innerHTML = 'Fetching...';
+            try {
+                const { data, error } = await supabase.from('chats').select('*').order('created_at', { ascending: false }).limit(5);
+                if (error) throw error;
+                pre.innerHTML = JSON.stringify(data, null, 2);
+            } catch (err) {
+                pre.innerHTML = `❌ Error: ${err.message}`;
+            }
+        }
+
+        // Attach event listeners
+        document.getElementById('testInsertBtn').onclick = insertTestMessage;
+        document.getElementById('fetchChatsBtn').onclick = fetchLatestChats;
+
+        // Run on load
+        updateAuthStatus();
+        updateChatUUID();
+        // If you have a global function for current chat UUID, use it; otherwise maybe define one.
+        // For now, we rely on window.getCurrentChatUUID if your script exposes it.
+        if (typeof window.getCurrentChatUUID !== 'function') {
+            document.getElementById('chatUUID').innerHTML = '⚠️ window.getCurrentChatUUID not defined – make sure your chat script is loaded after this debug page.';
+        }
+    </script>
+</body>
+</html>
