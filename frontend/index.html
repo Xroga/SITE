@@ -2272,39 +2272,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     display: none !important;
   }
 </style> 
-<!-- ========== 1. PERMANENT LOCALSTORAGE BLOCK (BEFORE ANY OTHER SCRIPT) ========== -->
-    <script>
-        // List of chat-related keys to block completely
-        const BLOCKED_KEYS = [
-            'xroga-chats',
-            'xroga-chats-advanced',
-            'xroga-tasks',
-            'xroga-tasks-advanced',
-            'xroga-task-history',
-            'xroga-deployed-site',
-            'xroga-chat-history'
-        ];
 
-        const originalGetItem = localStorage.getItem;
-        const originalSetItem = localStorage.setItem;
-
-        localStorage.getItem = function(key) {
-            if (BLOCKED_KEYS.includes(key)) {
-                console.log(`[Blocked] localStorage.getItem("${key}") → null`);
-                return null;
-            }
-            return originalGetItem.call(this, key);
-        };
-
-        localStorage.setItem = function(key, value) {
-            if (BLOCKED_KEYS.includes(key)) {
-                console.log(`[Blocked] localStorage.setItem("${key}") ignored`);
-                return;
-            }
-            originalSetItem.call(this, key, value);
-        };
-    </script>
-  
 <script>
   lucide.createIcons();
 
@@ -3383,8 +3351,7 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
             tasks: JSON.parse(localStorage.getItem('xroga-tasks')) || [],
             autoSpeak: localStorage.getItem('autoSpeak') !== 'false',
             currentChatId: null,
-            chats: JSON.parse(localStorage.getItem('xroga-chats')) || [],
-            isTyping: false,
+            chats: [],
             isRecording: false,
             topicsVisible: false,
             uploadedFiles: [],
@@ -3393,7 +3360,6 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
             currentMode: 'code-expert',   // always start with Code Expert
             deployedSite: JSON.parse(localStorage.getItem('xroga-deployed-site')) || null
         };
-        
                 // Ensure localStorage has a valid default mode
         if (!localStorage.getItem('currentMode')) {
             localStorage.setItem('currentMode', 'code-expert');
@@ -3472,7 +3438,7 @@ setTimeout(() => {
         };
 
         // ===================== HELPERS =====================
-        function saveChats() { localStorage.setItem('xroga-chats', JSON.stringify(state.chats)); }
+        function saveChats() { }
         function saveTasks() { localStorage.setItem('xroga-tasks', JSON.stringify(state.tasks)); }
         function saveDeployedSite() { localStorage.setItem('xroga-deployed-site', JSON.stringify(state.deployedSite)); }
 
@@ -3564,24 +3530,26 @@ setTimeout(() => {
        
 
     function loadChatHistory(searchTerm = '') {
-    let codeChats = state.chats.filter(chat => chat.type === 'code');
-    let lighteningChats = state.chats.filter(chat => chat.type === 'lightening');
-    let deepthoughtChats = state.chats.filter(chat => chat.type === 'deep-thought');
+  // Use cloud chat list if available (from Supabase), otherwise local state
+  let chatList = (window.xroga && window.xroga.state && window.xroga.state.chats.length) ? window.xroga.state.chats : state.chats;
+  
+  let codeChats = chatList.filter(chat => chat.type === 'code');
+  let lighteningChats = chatList.filter(chat => chat.type === 'lightening');
+  let deepthoughtChats = chatList.filter(chat => chat.type === 'deep-thought');
 
-    if (searchTerm) {
-        codeChats = codeChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
-        lighteningChats = lighteningChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
-        deepthoughtChats = deepthoughtChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
-    }
+  if (searchTerm) {
+    codeChats = codeChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
+    lighteningChats = lighteningChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
+    deepthoughtChats = deepthoughtChats.filter(chat => chat.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chat.messages.some(m => m.content.toLowerCase().includes(searchTerm.toLowerCase())));
+  }
 
-      renderChatList('code-expert-list', codeChats, 'code-2', 'text-purple-500');
-    renderChatList('lightening-chats-list', lighteningChats, 'zap', 'text-yellow-500');
-    renderChatList('deepthought-chats-list', deepthoughtChats, 'brain', 'text-blue-500');
-
-    attachChatItemEventListeners();   // ✅ Add this line
+  renderChatList('code-expert-list', codeChats, 'code-2', 'text-purple-500');
+  renderChatList('lightening-chats-list', lighteningChats, 'zap', 'text-yellow-500');
+  renderChatList('deepthought-chats-list', deepthoughtChats, 'brain', 'text-blue-500');
+  attachChatItemEventListeners();
 }
 
 
@@ -3739,33 +3707,47 @@ function attachChatItemEventListeners() {
         }
     }
 
-function addChatToHistory(title, messages = [], type = 'lightening') {
-    const config = {
+async function addChatToHistory(title, messages = [], type = 'lightening') {
+  const config = {
     code: { mode: 'code-expert', color: 'text-purple-500', icon: 'code-2' },
     lightening: { mode: 'lightening', color: 'text-yellow-500', icon: 'zap' },
     'deep-thought': { mode: 'deep-thought', color: 'text-blue-500', icon: 'brain' },
     travel: { mode: 'travel-concierge', color: 'text-emerald-500', icon: 'plane' },
     islamic: { mode: 'muslim-islamic', color: 'text-amber-500', icon: 'star-and-crescent' },
-    shop: { mode: 'shop-confidence', color: 'text-cyan-400', icon: 'shopping-cart' }   // 🆕 6th mode
-};
-    const cfg = config[type] || config.lightening;
-    const chat = {
-        id: Date.now(),
-        title: title || `${type === 'code' ? 'Code' : type === 'lightening' ? 'Lightening' : type === 'deep-thought' ? 'DeepThought' : type === 'travel' ? 'Travel' : type === 'islamic' ? 'Islamic' : 'Shop'} Chat ${state.chats.length + 1}`,
-        messages: messages,
-        timestamp: new Date().toISOString(),
-        pinned: false,
-        color: cfg.color,
-        type: type
-    };
-    state.chats.unshift(chat);
-    state.currentChatId = chat.id;
-    state.selectedChat = chat;
-    saveChats();
-    loadChatHistory(elements.searchChats?.value || '');
-    updateModeReminder();
-    expandSectionForMode(state.currentMode);   // auto-expand sidebar
-    return chat;
+    shop: { mode: 'shop-confidence', color: 'text-cyan-400', icon: 'shopping-cart' }
+  };
+  const cfg = config[type] || config.lightening;
+  const chatTitle = title || `${type === 'code' ? 'Code' : 'Lightening'} Chat`;
+
+  // Cloud version (preferred)
+  if (typeof window.createNewChatInCloud === 'function') {
+    const chatMeta = await window.createNewChatInCloud(chatTitle);
+    if (chatMeta) {
+      state.currentChatId = chatMeta.id;
+      state.selectedChat = { id: chatMeta.id, title: chatTitle, type: type, messages: [] };
+      updateModeReminder();
+      expandSectionForMode(state.currentMode);
+      return state.selectedChat;
+    }
+  }
+  // Local fallback (kept for safety)
+  const chat = {
+    id: Date.now(),
+    title: chatTitle,
+    messages: messages,
+    timestamp: new Date().toISOString(),
+    pinned: false,
+    color: cfg.color,
+    type: type
+  };
+  state.chats.unshift(chat);
+  state.currentChatId = chat.id;
+  state.selectedChat = chat;
+  saveChats();
+  loadChatHistory(elements.searchChats?.value || '');
+  updateModeReminder();
+  expandSectionForMode(state.currentMode);
+  return chat;
 }
 
 function loadChat(chat) {
@@ -6104,12 +6086,15 @@ function createNewChat() {
     } else if (mode === 'deep-thought') {
         type = 'deep-thought'; color = 'text-blue-500'; titlePrefix = 'DeepThought';
     } else if (mode === 'shop-confidence') {
-    type = 'shop'; color = 'text-cyan-400'; titlePrefix = 'Shop';
+        type = 'shop'; color = 'text-cyan-400'; titlePrefix = 'Shop';
     } else if (mode === 'travel-concierge') {
         type = 'travel'; color = 'text-emerald-500'; titlePrefix = 'Travel';
     } else if (mode === 'muslim-islamic') {
         type = 'islamic'; color = 'text-amber-500'; titlePrefix = 'Islamic';
     }
+    
+
+
     
 function renderCodeExpertWelcome() {
   const greeting = getTimeBasedGreeting();
@@ -6717,25 +6702,35 @@ if (mode === 'code-expert') {
 if (typeof lucide !== 'undefined') lucide.createIcons();
 
 
-// Create the new chat object with correct type
-    const newChat = {
-        id: Date.now(),
-        title: `New ${titlePrefix} Chat`,
-        messages: [],
-        timestamp: new Date().toISOString(),
-        pinned: false,
-        color: color,
-        type: type
-    };
-    state.chats.unshift(newChat);
-    state.currentChatId = newChat.id;
-    state.selectedChat = newChat;
-    saveChats();
-    loadChatHistory(elements.searchChats?.value || '');
-    if (window.innerWidth < 1024) toggleSidebar(false);
-    lucide.createIcons();
-    expandSectionForMode(mode);   // auto‑expand sidebar
-    showToast('New chat started', 'Ready');
+ // ========== CHAT CREATION (CLOUD‑AWARE) ==========
+    if (typeof window.createNewChatInCloud === 'function') {
+        window.createNewChatInCloud(`New ${titlePrefix} Chat`).then(chat => {
+            if (chat) {
+                if (typeof clearChatUI === 'function') clearChatUI();
+                showToast('New chat started', 'Ready');
+            }
+        }).catch(err => console.warn('Cloud chat creation failed', err));
+    } else {
+        // Local fallback (kept for safety)
+        const newChat = {
+            id: Date.now(),
+            title: `New ${titlePrefix} Chat`,
+            messages: [],
+            timestamp: new Date().toISOString(),
+            pinned: false,
+            color: color,
+            type: type
+        };
+        state.chats.unshift(newChat);
+        state.currentChatId = newChat.id;
+        state.selectedChat = newChat;
+        saveChats();
+        loadChatHistory(elements.searchChats?.value || '');
+        if (window.innerWidth < 1024) toggleSidebar(false);
+        lucide.createIcons();
+        expandSectionForMode(mode);
+        showToast('New chat started (local fallback)', 'Ready');
+    }
 }
 
 function renderLighteningWelcome() {
@@ -9323,13 +9318,13 @@ async function sendMessage() {
         if (elements.topicsToggleContainer) elements.topicsToggleContainer.classList.remove('hidden');
     }
 
-    if (!state.selectedChat) {
-        const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-        let type = 'lightening';
-        if (state.currentMode === 'code-expert') type = 'code';
-        else if (state.currentMode === 'deep-thought') type = 'deep-thought';
-        addChatToHistory(title, [], type);
-    }
+   if (!state.selectedChat) {
+    const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
+    let type = 'lightening';
+    if (state.currentMode === 'code-expert') type = 'code';
+    else if (state.currentMode === 'deep-thought') type = 'deep-thought';
+    await addChatToHistory(title, [], type);   // ✅ add await
+}
 
     // Add user message to UI
     addUserMessage(message);
@@ -10125,14 +10120,7 @@ function expandSectionForMode(mode) {
             loadChatHistory();
             renderTasks();
             updateModeReminder();
-            if (state.chats.length === 0) {
-    const sampleCode = { id: Date.now()-3000, title: "Sample Code Chat", messages: [{ role: "user", content: "code Show me a JavaScript function", timestamp: new Date().toISOString() }], timestamp: new Date().toISOString(), pinned: false, color: "text-purple-500", type: "code" };
-    const sampleLightening = { id: Date.now()-2000, title: "Sample Lightening Chat", messages: [{ role: "user", content: "Write a creative poem about AI", timestamp: new Date().toISOString() }], timestamp: new Date().toISOString(), pinned: false, color: "text-yellow-500", type: "lightening" };
-    const sampleDeepThought = { id: Date.now()-1000, title: "Sample DeepThought Chat", messages: [{ role: "user", content: "Explain the meaning of life", timestamp: new Date().toISOString() }], timestamp: new Date().toISOString(), pinned: false, color: "text-blue-500", type: "deep-thought" };
-    state.chats = [sampleCode, sampleLightening, sampleDeepThought];
-    saveChats();
-    loadChatHistory();
-}
+            
             window.addEventListener('resize', () => { if (window.innerWidth >= 1024 && state.isSidebarOpen) toggleSidebar(false); });
             updateAuthUI();
             await verifyPaymentAndSetup();
