@@ -2272,7 +2272,39 @@ class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-cyan-100 d
     display: none !important;
   }
 </style> 
+<!-- ========== 1. PERMANENT LOCALSTORAGE BLOCK (BEFORE ANY OTHER SCRIPT) ========== -->
+    <script>
+        // List of chat-related keys to block completely
+        const BLOCKED_KEYS = [
+            'xroga-chats',
+            'xroga-chats-advanced',
+            'xroga-tasks',
+            'xroga-tasks-advanced',
+            'xroga-task-history',
+            'xroga-deployed-site',
+            'xroga-chat-history'
+        ];
 
+        const originalGetItem = localStorage.getItem;
+        const originalSetItem = localStorage.setItem;
+
+        localStorage.getItem = function(key) {
+            if (BLOCKED_KEYS.includes(key)) {
+                console.log(`[Blocked] localStorage.getItem("${key}") → null`);
+                return null;
+            }
+            return originalGetItem.call(this, key);
+        };
+
+        localStorage.setItem = function(key, value) {
+            if (BLOCKED_KEYS.includes(key)) {
+                console.log(`[Blocked] localStorage.setItem("${key}") ignored`);
+                return;
+            }
+            originalSetItem.call(this, key, value);
+        };
+    </script>
+  
 <script>
   lucide.createIcons();
 
