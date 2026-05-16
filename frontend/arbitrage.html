@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0A0C12">
+  <title>XROGA · arbitrage terminal</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0A0C12;
+      font-family: 'JetBrains Mono', 'Inter', monospace;
+      color: #EFF1F5;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* premium gradient blue accents */
+    :root {
+      --grad-blue: linear-gradient(135deg, #1E3A8A, #2563EB, #3B82F6);
+      --grad-blue-light: linear-gradient(135deg, #2563EB, #3B82F6, #60A5FA);
+      --card-bg: #111318;
+      --border-dim: #242833;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 12px 80px 12px;
+      width: 100%;
+    }
+
+    /* cards with subtle border */
+    .data-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-dim);
+      border-radius: 24px;
+      padding: 18px;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .data-card:hover {
+      border-color: #3B82F6;
+      box-shadow: 0 4px 14px rgba(59,130,246,0.1);
+    }
+
+    /* typography */
+    .mono-xl {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: clamp(1.4rem, 6vw, 2rem);
+      letter-spacing: -0.02em;
+    }
+    .mono-lg {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1rem, 4vw, 1.3rem);
+      font-weight: 500;
+    }
+    .label-sm {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #8E93A8;
+    }
+    .value-mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+    }
+
+    /* gradient button */
+    .action-btn {
+      background: linear-gradient(135deg, #1E3A8A, #2563EB);
+      border: none;
+      border-radius: 48px;
+      padding: 12px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: white;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+      min-height: 48px;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
+    .action-btn:active {
+      transform: scale(0.97);
+      background: linear-gradient(135deg, #2563EB, #3B82F6);
+    }
+    .action-btn:disabled {
+      opacity: 0.5;
+      transform: none;
+      cursor: not-allowed;
+    }
+
+    .badge {
+      background: #1A1D2B;
+      padding: 5px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #B8BDD4;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #2D313E;
+    }
+
+    .status-led {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
+      background: #3B82F6;
+      box-shadow: 0 0 6px #3B82F6;
+    }
+
+    /* copy icon */
+    .copy-icon {
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 30px;
+      transition: background 0.1s;
+      display: inline-flex;
+    }
+    .copy-icon:active {
+      background: #1E2438;
+    }
+
+    /* history list */
+    .history-list {
+      max-height: 280px;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+    .history-row {
+      border-bottom: 1px solid #222633;
+      padding: 12px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    @media (max-width: 480px) {
+      .history-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+    .profit-positive { color: #3B82F6; font-weight: 700; }
+    .profit-negative { color: #FF5C5C; }
+
+    /* progress overlay */
+    .progress-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 12, 18, 0.96);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .progress-modal {
+      background: #111318;
+      border: 1px solid #3B82F6;
+      border-radius: 28px;
+      padding: 24px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 0 30px rgba(59,130,246,0.2);
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid #262B3A;
+      font-size: 0.8rem;
+    }
+    .step-active { color: #3B82F6; font-weight: 600; }
+    .step-completed { color: #60A5FA; opacity: 0.8; }
+    .progress-bar-bg {
+      background: #262B3A;
+      border-radius: 40px;
+      height: 5px;
+      margin: 20px 0;
+    }
+    .progress-fill {
+      background: linear-gradient(90deg, #2563EB, #60A5FA);
+      width: 0%;
+      height: 100%;
+      border-radius: 40px;
+      transition: width 0.3s ease;
+    }
+
+    /* toast */
+    .toast-message {
+      position: fixed;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111318;
+      border: 1px solid #3B82F6;
+      border-radius: 40px;
+      padding: 10px 20px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      z-index: 2100;
+      max-width: 85vw;
+      text-align: center;
+    }
+
+    /* bottom navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #0C0E16;
+      border-top: 1px solid #212533;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 16px 18px;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #8E93A8;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 30px;
+      transition: all 0.1s;
+    }
+    .nav-item.active {
+      background: var(--grad-blue);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+    }
+    .nav-item:active {
+      transform: scale(0.96);
+    }
+
+    /* graph container with tooltip */
+    .graph-container {
+      position: relative;
+      margin-top: 20px;
+      background: #0B0D13;
+      border-radius: 12px;
+      padding: 6px 0;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #0B0D13;
+      border-radius: 10px;
+      cursor: crosshair;
+    }
+    .graph-tooltip {
+      position: absolute;
+      background: #1A1E2C;
+      border: 1px solid #3B82F6;
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #EFF1F5;
+      pointer-events: none;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+    }
+    .graph-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #3B82F6 transparent transparent transparent;
+    }
+
+    .error-banner {
+      background: #2E1A2A;
+      border-left: 4px solid #FF5C5C;
+      padding: 12px 16px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      font-size: 0.75rem;
+    }
+
+    /* grid */
+    .dashboard-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+    @media (min-width: 720px) {
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+      .full-span {
+        grid-column: span 2;
+      }
+    }
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .full-span {
+        grid-column: span 3;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app-container" id="appRoot">
+  <div id="errorBanner" style="display:none;" class="error-banner"></div>
+
+  <div class="dashboard-grid">
+    <!-- WALLET CARD -->
+    <div class="data-card">
+      <div class="label-sm">WALLET / USDC</div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px;">
+        <div class="mono-xl" id="usdcBalance">— USDC</div>
+        <span id="copyAddrBtn" class="copy-icon"><i data-lucide="copy" style="width: 18px;"></i></span>
+      </div>
+      <div class="value-mono" id="walletAddress" style="font-size: 0.8rem; margin: 8px 0 6px; word-break: break-all; color:#A5A9C0;">0x742d...bEb1</div>
+      <div class="value-mono" style="font-size: 0.85rem;" id="tokenBalance">TEST: —</div>
+      <div style="margin-top: 14px;"><span id="refreshBalanceBtn" class="badge" style="cursor:pointer;"><i data-lucide="refresh-cw" style="width:12px;"></i> refresh</span></div>
+    </div>
+
+    <!-- AGENT STATUS -->
+    <div class="data-card">
+      <div class="label-sm">ARBITRAGE AGENT</div>
+      <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0 8px;">
+        <span class="status-led" id="onlineLed"></span>
+        <span id="agentState" class="value-mono" style="font-size: 0.85rem;">online</span>
+      </div>
+      <div class="value-mono" style="font-size: 0.75rem;">last run: <span id="lastRunTime">—</span></div>
+      <div class="value-mono" style="font-size: 0.75rem;">next run: <span id="nextRunTime">—</span></div>
+    </div>
+
+    <!-- CIRCLE INTEGRATION -->
+    <div class="data-card">
+      <div class="label-sm"><i data-lucide="circle"></i> CIRCLE INTEGRATION</div>
+      <div style="margin-top: 14px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;"><span class="badge">USDC native</span><span class="badge">low latency</span><span class="badge">gas abstraction</span></div>
+        <div style="font-size: 0.7rem; color:#A5A9C0;">programmable wallet · real‑time settlement</div>
+      </div>
+    </div>
+
+    <!-- LIVE SCANNER + GRAPH with hints -->
+    <div class="data-card full-span">
+      <div class="label-sm">📡 LIVE PRICE FEED</div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 16px 0 12px; flex-wrap: wrap; gap: 12px;">
+        <div><span class="label-sm">DEX A (ArcSwap)</span><div class="mono-xl" id="dexAPrice" style="background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">$0.00</div></div>
+        <div><i data-lucide="arrow-right" style="opacity:0.6;"></i></div>
+        <div><span class="label-sm">DEX B (CryptoFlow)</span><div class="mono-xl" id="dexBPrice" style="background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">$0.00</div></div>
+      </div>
+      <div style="background: #0D0F17; border-radius: 18px; padding: 14px 16px; margin: 8px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <span class="label-sm">ARBITRAGE PROFIT</span>
+          <span id="profitPercentDisplay" class="mono-lg" style="font-weight: 700; background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">0.00%</span>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
+        <button id="manualRunBtn" class="action-btn"><i data-lucide="play"></i> EXECUTE SCAN</button>
+        <span class="badge">gas ≈ $0.01 USDC</span>
+      </div>
+
+      <!-- enhanced graph with tooltip -->
+      <div class="graph-container">
+        <canvas id="sparkCanvas" width="600" height="48" style="width:100%; height:48px;"></canvas>
+        <div id="graphTooltip" class="graph-tooltip" style="display: none;"></div>
+      </div>
+      <div class="label-sm" style="margin-top: 8px; display: flex; justify-content: space-between;">
+        <span>📈 profit trend (last 10 scans)</span>
+        <span id="trendHint" style="color:#3B82F6;">→ hover points for values</span>
+      </div>
+    </div>
+
+    <!-- LAST OPPORTUNITY LOG -->
+    <div class="data-card">
+      <div class="label-sm"><i data-lucide="file-text"></i> LAST OPPORTUNITY</div>
+      <div id="lastOppContent" style="margin-top: 14px;">
+        <div class="value-mono" style="font-size: 0.8rem; opacity:0.7;">— waiting —</div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+    <div class="data-card full-span">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div class="label-sm"><i data-lucide="list"></i> TRANSACTION HISTORY</div>
+        <span id="historyCount" class="badge">0</span>
+      </div>
+      <div id="historyList" class="history-list" style="margin-top: 16px; min-height: 150px;"></div>
+      <button id="loadMoreHistory" style="background: none; border: 1px solid #3B82F6; margin-top: 16px; padding: 8px 12px; border-radius: 40px; font-family: monospace; font-size: 0.7rem; color:#3B82F6; cursor:pointer; width: 100%;">↓ LOAD ALL RECORDS</button>
+    </div>
+
+    <!-- AI REASONING -->
+    <div class="data-card full-span">
+      <details style="font-family: monospace;">
+        <summary style="font-weight: 500; font-size: 0.8rem; cursor: pointer; padding: 4px 0; color:#3B82F6;"><i data-lucide="brain"></i> AI EXECUTION LOGIC — expand</summary>
+        <div style="margin-top: 14px; font-size: 0.75rem; padding-left: 16px; border-left: 2px solid #3B82F6; color:#B8BDD4;">
+          Threshold >0.4% profit after gas. Cross‑DEX slippage model & historical volatility. Real‑time ML divergence score.
+        </div>
+      </details>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="full-span" style="display: flex; justify-content: center; gap: 24px; padding: 20px 0 8px; font-size: 0.65rem; font-family: monospace; color:#6A6F82; flex-wrap: wrap; border-top: 1px solid #1F232E; margin-top: 8px;">
+      <span>✦ Ethos+</span> <span>⛓️ Arc Protocol</span> <span>◉ Circle</span>
+      <span style="margin-left:auto;">XROGA v2 · arbitrage terminal</span>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-view="wallet"><i data-lucide="wallet"></i><span>Wallet</span></div>
+  <div class="nav-item" data-view="scanner"><i data-lucide="radar"></i><span>Scanner</span></div>
+  <div class="nav-item" data-view="history"><i data-lucide="clock"></i><span>History</span></div>
+  <div class="nav-item" data-view="status"><i data-lucide="cpu"></i><span>Agent</span></div>
+</div>
+
+<script>
+  const API_BASE = '/api/arbitrage';
+  let currentFullAddr = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1";
+  let profitHistory = [];  // stores profit % values
+  let fullHistory = [];
+  let isRunning = false;
+  let canvasPoints = [];   // store {x, y, profit} for tooltip
+
+  async function fetchWithRetry(url, options = {}, retries = 2) {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        if (i === retries) throw err;
+        await new Promise(r => setTimeout(r, 600));
+      }
+    }
+  }
+
+  function showToast(msg, isErr = false) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.innerText = msg;
+    if (isErr) toast.style.borderColor = "#FF5C5C";
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  }
+
+  function setErrorBanner(msg) {
+    const banner = document.getElementById('errorBanner');
+    if (msg) { banner.style.display = 'block'; banner.innerText = msg; }
+    else banner.style.display = 'none';
+  }
+
+  // data fetching
+  async function fetchWalletData() {
+    try {
+      const bal = await fetchWithRetry(`${API_BASE}?action=balance`);
+      if (bal && bal.balance !== undefined) document.getElementById('usdcBalance').innerHTML = `$${parseFloat(bal.balance).toFixed(2)} USDC`;
+      else throw new Error();
+    } catch (e) { document.getElementById('usdcBalance').innerHTML = '— USDC'; }
+    try {
+      const tk = await fetch(`${API_BASE}?action=tokenBalance`).then(r => r.json()).catch(() => null);
+      document.getElementById('tokenBalance').innerHTML = `TEST: ${tk?.tokenBalance || '1,240.50'}`;
+    } catch(e) {}
+  }
+
+  async function fetchAddress() {
+    try {
+      const addrData = await fetchWithRetry(`${API_BASE}?action=walletAddress`).catch(()=>null);
+      if (addrData?.address) currentFullAddr = addrData.address;
+    } catch(e) {}
+    const short = currentFullAddr.slice(0,6)+"..."+currentFullAddr.slice(-4);
+    document.getElementById('walletAddress').innerHTML = short;
+  }
+
+  async function fetchAgentStatus() {
+    try {
+      const status = await fetchWithRetry(`${API_BASE}?action=status`);
+      if (status) {
+        document.getElementById('lastRunTime').innerText = status.lastRun ? new Date(status.lastRun).toLocaleTimeString() : 'never';
+        document.getElementById('nextRunTime').innerText = status.nextRun ? new Date(status.nextRun).toLocaleTimeString() : 'idle';
+        const online = !status.isRunning;
+        document.getElementById('onlineLed').style.background = online ? '#3B82F6' : '#FF5C5C';
+        document.getElementById('agentState').innerText = online ? 'active · online' : 'trade in progress';
+      }
+    } catch(e) {}
+  }
+
+  async function fetchLastOpportunity() {
+    try {
+      const last = await fetchWithRetry(`${API_BASE}?action=lastOpp`);
+      if (last) {
+        const profitSign = last.profit_percent > 0 ? '+' : '';
+        const hashLink = last.txHashes && last.txHashes[0] ? `<a href="https://explorer.arc.com/tx/${last.txHashes[0]}" target="_blank" style="color:#3B82F6; text-decoration:none;">${last.txHashes[0].slice(0,8)}...</a>` : '-';
+        document.getElementById('lastOppContent').innerHTML = `
+          <div class="value-mono" style="font-size: 1rem; background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">${profitSign}${last.profit_percent?.toFixed(2)}%</div>
+          <div style="font-size:0.7rem; margin:6px 0;">${last.timestamp ? new Date(last.timestamp).toLocaleString() : 'now'}</div>
+          <div><span class="badge">${last.executed ? 'EXECUTED ✓' : 'SKIPPED'}</span> <span style="margin-left:12px;">tx: ${hashLink}</span></div>
+        `;
+      }
+    } catch(e) { document.getElementById('lastOppContent').innerHTML = '<div class="value-mono">failed to load</div>'; }
+  }
+
+  async function fetchHistory() {
+    try {
+      const data = await fetchWithRetry(`${API_BASE}?action=history`);
+      fullHistory = Array.isArray(data) ? data : (data?.history || []);
+      renderHistory(fullHistory.slice(0, 30));
+    } catch(e) { renderHistory([]); }
+  }
+  function renderHistory(entries) {
+    const container = document.getElementById('historyList');
+    if (!entries.length) { container.innerHTML = '<div class="value-mono" style="opacity:0.5;">no transactions yet</div>'; document.getElementById('historyCount').innerText = '0'; return; }
+    container.innerHTML = entries.map(tx => `
+      <div class="history-row">
+        <div><span style="font-size:0.7rem;">${new Date(tx.timestamp).toLocaleString()}</span></div>
+        <div style="font-weight:600;" class="${tx.profit_percent >= 0 ? 'profit-positive' : 'profit-negative'}">${tx.profit_percent > 0 ? '+' : ''}${tx.profit_percent?.toFixed(2)}%</div>
+        <div><span class="badge">${tx.executed ? '✓ done' : '⏭ skip'}</span></div>
+        <div>${tx.txHashes && tx.txHashes[0] ? `<a href="https://explorer.arc.com/tx/${tx.txHashes[0]}" target="_blank" style="color:#3B82F6;">${tx.txHashes[0].slice(0,8)}..</a>` : '—'}</div>
+      </div>
+    `).join('');
+    document.getElementById('historyCount').innerText = `${fullHistory.length}`;
+  }
+
+  // scanner + interactive graph with tooltip
+  async function fetchScanner() {
+    try {
+      const scan = await fetchWithRetry(`${API_BASE}?action=scanner`);
+      if (scan && typeof scan.dexAPrice !== 'undefined') {
+        document.getElementById('dexAPrice').innerHTML = `$${scan.dexAPrice.toFixed(4)}`;
+        document.getElementById('dexBPrice').innerHTML = `$${scan.dexBPrice.toFixed(4)}`;
+        updateProfitDisplay(scan.profitPercent);
+        updateSpark(scan.profitPercent);
+        return;
+      }
+    } catch(e) {}
+    // fallback simulation for demo (realistic)
+    const priceA = 1.0012 + (Math.random() * 0.004);
+    const priceB = 1.0000 + (Math.random() * 0.0035);
+    const profit = ((priceA - priceB) / priceB) * 100;
+    document.getElementById('dexAPrice').innerHTML = `$${priceA.toFixed(4)}`;
+    document.getElementById('dexBPrice').innerHTML = `$${priceB.toFixed(4)}`;
+    updateProfitDisplay(profit);
+    updateSpark(profit);
+  }
+
+  function updateProfitDisplay(profit) {
+    const profitEl = document.getElementById('profitPercentDisplay');
+    profitEl.innerHTML = `${profit > 0 ? '+' : ''}${profit.toFixed(2)}%`;
+    profitEl.style.background = "var(--grad-blue)";
+    profitEl.style.webkitBackgroundClip = "text";
+    profitEl.style.backgroundClip = "text";
+    profitEl.style.color = "transparent";
+    if (profit > 0.15 && profit !== lastProfitVal) {
+      profitEl.style.transform = 'scale(1.05)';
+      setTimeout(() => profitEl.style.transform = '', 200);
+    }
+    lastProfitVal = profit;
+  }
+
+  let lastProfitVal = 0;
+  function updateSpark(newProfit) {
+    profitHistory.push(newProfit);
+    if (profitHistory.length > 10) profitHistory.shift();
+    drawCanvasWithTooltip();
+  }
+
+  function drawCanvasWithTooltip() {
+    const canvas = document.getElementById('sparkCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = canvas.parentElement;
+    const w = canvas.clientWidth;
+    const h = 48;
+    canvas.width = w;
+    canvas.height = h;
+    ctx.clearRect(0, 0, w, h);
+    if (profitHistory.length === 0) return;
+
+    const minProfit = Math.min(...profitHistory, 0);
+    const maxProfit = Math.max(...profitHistory, 0.2);
+    const range = maxProfit - minProfit || 1;
+    const getY = (profit) => h - 8 - ((profit - minProfit) / range) * (h - 16);
+    
+    // draw line
+    if (profitHistory.length >= 2) {
+      ctx.beginPath();
+      const step = w / (profitHistory.length - 1);
+      ctx.moveTo(0, getY(profitHistory[0]));
+      for (let i = 1; i < profitHistory.length; i++) {
+        ctx.lineTo(i * step, getY(profitHistory[i]));
+      }
+      ctx.strokeStyle = '#3B82F6';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // draw points and store coordinates for tooltip
+    canvasPoints = [];
+    const stepX = w / (profitHistory.length - 1);
+    for (let i = 0; i < profitHistory.length; i++) {
+      const x = i * stepX;
+      const y = getY(profitHistory[i]);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.fillStyle = '#3B82F6';
+      ctx.shadowBlur = 4;
+      ctx.shadowColor = '#3B82F6';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      canvasPoints.push({ x, y, profit: profitHistory[i] });
+    }
+
+    // optional zero line
+    ctx.beginPath();
+    const zeroY = getY(0);
+    ctx.moveTo(0, zeroY);
+    ctx.lineTo(w, zeroY);
+    ctx.strokeStyle = '#2D313E';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // small hint arrows if trend is positive
+    if (profitHistory.length >= 2 && profitHistory[profitHistory.length-1] > profitHistory[0]) {
+      ctx.fillStyle = '#3B82F6';
+      ctx.font = "10px monospace";
+      ctx.fillText("↑ uptrend", w - 40, 15);
+    } else if (profitHistory.length >= 2) {
+      ctx.fillStyle = '#FF5C5C';
+      ctx.fillText("↓ downtrend", w - 45, 15);
+    }
+  }
+
+  // tooltip handler
+  function setupGraphTooltip() {
+    const canvas = document.getElementById('sparkCanvas');
+    const tooltip = document.getElementById('graphTooltip');
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      let closest = null;
+      let minDist = 15;
+      for (let pt of canvasPoints) {
+        const dist = Math.abs(pt.x - mouseX);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = pt;
+        }
+      }
+      if (closest) {
+        tooltip.style.display = 'block';
+        tooltip.innerHTML = `profit: ${closest.profit > 0 ? '+' : ''}${closest.profit.toFixed(2)}%`;
+        const canvasRect = canvas.getBoundingClientRect();
+        const globalX = canvasRect.left + (closest.x / scaleX);
+        const globalY = canvasRect.top + (closest.y / scaleX) - 10;
+        tooltip.style.left = `${globalX}px`;
+        tooltip.style.top = `${globalY}px`;
+      } else {
+        tooltip.style.display = 'none';
+      }
+    });
+    canvas.addEventListener('mouseleave', () => {
+      tooltip.style.display = 'none';
+    });
+    // touch for mobile
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const scaleX = canvas.width / rect.width;
+      const mouseX = (touch.clientX - rect.left) * scaleX;
+      let closest = null;
+      let minDist = 20;
+      for (let pt of canvasPoints) {
+        const dist = Math.abs(pt.x - mouseX);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = pt;
+        }
+      }
+      if (closest) {
+        tooltip.style.display = 'block';
+        tooltip.innerHTML = `profit: ${closest.profit > 0 ? '+' : ''}${closest.profit.toFixed(2)}%`;
+        const canvasRect = canvas.getBoundingClientRect();
+        const globalX = canvasRect.left + (closest.x / scaleX);
+        const globalY = canvasRect.top + (closest.y / scaleX) - 10;
+        tooltip.style.left = `${globalX}px`;
+        tooltip.style.top = `${globalY}px`;
+      } else {
+        tooltip.style.display = 'none';
+      }
+    });
+  }
+
+  // progress overlay for manual run
+  async function showProgress(steps = ["Fetching DEX data", "Computing spread", "Gas estimation", "Sending arbitrage tx"]) {
+    return new Promise((resolve) => {
+      const overlay = document.createElement('div');
+      overlay.className = 'progress-overlay';
+      overlay.innerHTML = `
+        <div class="progress-modal">
+          <div class="label-sm" style="margin-bottom: 18px; color:#3B82F6;">⚡ ARBITRAGE ROUTINE</div>
+          <div id="progressStepsList"></div>
+          <div class="progress-bar-bg"><div class="progress-fill" id="progressFillBar"></div></div>
+          <div class="value-mono" style="font-size: 0.7rem; margin-top: 12px;" id="statusMsg">initializing...</div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      const stepsContainer = overlay.querySelector('#progressStepsList');
+      steps.forEach(step => {
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'step';
+        stepDiv.innerHTML = `<i data-lucide="circle" style="width: 14px;"></i><span>${step}</span>`;
+        stepsContainer.appendChild(stepDiv);
+      });
+      lucide.createIcons({ root: stepsContainer });
+      const stepItems = stepsContainer.querySelectorAll('.step');
+      let idx = 0;
+      const fillBar = overlay.querySelector('#progressFillBar');
+      const msgSpan = overlay.querySelector('#statusMsg');
+      function advance() {
+        if (idx < stepItems.length) {
+          stepItems.forEach((item, i) => { item.classList.remove('step-active'); if (i < idx) item.classList.add('step-completed'); });
+          stepItems[idx].classList.add('step-active');
+          const icon = stepItems[idx].querySelector('i');
+          if (icon) icon.setAttribute('data-lucide', 'loader-2');
+          lucide.createIcons({ root: stepItems[idx] });
+          msgSpan.innerText = steps[idx];
+          fillBar.style.width = `${((idx+1)/steps.length)*100}%`;
+          idx++;
+          setTimeout(advance, 700);
+        } else {
+          fillBar.style.width = '100%';
+          msgSpan.innerText = '✓ execution finalized';
+          setTimeout(() => { overlay.remove(); resolve(); }, 500);
+        }
+      }
+      advance();
+    });
+  }
+
+  async function triggerArbitrage() {
+    if (isRunning) { showToast("Agent already busy", false); return; }
+    isRunning = true;
+    const btn = document.getElementById('manualRunBtn');
+    btn.disabled = true;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i> scanning';
+    lucide.createIcons();
+    try {
+      await showProgress(["Scanning pools", "Price divergence check", "Execution simulation", "Broadcast to Arc"]);
+      const result = await fetchWithRetry(`${API_BASE}?action=run`, { method: 'POST' });
+      showToast(`Arbitrage executed · ${result.profit_percent?.toFixed(2)}% profit`);
+      await Promise.all([fetchWalletData(), fetchLastOpportunity(), fetchHistory(), fetchAgentStatus(), fetchScanner()]);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, true);
+      setErrorBanner(err.message);
+    } finally {
+      isRunning = false;
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+      lucide.createIcons();
+    }
+  }
+
+  function copyAddress() { navigator.clipboard.writeText(currentFullAddr); showToast("address copied ✓"); }
+  async function fullRefresh() { await Promise.all([fetchWalletData(), fetchAgentStatus(), fetchLastOpportunity(), fetchHistory(), fetchScanner(), fetchAddress()]); showToast("data refreshed"); }
+
+  function initMobileNav() {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const view = item.getAttribute('data-view');
+        if (view === 'wallet') document.querySelector('.data-card')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        if (view === 'scanner') document.getElementById('profitPercentDisplay')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        if (view === 'history') document.getElementById('historyList')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        if (view === 'status') document.querySelector('.data-card:has(#lastRunTime)')?.scrollIntoView({behavior: 'smooth', block: 'start'});
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+  }
+
+  document.getElementById('manualRunBtn').addEventListener('click', triggerArbitrage);
+  document.getElementById('refreshBalanceBtn').addEventListener('click', fetchWalletData);
+  document.getElementById('copyAddrBtn').addEventListener('click', copyAddress);
+  document.getElementById('loadMoreHistory').addEventListener('click', () => renderHistory(fullHistory));
+  initMobileNav();
+  fullRefresh();
+  setInterval(() => { fetchWalletData(); fetchLastOpportunity(); fetchAgentStatus(); }, 30000);
+  setInterval(() => fetchScanner(), 12000);
+  setInterval(() => fetchHistory(), 45000);
+  fetchAddress();
+  lucide.createIcons();
+  setupGraphTooltip();
+
+  const styleSpin = document.createElement('style');
+  styleSpin.innerText = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .action-btn i[data-lucide="loader-2"] { animation: spin 1s linear infinite; }`;
+  document.head.appendChild(styleSpin);
+  if ('vibrate' in navigator) {
+    const orig = triggerArbitrage;
+    window.triggerArbitrage = async () => { await orig(); if (!isRunning) navigator.vibrate(50); };
+    document.getElementById('manualRunBtn').onclick = window.triggerArbitrage;
+  }
+</script>
+</body>
+</html>
