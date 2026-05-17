@@ -2,850 +2,360 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#0A0C12">
-  <title>XROGA · arbitrage terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Circle·Arc | AI Pro — Multi-Chart, Multi-Network Gas Swap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: #0A0C12;
-      font-family: 'JetBrains Mono', 'Inter', monospace;
-      color: #EFF1F5;
-      line-height: 1.4;
-      -webkit-font-smoothing: antialiased;
-      padding: 0;
-      margin: 0;
-    }
-
-    /* premium gradient blue accents */
-    :root {
-      --grad-blue: linear-gradient(135deg, #1E3A8A, #2563EB, #3B82F6);
-      --grad-blue-light: linear-gradient(135deg, #2563EB, #3B82F6, #60A5FA);
-      --card-bg: #111318;
-      --border-dim: #242833;
-    }
-
-    .app-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 12px 80px 12px;
-      width: 100%;
-    }
-
-    /* cards with subtle border */
-    .data-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-dim);
-      border-radius: 24px;
-      padding: 18px;
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-    .data-card:hover {
-      border-color: #3B82F6;
-      box-shadow: 0 4px 14px rgba(59,130,246,0.1);
-    }
-
-    /* typography */
-    .mono-xl {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: clamp(1.4rem, 6vw, 2rem);
-      letter-spacing: -0.02em;
-    }
-    .mono-lg {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: clamp(1rem, 4vw, 1.3rem);
-      font-weight: 500;
-    }
-    .label-sm {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #8E93A8;
-    }
-    .value-mono {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 500;
-    }
-
-    /* gradient button */
-    .action-btn {
-      background: linear-gradient(135deg, #1E3A8A, #2563EB);
-      border: none;
-      border-radius: 48px;
-      padding: 12px 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: white;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s ease;
-      min-height: 48px;
-      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
-    }
-    .action-btn:active {
-      transform: scale(0.97);
-      background: linear-gradient(135deg, #2563EB, #3B82F6);
-    }
-    .action-btn:disabled {
-      opacity: 0.5;
-      transform: none;
-      cursor: not-allowed;
-    }
-
-    .badge {
-      background: #1A1D2B;
-      padding: 5px 12px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: #B8BDD4;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #2D313E;
-    }
-
-    .status-led {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 8px;
-      background: #3B82F6;
-      box-shadow: 0 0 6px #3B82F6;
-    }
-
-    /* copy icon */
-    .copy-icon {
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 30px;
-      transition: background 0.1s;
-      display: inline-flex;
-    }
-    .copy-icon:active {
-      background: #1E2438;
-    }
-
-    /* history list */
-    .history-list {
-      max-height: 280px;
-      overflow-y: auto;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-    }
-    .history-row {
-      border-bottom: 1px solid #222633;
-      padding: 12px 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-    @media (max-width: 480px) {
-      .history-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-    }
-    .profit-positive { color: #3B82F6; font-weight: 700; }
-    .profit-negative { color: #FF5C5C; }
-
-    /* progress overlay */
-    .progress-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 12, 18, 0.96);
-      backdrop-filter: blur(6px);
-      z-index: 2000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .progress-modal {
-      background: #111318;
-      border: 1px solid #3B82F6;
-      border-radius: 28px;
-      padding: 24px;
-      width: 90%;
-      max-width: 360px;
-      box-shadow: 0 0 30px rgba(59,130,246,0.2);
-    }
-    .step {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 10px 0;
-      border-bottom: 1px solid #262B3A;
-      font-size: 0.8rem;
-    }
-    .step-active { color: #3B82F6; font-weight: 600; }
-    .step-completed { color: #60A5FA; opacity: 0.8; }
-    .progress-bar-bg {
-      background: #262B3A;
-      border-radius: 40px;
-      height: 5px;
-      margin: 20px 0;
-    }
-    .progress-fill {
-      background: linear-gradient(90deg, #2563EB, #60A5FA);
-      width: 0%;
-      height: 100%;
-      border-radius: 40px;
-      transition: width 0.3s ease;
-    }
-
-    /* toast */
-    .toast-message {
-      position: fixed;
-      bottom: 75px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #111318;
-      border: 1px solid #3B82F6;
-      border-radius: 40px;
-      padding: 10px 20px;
-      font-family: monospace;
-      font-size: 0.75rem;
-      z-index: 2100;
-      max-width: 85vw;
-      text-align: center;
-    }
-
-    /* bottom navigation */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #0C0E16;
-      border-top: 1px solid #212533;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 8px 16px 18px;
-      z-index: 100;
-      backdrop-filter: blur(10px);
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.65rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: #8E93A8;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 30px;
-      transition: all 0.1s;
-    }
-    .nav-item.active {
-      background: var(--grad-blue);
-      color: white;
-      box-shadow: 0 2px 8px rgba(59,130,246,0.4);
-    }
-    .nav-item:active {
-      transform: scale(0.96);
-    }
-
-    /* graph container with tooltip */
-    .graph-container {
-      position: relative;
-      margin-top: 20px;
-      background: #0B0D13;
-      border-radius: 12px;
-      padding: 6px 0;
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: #0B0D13;
-      border-radius: 10px;
-      cursor: crosshair;
-    }
-    .graph-tooltip {
-      position: absolute;
-      background: #1A1E2C;
-      border: 1px solid #3B82F6;
-      border-radius: 12px;
-      padding: 4px 10px;
-      font-size: 0.7rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: #EFF1F5;
-      pointer-events: none;
-      transform: translate(-50%, -120%);
-      white-space: nowrap;
-      z-index: 50;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-    }
-    .graph-tooltip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: #3B82F6 transparent transparent transparent;
-    }
-
-    .error-banner {
-      background: #2E1A2A;
-      border-left: 4px solid #FF5C5C;
-      padding: 12px 16px;
-      border-radius: 14px;
-      margin-bottom: 16px;
-      font-size: 0.75rem;
-    }
-
-    /* grid */
-    .dashboard-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      width: 100%;
-    }
-    @media (min-width: 720px) {
-      .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-      }
-      .full-span {
-        grid-column: span 2;
-      }
-    }
-    @media (min-width: 1024px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .full-span {
-        grid-column: span 3;
-      }
-    }
+    * { font-family: 'Inter', sans-serif; transition: background-color 0.2s ease, border-color 0.2s, color 0.2s; }
+    body { background: linear-gradient(135deg, #f5f7fc 0%, #e9eef5 100%); }
+    body.dark { background: radial-gradient(circle at 0% 0%, #0a0f1e, #030617); }
+    .glass-panel { background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); border-radius: 1.75rem; box-shadow: 0 8px 20px -6px rgba(0,0,0,0.05); }
+    body.dark .glass-panel { background: rgba(8,15,28,0.75); backdrop-filter: blur(14px); border: 1px solid rgba(0,200,255,0.25); }
+    .btn-action { transition: transform 0.1s, background 0.15s; cursor: pointer; }
+    .btn-action:active { transform: scale(0.96); }
+    .timeframe-btn, .chart-type-btn, .display-mode-btn { transition: all 0.15s; cursor: pointer; background: rgba(0,0,0,0.05); border: 1px solid transparent; }
+    body.dark .timeframe-btn, body.dark .chart-type-btn, body.dark .display-mode-btn { background: rgba(255,255,255,0.08); color: #cbd5e1; }
+    .timeframe-btn.active, .chart-type-btn.active, .display-mode-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    body.dark .timeframe-btn.active, body.dark .chart-type-btn.active, body.dark .display-mode-btn.active { background: #2563eb; }
+    .token-selector { position: relative; }
+    .token-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 50; background: white; border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); max-height: 250px; overflow-y: auto; display: none; }
+    body.dark .token-dropdown { background: #1e293b; border: 1px solid #475569; }
+    .token-dropdown.show { display: block; }
+    .token-option { padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #e2e8f0; }
+    body.dark .token-option { border-color: #334155; }
+    .token-option:hover { background: #f1f5f9; }
+    body.dark .token-option:hover { background: #334155; }
+    .execution-log { max-height: 70px; overflow-y: auto; font-size: 11px; }
+    .wallet-connected-badge { background: #10b98120; border: 1px solid #10b98140; border-radius: 2rem; padding: 2px 10px; display: inline-flex; align-items: center; gap: 6px; }
+    .chart-wrapper { width: 100%; position: relative; }
+    @media (min-width: 768px) { .chart-wrapper { aspect-ratio: 16 / 9; } }
+    @media (max-width: 767px) { .chart-wrapper { aspect-ratio: 4 / 5; } }
+    canvas { width: 100% !important; height: 100% !important; display: block; }
+    .xroga-chat-root { position: static; display: block; height: 0; width: 0; }
+    .xroga-chat-bar { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 1000px; z-index: 99999; pointer-events: none; transition: transform 0.3s, opacity 0.3s; }
+    .xroga-chat-root.chatbar-hidden .xroga-chat-bar { transform: translateX(-50%) translateY(200%); opacity: 0; pointer-events: none; }
+    .xroga-glass-panel { pointer-events: auto; background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); border-radius: 40px; padding: 8px 16px; box-shadow: 0 8px 20px -6px rgba(0,0,0,0.1); }
+    body.dark .xroga-glass-panel { background: rgba(10,18,30,0.95); }
+    .xroga-reveal-btn { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) scale(0.9); background: rgba(255,255,255,0.9); backdrop-filter: blur(16px); border-radius: 40px; padding: 6px 16px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; opacity: 0; pointer-events: none; transition: all 0.25s; font-size: 0.8rem; z-index: 100000; }
+    body.dark .xroga-reveal-btn { background: rgba(10,18,30,0.95); color: white; }
+    .xroga-chat-root.chatbar-hidden .xroga-reveal-btn { opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto; }
+    .hide-chat-icon { position: absolute; right: 16px; top: 10px; cursor: pointer; color: #64748b; }
+    .analysis-card-modern { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border-radius: 1.5rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.4); transition: all 0.2s; }
+    body.dark .analysis-card-modern { background: rgba(0,0,0,0.4); border-color: rgba(59,130,246,0.3); }
+    .smart-order-actions button { transition: all 0.15s; }
+    .toggle-modern { background: rgba(0,0,0,0.08); border-radius: 2rem; padding: 4px 8px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; backdrop-filter: blur(4px); }
+    body.dark .toggle-modern { background: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
-<div class="app-container" id="appRoot">
-  <div id="errorBanner" style="display:none;" class="error-banner"></div>
 
-  <div class="dashboard-grid">
-    <!-- WALLET CARD -->
-    <div class="data-card">
-      <div class="label-sm">WALLET / USDC</div>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 12px;">
-        <div class="mono-xl" id="usdcBalance">— USDC</div>
-        <span id="copyAddrBtn" class="copy-icon"><i data-lucide="copy" style="width: 18px;"></i></span>
+<!-- Sidebar same as original -->
+<div id="sidebar" class="fixed top-0 left-0 h-full w-80 bg-white/95 dark:bg-black/90 backdrop-blur-2xl border-r border-gray-200 dark:border-cyan-500/30 z-40 transform -translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+  <div class="p-5 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <h2 class="text-xl font-bold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent"><i data-lucide="database" class="inline-block w-5 h-5 mr-1"></i>Arc Vault</h2>
+    <button id="closeSidebar"><i data-lucide="x" class="w-5 h-5 text-gray-500 dark:text-gray-400"></i></button>
+  </div>
+  <div class="flex-1 overflow-y-auto p-4 space-y-6">
+    <div><h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"><i data-lucide="clock"></i> Chat History</h3><div id="chatHistoryList" class="space-y-2 text-xs max-h-64 overflow-y-auto pr-1"></div><button id="clearHistoryBtn" class="text-[10px] text-red-500 mt-2"><i data-lucide="trash-2" class="inline w-3 h-3"></i> Clear</button></div>
+    <div class="pt-4 border-t dark:border-gray-700"><h3 class="text-sm font-semibold mb-3">✨ Coming Soon</h3><div class="space-y-3"><div class="flex justify-between p-2 bg-gray-100 dark:bg-gray-800/30 rounded-xl"><span><i data-lucide="pie-chart"></i> Adaptive Portfolio</span><span class="text-[10px] bg-yellow-500/20 rounded-full px-2">SOON</span></div></div></div>
+  </div>
+</div>
+<button id="sidebarToggle" class="fixed top-20 left-4 z-50 bg-cyan-500/20 hover:bg-cyan-500/40 backdrop-blur rounded-full p-2"><i data-lucide="messages-square" class="w-5 h-5 text-cyan-300"></i></button>
+
+<!-- MAIN DASHBOARD -->
+<div class="max-w-full mx-auto px-4 py-6 lg:py-8 pb-36">
+  <!-- Header -->
+  <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+    <div><h1 class="text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-cyan-600 to-purple-600 bg-clip-text text-transparent"><i data-lucide="bitcoin" class="inline w-7 h-7 mr-2 text-amber-500"></i>Circle·Arc Pro Agent</h1><p class="text-gray-600 dark:text-gray-400 text-sm">Multi-Chart · All Tokens · Price/Market Cap Toggle · Real Gas</p></div>
+    <div class="flex gap-3 items-center"><div class="bg-white/60 dark:bg-black/40 rounded-full px-3 py-1.5 text-sm border"><i data-lucide="trending-up"></i> CoinGecko</div><button id="walletConnectBtn" class="flex gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-1.5 rounded-full text-white text-sm"><i data-lucide="wallet"></i> <span id="walletBtnText">Connect Wallet</span></button><button id="themeToggle" class="flex gap-2 bg-white/50 dark:bg-black/30 px-3 py-1.5 rounded-full border"><i data-lucide="moon" class="dark:hidden"></i><i data-lucide="sun" class="hidden dark:inline-block"></i><span>Day/Night</span></button></div>
+  </div>
+  <div id="walletStatus" class="text-xs mb-4 flex gap-2 text-gray-600 dark:text-gray-400"><i data-lucide="circle-check"></i> <span id="walletAddressDisplay">No wallet connected</span></div>
+
+  <!-- Top Gainers -->
+  <div class="glass-panel p-5 mb-6">
+    <div class="flex items-center gap-2 mb-3"><i data-lucide="flame" class="text-orange-500"></i><span class="font-bold text-gray-800 dark:text-gray-100">🔥 Top Gainers & AI Strategy</span></div>
+    <div id="trendingContainer" class="grid grid-cols-1 md:grid-cols-3 gap-3"><div class="bg-white/50 dark:bg-black/40 rounded-xl p-3 animate-pulse">Loading top movers...</div></div>
+    <div class="text-xs text-gray-500 mt-2 flex gap-4 flex-wrap"><span><i data-lucide="bar-chart-2" class="inline w-3 h-3"></i> Strategy: RSI + MACD + Volume</span><span><i data-lucide="activity" class="inline w-3 h-3"></i> AI Score: <span id="aiStrategyScore">—</span></span><span><i data-lucide="trending-up" class="inline w-3 h-3"></i> Top signal: <span id="topSignal">—</span></span></div>
+  </div>
+
+  <!-- CHART CARD -->
+  <div class="glass-panel p-5 mb-6">
+    <!-- AI + Balance row -->
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4 pb-2 border-b border-gray-300/40 dark:border-gray-700/50">
+      <div><div class="flex items-center gap-2 flex-wrap"><i data-lucide="microchip" class="text-cyan-500 w-4 h-4"></i><span class="font-semibold">AI Specialist Agents · Live Debate</span><span id="aiStatusBadge" class="text-xs bg-green-100 dark:bg-green-900/50 px-2 py-0.5 rounded-full">initializing...</span></div>
+      <div id="aiAgentText" class="text-xs text-gray-600 dark:text-gray-400 mt-1 flex gap-3 flex-wrap"><span>Technical: <span id="techSigDisplay">—</span> <span id="techConfDisplay">—</span></span><span>Sentiment: <span id="sentSigDisplay">—</span> <span id="sentConfDisplay">—</span></span><span>Volume Profile: <span id="volProfileDisplay">—</span></span></div></div>
+      <div class="flex items-center gap-4 bg-white/40 dark:bg-black/40 p-2 rounded-2xl">
+        <div class="flex items-center gap-2"><i data-lucide="circle-dollar-sign" class="text-blue-500 w-5 h-5"></i><div><div class="text-xs text-gray-500">Mock Balance (USDC)</div><div id="mockBalance" class="text-xl font-mono font-bold text-emerald-700 dark:text-emerald-300">$12,450.00</div></div></div>
+        <div class="flex gap-2"><button id="executeBuyBtn" class="btn-action px-4 py-1.5 rounded-xl bg-green-600 hover:bg-green-500 text-white flex gap-1 text-sm"><i data-lucide="arrow-up"></i> Buy</button><button id="executeSellBtn" class="btn-action px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white flex gap-1 text-sm"><i data-lucide="arrow-down"></i> Sell</button><button id="reasonTradeBtn" class="btn-action px-3 py-1.5 rounded-xl bg-amber-500/80 hover:bg-amber-500 text-white flex gap-1 text-sm"><i data-lucide="lightbulb"></i> Why?</button></div>
       </div>
-      <div class="value-mono" id="walletAddress" style="font-size: 0.8rem; margin: 8px 0 6px; word-break: break-all; color:#A5A9C0;">0x742d...bEb1</div>
-      <div class="value-mono" style="font-size: 0.85rem;" id="tokenBalance">TEST: —</div>
-      <div style="margin-top: 14px;"><span id="refreshBalanceBtn" class="badge" style="cursor:pointer;"><i data-lucide="refresh-cw" style="width:12px;"></i> refresh</span></div>
     </div>
 
-    <!-- AGENT STATUS -->
-    <div class="data-card">
-      <div class="label-sm">ARBITRAGE AGENT</div>
-      <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0 8px;">
-        <span class="status-led" id="onlineLed"></span>
-        <span id="agentState" class="value-mono" style="font-size: 0.85rem;">online</span>
-      </div>
-      <div class="value-mono" style="font-size: 0.75rem;">last run: <span id="lastRunTime">—</span></div>
-      <div class="value-mono" style="font-size: 0.75rem;">next run: <span id="nextRunTime">—</span></div>
-    </div>
-
-    <!-- CIRCLE INTEGRATION -->
-    <div class="data-card">
-      <div class="label-sm"><i data-lucide="circle"></i> CIRCLE INTEGRATION</div>
-      <div style="margin-top: 14px;">
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;"><span class="badge">USDC native</span><span class="badge">low latency</span><span class="badge">gas abstraction</span></div>
-        <div style="font-size: 0.7rem; color:#A5A9C0;">programmable wallet · real‑time settlement</div>
-      </div>
-    </div>
-
-    <!-- LIVE SCANNER + GRAPH with hints -->
-    <div class="data-card full-span">
-      <div class="label-sm">📡 LIVE PRICE FEED</div>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin: 16px 0 12px; flex-wrap: wrap; gap: 12px;">
-        <div><span class="label-sm">DEX A (ArcSwap)</span><div class="mono-xl" id="dexAPrice" style="background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">$0.00</div></div>
-        <div><i data-lucide="arrow-right" style="opacity:0.6;"></i></div>
-        <div><span class="label-sm">DEX B (CryptoFlow)</span><div class="mono-xl" id="dexBPrice" style="background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">$0.00</div></div>
-      </div>
-      <div style="background: #0D0F17; border-radius: 18px; padding: 14px 16px; margin: 8px 0;">
-        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <span class="label-sm">ARBITRAGE PROFIT</span>
-          <span id="profitPercentDisplay" class="mono-lg" style="font-weight: 700; background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">0.00%</span>
+    <!-- Smart Order Suggestion with interactive buttons (Buy/Sell/Hold) -->
+    <div class="mb-4">
+      <div class="smart-order-badge w-full justify-between flex items-center flex-wrap gap-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-3 rounded-2xl">
+        <div class="flex items-center gap-2"><i data-lucide="zap" class="text-yellow-500 w-5 h-5"></i><span class="font-semibold text-sm">Smart Order Suggestion</span></div>
+        <div id="smartOrderText" class="text-sm font-medium bg-white/30 dark:bg-black/30 px-3 py-1 rounded-full">Analyzing market...</div>
+        <div class="smart-order-actions flex gap-2">
+          <button id="quickBuyBtn" class="px-3 py-1 rounded-full text-xs font-bold bg-green-500/80 hover:bg-green-600 text-white transition">BUY</button>
+          <button id="quickSellBtn" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/80 hover:bg-red-600 text-white transition">SELL</button>
+          <button id="quickHoldBtn" class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-500/80 hover:bg-yellow-600 text-white transition">HOLD</button>
         </div>
       </div>
-      <div style="display: flex; justify-content: space-between; margin-top: 16px; flex-wrap: wrap; gap: 12px;">
-        <button id="manualRunBtn" class="action-btn"><i data-lucide="play"></i> EXECUTE SCAN</button>
-        <span class="badge">gas ≈ $0.01 USDC</span>
-      </div>
-
-      <!-- enhanced graph with tooltip -->
-      <div class="graph-container">
-        <canvas id="sparkCanvas" width="600" height="48" style="width:100%; height:48px;"></canvas>
-        <div id="graphTooltip" class="graph-tooltip" style="display: none;"></div>
-      </div>
-      <div class="label-sm" style="margin-top: 8px; display: flex; justify-content: space-between;">
-        <span>📈 profit trend (last 10 scans)</span>
-        <span id="trendHint" style="color:#3B82F6;">→ hover points for values</span>
-      </div>
     </div>
 
-    <!-- LAST OPPORTUNITY LOG -->
-    <div class="data-card">
-      <div class="label-sm"><i data-lucide="file-text"></i> LAST OPPORTUNITY</div>
-      <div id="lastOppContent" style="margin-top: 14px;">
-        <div class="value-mono" style="font-size: 0.8rem; opacity:0.7;">— waiting —</div>
-      </div>
-    </div>
-
-    <!-- TRANSACTION HISTORY -->
-    <div class="data-card full-span">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <div class="label-sm"><i data-lucide="list"></i> TRANSACTION HISTORY</div>
-        <span id="historyCount" class="badge">0</span>
-      </div>
-      <div id="historyList" class="history-list" style="margin-top: 16px; min-height: 150px;"></div>
-      <button id="loadMoreHistory" style="background: none; border: 1px solid #3B82F6; margin-top: 16px; padding: 8px 12px; border-radius: 40px; font-family: monospace; font-size: 0.7rem; color:#3B82F6; cursor:pointer; width: 100%;">↓ LOAD ALL RECORDS</button>
-    </div>
-
-    <!-- AI REASONING -->
-    <div class="data-card full-span">
-      <details style="font-family: monospace;">
-        <summary style="font-weight: 500; font-size: 0.8rem; cursor: pointer; padding: 4px 0; color:#3B82F6;"><i data-lucide="brain"></i> AI EXECUTION LOGIC — expand</summary>
-        <div style="margin-top: 14px; font-size: 0.75rem; padding-left: 16px; border-left: 2px solid #3B82F6; color:#B8BDD4;">
-          Threshold >0.4% profit after gas. Cross‑DEX slippage model & historical volatility. Real‑time ML divergence score.
+    <!-- Enhanced Token Selector and Toggle (Price / Market Cap modern) -->
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+      <div class="flex gap-2 items-center flex-wrap">
+        <span class="text-xs text-gray-500">Chart:</span>
+        <button id="chartBTCBtn" class="chart-selector-btn active px-3 py-1 text-sm">BTC/USD</button>
+        <button id="chartETHBtn" class="chart-selector-btn px-3 py-1 text-sm">ETH/USD</button>
+        <div class="relative token-selector">
+          <button id="allCoinsSelectorBtn" class="flex items-center gap-1 bg-white/50 dark:bg-black/40 px-3 py-1 rounded-full text-sm"><i data-lucide="search"></i> All Tokens <i data-lucide="chevron-down" class="w-3 h-3"></i></button>
+          <div id="allCoinsDropdown" class="token-dropdown mt-1 w-64" style="z-index:60;">
+            <input type="text" id="coinSearchInput" placeholder="Search coin..." class="w-full p-2 text-sm border-b dark:bg-gray-800">
+            <div id="coinListContainer" class="max-h-48 overflow-y-auto"></div>
+          </div>
         </div>
-      </details>
+      </div>
+      <!-- Modern Toggle Button for Price / Market Cap (not dropdown) -->
+      <button id="displayModeToggleBtn" class="toggle-modern flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30"><i data-lucide="chart-line" class="w-4 h-4"></i> <span id="toggleModeText">Price Mode</span> <i data-lucide="repeat" class="w-3 h-3"></i></button>
+      <div class="flex gap-1 flex-wrap">
+        <button data-chart="candle" class="chart-type-btn px-3 py-1.5 rounded-full text-xs">Candles</button>
+        <button data-chart="line" class="chart-type-btn active px-3 py-1.5 rounded-full text-xs">Line</button>
+      </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="full-span" style="display: flex; justify-content: center; gap: 24px; padding: 20px 0 8px; font-size: 0.65rem; font-family: monospace; color:#6A6F82; flex-wrap: wrap; border-top: 1px solid #1F232E; margin-top: 8px;">
-      <span>✦ Ethos+</span> <span>⛓️ Arc Protocol</span> <span>◉ Circle</span>
-      <span style="margin-left:auto;">XROGA v2 · arbitrage terminal</span>
+    <!-- Timeframes: 24h, 7d, 30d, 90d, YTD, 1Y, MAX -->
+    <div class="flex gap-1 flex-wrap mb-4">
+      <button data-range="1" class="timeframe-btn px-3 py-1 rounded-full text-xs">24H</button>
+      <button data-range="7" class="timeframe-btn px-3 py-1 rounded-full text-xs">7D</button>
+      <button data-range="30" class="timeframe-btn active px-3 py-1 rounded-full text-xs">30D</button>
+      <button data-range="90" class="timeframe-btn px-3 py-1 rounded-full text-xs">90D</button>
+      <button data-range="ytd" class="timeframe-btn px-3 py-1 rounded-full text-xs">YTD</button>
+      <button data-range="365" class="timeframe-btn px-3 py-1 rounded-full text-xs">1Y</button>
+      <button data-range="max" class="timeframe-btn px-3 py-1 rounded-full text-xs">MAX</button>
+    </div>
+
+    <!-- Chart Canvas -->
+    <div class="chart-wrapper"><canvas id="mainChartCanvas"></canvas></div>
+
+    <!-- Token Info: Price + Market Cap Dynamic -->
+    <div class="flex justify-between items-center mt-3 text-sm bg-white/40 dark:bg-black/30 p-3 rounded-xl">
+      <div><span class="text-gray-500">Current Price:</span> <span id="currentPriceDisplay" class="font-bold text-lg">$—</span></div>
+      <div><span class="text-gray-500">Market Cap:</span> <span id="currentMarketCapDisplay" class="font-semibold">$—</span></div>
+      <div><span class="text-gray-500">24h Change:</span> <span id="priceChangeDisplay" class="font-semibold">—</span></div>
+    </div>
+
+    <!-- Indicators row -->
+    <div class="grid grid-cols-2 md:grid-cols-6 gap-2 mt-5 text-center text-sm">
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span class="text-gray-500">RSI (14)</span><br><span id="rsiValue" class="font-bold">—</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span>MACD</span><br><span id="macdSignal">—</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span>Fear & Greed</span><br><span id="fngValue">—</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span>DEX Vol(24h)</span><br><span id="dexVolume">—</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span>SMA 50/200</span><br><span id="smaStatus">—</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-2"><span>AI Signal</span><br><span id="aiSignalBadge" class="font-bold uppercase">—</span></div>
+    </div>
+    <div id="executionToast" class="execution-log bg-white/60 dark:bg-black/40 rounded-lg p-2 mt-3 font-mono"></div>
+  </div>
+
+  <!-- Enhanced Advanced Trading Signal & Analysis (Modern Cards) -->
+  <div class="glass-panel p-5 mb-6">
+    <h3 class="font-bold flex gap-2 items-center text-lg mb-4"><i data-lucide="brain" class="text-purple-500"></i> Advanced Trading Signal & Analysis</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="analysis-card-modern">
+        <div class="flex items-center justify-between"><span class="font-semibold text-gray-700 dark:text-gray-300">🎯 Final Signal</span><span id="signalFinalBadge" class="text-xl font-bold px-4 py-1 rounded-full bg-gradient-to-r from-green-500/20 to-red-500/20">—</span></div>
+        <div class="mt-2 flex justify-between items-center"><span>Confidence:</span><span id="signalConfidence" class="font-mono font-bold">--%</span></div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1"><div id="confidenceBar" class="bg-blue-600 h-2 rounded-full" style="width:0%"></div></div>
+      </div>
+      <div class="analysis-card-modern"><span class="font-semibold flex items-center gap-1"><i data-lucide="line-chart"></i> Technical Insight</span><p id="techInsight" class="mt-1 text-sm">—</p></div>
+      <div class="analysis-card-modern"><span class="font-semibold flex items-center gap-1"><i data-lucide="bar-chart-2"></i> Volume & Momentum</span><p id="volumeInsight" class="mt-1 text-sm">—</p></div>
+      <div class="analysis-card-modern"><span class="font-semibold flex items-center gap-1"><i data-lucide="shield-alert"></i> Risk / Recommendation</span><p id="riskAdvice" class="mt-1 text-sm">—</p></div>
+    </div>
+    <div class="mt-4 p-3 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 rounded-xl text-xs text-center"><i data-lucide="clock"></i> AI updated in real-time based on RSI, MACD, Fear&Greed, and DEX volume</div>
+  </div>
+
+  <!-- Advanced Swap Area (unchanged functionality but included) -->
+  <div class="glass-panel p-5">
+    <div class="flex gap-2 mb-5 bg-white/40 dark:bg-black/30 p-1 rounded-full w-fit">
+      <button id="exchangeModeBtn" class="toggle-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-blue-600 text-white shadow-md">Exchange</button>
+      <button id="gasModeBtn" class="toggle-btn px-5 py-2 rounded-full text-sm font-medium transition-all bg-white/50 dark:bg-black/50 text-gray-700 dark:text-gray-300">Gas</button>
+    </div>
+    <!-- Exchange Mode Panel (basic) -->
+    <div id="exchangeModePanel">
+      <div class="flex justify-between mb-4"><div class="flex gap-2"><i data-lucide="arrow-left-right" class="text-purple-500"></i><span class="font-bold">Swap Tokens (Mock)</span></div><span class="text-xs bg-purple-100 dark:bg-purple-900/40 px-2 py-1 rounded-full">0.06% fee</span></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-3 mb-3">
+        <div class="flex justify-between"><span class="text-xs text-gray-500">From</span><span class="text-xs">Balance: $<span id="fromBalance">12450.00</span></span></div>
+        <div class="flex justify-between items-center mt-1"><div class="token-selector relative"><button id="fromTokenBtn" class="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-full text-sm font-medium"><img id="fromTokenIcon" src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg" class="w-5 h-5"> <span id="fromTokenSymbol">USDC</span> <i data-lucide="chevron-down" class="w-4 h-4"></i></button><div id="fromTokenDropdown" class="token-dropdown mt-1 w-48"><input type="text" id="fromSearch" placeholder="Search..." class="w-full p-2 text-sm border-b dark:bg-gray-800"><div id="fromTokenList"></div></div></div><input type="number" id="swapAmount" value="100" class="bg-transparent text-right text-xl font-mono outline-none w-32 text-gray-900 dark:text-white"></div>
+      </div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-3 mb-4">
+        <div class="text-xs text-gray-500">To (estimated)</div>
+        <div class="flex justify-between items-center mt-1"><div class="token-selector relative"><button id="toTokenBtn" class="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-full text-sm font-medium"><img id="toTokenIcon" src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" class="w-5 h-5"> <span id="toTokenSymbol">BTC</span> <i data-lucide="chevron-down" class="w-4 h-4"></i></button><div id="toTokenDropdown" class="token-dropdown mt-1 w-48"><input type="text" id="toSearch" placeholder="Search..." class="w-full p-2 text-sm border-b dark:bg-gray-800"><div id="toTokenList"></div></div></div><div id="estimatedReceive" class="text-right text-xl font-mono">—</div></div>
+      </div>
+      <button id="executeSwapBtn" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-3 rounded-xl font-bold text-white flex items-center justify-center gap-2"><i data-lucide="send"></i> Swap</button>
+      <div id="swapResultMsg" class="text-xs text-center mt-3 text-gray-500"></div>
+    </div>
+    <!-- Gas Mode Panel (simplified but functional) -->
+    <div id="gasModePanel" class="hidden">
+      <div class="flex justify-between mb-4"><div class="flex gap-2"><i data-lucide="fuel" class="text-orange-500"></i><span class="font-bold">Gas Swap Estimator</span></div></div>
+      <div class="bg-white/50 dark:bg-black/30 rounded-xl p-3 mb-3"><div class="text-xs text-gray-500">From: ETH (Ethereum)</div><input type="number" id="gasAmount" value="0.1" class="w-full bg-transparent text-xl font-mono"><div class="text-xs mt-2">Gas fee: ~$2.50</div></div>
+      <button id="executeGasSwapBtn" class="w-full bg-gradient-to-r from-orange-500 to-red-500 py-3 rounded-xl font-bold text-white">Send with gas</button>
+      <div id="gasResultMsg" class="text-xs text-center mt-3"></div>
     </div>
   </div>
 </div>
 
-<div class="bottom-nav" id="bottomNav">
-  <div class="nav-item active" data-view="wallet"><i data-lucide="wallet"></i><span>Wallet</span></div>
-  <div class="nav-item" data-view="scanner"><i data-lucide="radar"></i><span>Scanner</span></div>
-  <div class="nav-item" data-view="history"><i data-lucide="clock"></i><span>History</span></div>
-  <div class="nav-item" data-view="status"><i data-lucide="cpu"></i><span>Agent</span></div>
-</div>
+<!-- XROGA Chat -->
+<div class="xroga-chat-root" id="xrogaRoot"><div class="xroga-reveal-btn" id="xrogaRevealBtn"><i data-lucide="chevron-up"></i><span>Show chat</span></div><div class="xroga-chat-bar" id="xrogaChatBar"><div class="xroga-glass-panel"><div class="hide-chat-icon" id="xrogaHideBtn"><i data-lucide="minus-circle"></i></div><div class="xroga-flex-row"><div class="xroga-input-wrapper"><input type="text" id="xroga-chat-input" placeholder="Ask XROGA AI... (/balance, /signal, /buy 100)"></div><div><button class="xroga-btn xroga-send" id="xroga-send-btn"><i data-lucide="rocket"></i></button></div></div></div></div></div>
+
+<div id="reasonModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-overlay"><div class="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-md"><div class="flex justify-between mb-3"><h3 class="text-xl font-bold">🤖 AI Decision Reason</h3><button id="closeModalBtn"><i data-lucide="x"></i></button></div><div id="modalReasonContent" class="text-sm whitespace-pre-wrap"></div><button id="modalOkBtn" class="mt-4 w-full bg-blue-600 py-2 rounded-xl text-white">Got it</button></div></div>
 
 <script>
-  const API_BASE = '/api/arbitrage';
-  let currentFullAddr = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1";
-  let profitHistory = [];  // stores profit % values
-  let fullHistory = [];
-  let isRunning = false;
-  let canvasPoints = [];   // store {x, y, profit} for tooltip
+  (function(){
+    // Core variables
+    let mainChart = null, currentPrices = [], currentMarketCaps = [], currentChartType = 'line', displayMode = 'price';
+    let currentRange = 30; // days or string 'ytd'/'max'
+    let currentSymbol = 'bitcoin', currentCoinName = 'Bitcoin';
+    let currentPrice = 0, currentMarketCap = 0, priceChange24h = 0;
+    let rsi = 50, macdTrend = 'Neutral', fearGreed = 50, dexVolume = 0, finalDecision = { signal: 'HOLD', fullReason: '' };
+    let mockBalance = 12450.00;
+    let coinListData = [];
 
-  async function fetchWithRetry(url, options = {}, retries = 2) {
-    for (let i = 0; i <= retries; i++) {
+    // Helper: convert range to days
+    function getDaysForRange(rangeVal) {
+      if (rangeVal === 'ytd') { const now = new Date(); const start = new Date(now.getFullYear(), 0, 1); return Math.floor((now - start) / (1000 * 3600 * 24)); }
+      if (rangeVal === 'max') return 3650;
+      return parseInt(rangeVal);
+    }
+
+    async function fetchChartData(symbol, range) {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const res = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(timeoutId);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
-      } catch (err) {
-        if (i === retries) throw err;
-        await new Promise(r => setTimeout(r, 600));
-      }
-    }
-  }
-
-  function showToast(msg, isErr = false) {
-    const toast = document.createElement('div');
-    toast.className = 'toast-message';
-    toast.innerText = msg;
-    if (isErr) toast.style.borderColor = "#FF5C5C";
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2200);
-  }
-
-  function setErrorBanner(msg) {
-    const banner = document.getElementById('errorBanner');
-    if (msg) { banner.style.display = 'block'; banner.innerText = msg; }
-    else banner.style.display = 'none';
-  }
-
-  // data fetching
-  async function fetchWalletData() {
-    try {
-      const bal = await fetchWithRetry(`${API_BASE}?action=balance`);
-      if (bal && bal.balance !== undefined) document.getElementById('usdcBalance').innerHTML = `$${parseFloat(bal.balance).toFixed(2)} USDC`;
-      else throw new Error();
-    } catch (e) { document.getElementById('usdcBalance').innerHTML = '— USDC'; }
-    try {
-      const tk = await fetch(`${API_BASE}?action=tokenBalance`).then(r => r.json()).catch(() => null);
-      document.getElementById('tokenBalance').innerHTML = `TEST: ${tk?.tokenBalance || '1,240.50'}`;
-    } catch(e) {}
-  }
-
-  async function fetchAddress() {
-    try {
-      const addrData = await fetchWithRetry(`${API_BASE}?action=walletAddress`).catch(()=>null);
-      if (addrData?.address) currentFullAddr = addrData.address;
-    } catch(e) {}
-    const short = currentFullAddr.slice(0,6)+"..."+currentFullAddr.slice(-4);
-    document.getElementById('walletAddress').innerHTML = short;
-  }
-
-  async function fetchAgentStatus() {
-    try {
-      const status = await fetchWithRetry(`${API_BASE}?action=status`);
-      if (status) {
-        document.getElementById('lastRunTime').innerText = status.lastRun ? new Date(status.lastRun).toLocaleTimeString() : 'never';
-        document.getElementById('nextRunTime').innerText = status.nextRun ? new Date(status.nextRun).toLocaleTimeString() : 'idle';
-        const online = !status.isRunning;
-        document.getElementById('onlineLed').style.background = online ? '#3B82F6' : '#FF5C5C';
-        document.getElementById('agentState').innerText = online ? 'active · online' : 'trade in progress';
-      }
-    } catch(e) {}
-  }
-
-  async function fetchLastOpportunity() {
-    try {
-      const last = await fetchWithRetry(`${API_BASE}?action=lastOpp`);
-      if (last) {
-        const profitSign = last.profit_percent > 0 ? '+' : '';
-        const hashLink = last.txHashes && last.txHashes[0] ? `<a href="https://explorer.arc.com/tx/${last.txHashes[0]}" target="_blank" style="color:#3B82F6; text-decoration:none;">${last.txHashes[0].slice(0,8)}...</a>` : '-';
-        document.getElementById('lastOppContent').innerHTML = `
-          <div class="value-mono" style="font-size: 1rem; background: var(--grad-blue); -webkit-background-clip: text; background-clip: text; color: transparent;">${profitSign}${last.profit_percent?.toFixed(2)}%</div>
-          <div style="font-size:0.7rem; margin:6px 0;">${last.timestamp ? new Date(last.timestamp).toLocaleString() : 'now'}</div>
-          <div><span class="badge">${last.executed ? 'EXECUTED ✓' : 'SKIPPED'}</span> <span style="margin-left:12px;">tx: ${hashLink}</span></div>
-        `;
-      }
-    } catch(e) { document.getElementById('lastOppContent').innerHTML = '<div class="value-mono">failed to load</div>'; }
-  }
-
-  async function fetchHistory() {
-    try {
-      const data = await fetchWithRetry(`${API_BASE}?action=history`);
-      fullHistory = Array.isArray(data) ? data : (data?.history || []);
-      renderHistory(fullHistory.slice(0, 30));
-    } catch(e) { renderHistory([]); }
-  }
-  function renderHistory(entries) {
-    const container = document.getElementById('historyList');
-    if (!entries.length) { container.innerHTML = '<div class="value-mono" style="opacity:0.5;">no transactions yet</div>'; document.getElementById('historyCount').innerText = '0'; return; }
-    container.innerHTML = entries.map(tx => `
-      <div class="history-row">
-        <div><span style="font-size:0.7rem;">${new Date(tx.timestamp).toLocaleString()}</span></div>
-        <div style="font-weight:600;" class="${tx.profit_percent >= 0 ? 'profit-positive' : 'profit-negative'}">${tx.profit_percent > 0 ? '+' : ''}${tx.profit_percent?.toFixed(2)}%</div>
-        <div><span class="badge">${tx.executed ? '✓ done' : '⏭ skip'}</span></div>
-        <div>${tx.txHashes && tx.txHashes[0] ? `<a href="https://explorer.arc.com/tx/${tx.txHashes[0]}" target="_blank" style="color:#3B82F6;">${tx.txHashes[0].slice(0,8)}..</a>` : '—'}</div>
-      </div>
-    `).join('');
-    document.getElementById('historyCount').innerText = `${fullHistory.length}`;
-  }
-
-  // scanner + interactive graph with tooltip
-  async function fetchScanner() {
-    try {
-      const scan = await fetchWithRetry(`${API_BASE}?action=scanner`);
-      if (scan && typeof scan.dexAPrice !== 'undefined') {
-        document.getElementById('dexAPrice').innerHTML = `$${scan.dexAPrice.toFixed(4)}`;
-        document.getElementById('dexBPrice').innerHTML = `$${scan.dexBPrice.toFixed(4)}`;
-        updateProfitDisplay(scan.profitPercent);
-        updateSpark(scan.profitPercent);
-        return;
-      }
-    } catch(e) {}
-    // fallback simulation for demo (realistic)
-    const priceA = 1.0012 + (Math.random() * 0.004);
-    const priceB = 1.0000 + (Math.random() * 0.0035);
-    const profit = ((priceA - priceB) / priceB) * 100;
-    document.getElementById('dexAPrice').innerHTML = `$${priceA.toFixed(4)}`;
-    document.getElementById('dexBPrice').innerHTML = `$${priceB.toFixed(4)}`;
-    updateProfitDisplay(profit);
-    updateSpark(profit);
-  }
-
-  function updateProfitDisplay(profit) {
-    const profitEl = document.getElementById('profitPercentDisplay');
-    profitEl.innerHTML = `${profit > 0 ? '+' : ''}${profit.toFixed(2)}%`;
-    profitEl.style.background = "var(--grad-blue)";
-    profitEl.style.webkitBackgroundClip = "text";
-    profitEl.style.backgroundClip = "text";
-    profitEl.style.color = "transparent";
-    if (profit > 0.15 && profit !== lastProfitVal) {
-      profitEl.style.transform = 'scale(1.05)';
-      setTimeout(() => profitEl.style.transform = '', 200);
-    }
-    lastProfitVal = profit;
-  }
-
-  let lastProfitVal = 0;
-  function updateSpark(newProfit) {
-    profitHistory.push(newProfit);
-    if (profitHistory.length > 10) profitHistory.shift();
-    drawCanvasWithTooltip();
-  }
-
-  function drawCanvasWithTooltip() {
-    const canvas = document.getElementById('sparkCanvas');
-    const ctx = canvas.getContext('2d');
-    const container = canvas.parentElement;
-    const w = canvas.clientWidth;
-    const h = 48;
-    canvas.width = w;
-    canvas.height = h;
-    ctx.clearRect(0, 0, w, h);
-    if (profitHistory.length === 0) return;
-
-    const minProfit = Math.min(...profitHistory, 0);
-    const maxProfit = Math.max(...profitHistory, 0.2);
-    const range = maxProfit - minProfit || 1;
-    const getY = (profit) => h - 8 - ((profit - minProfit) / range) * (h - 16);
-    
-    // draw line
-    if (profitHistory.length >= 2) {
-      ctx.beginPath();
-      const step = w / (profitHistory.length - 1);
-      ctx.moveTo(0, getY(profitHistory[0]));
-      for (let i = 1; i < profitHistory.length; i++) {
-        ctx.lineTo(i * step, getY(profitHistory[i]));
-      }
-      ctx.strokeStyle = '#3B82F6';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+        document.getElementById('aiStatusBadge').innerText = 'fetching...';
+        let days = getDaysForRange(range);
+        const url = `https://api.coingecko.com/api/v3/coins/${symbol}/market_chart?vs_currency=usd&days=${days}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (!data.prices) throw new Error();
+        currentPrices = data.prices.map(p => p[1]);
+        currentMarketCaps = data.market_caps ? data.market_caps.map(m => m[1]) : currentPrices.map(() => 0);
+        currentPrice = currentPrices[currentPrices.length-1];
+        currentMarketCap = currentMarketCaps[currentMarketCaps.length-1] || 0;
+        const detail = await fetch(`https://api.coingecko.com/api/v3/coins/${symbol}?localization=false&tickers=false&market_data=true`);
+        if(detail.ok) { const d = await detail.json(); priceChange24h = d.market_data?.price_change_percentage_24h || 0; }
+        document.getElementById('currentPriceDisplay').innerHTML = `$${currentPrice.toLocaleString()}`;
+        document.getElementById('currentMarketCapDisplay').innerHTML = `$${(currentMarketCap/1e9).toFixed(2)}B`;
+        document.getElementById('priceChangeDisplay').innerHTML = `${priceChange24h >=0 ? '▲' : '▼'} ${Math.abs(priceChange24h).toFixed(2)}%`;
+        document.getElementById('priceChangeDisplay').className = priceChange24h>=0 ? 'text-green-500' : 'text-red-500';
+        renderChart();
+        await computeIndicatorsAndSignal();
+        document.getElementById('aiStatusBadge').innerText = 'agents ready ✅';
+      } catch(e) { console.warn(e); document.getElementById('aiStatusBadge').innerText = 'cached data'; }
     }
 
-    // draw points and store coordinates for tooltip
-    canvasPoints = [];
-    const stepX = w / (profitHistory.length - 1);
-    for (let i = 0; i < profitHistory.length; i++) {
-      const x = i * stepX;
-      const y = getY(profitHistory[i]);
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, 2 * Math.PI);
-      ctx.fillStyle = '#3B82F6';
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = '#3B82F6';
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      canvasPoints.push({ x, y, profit: profitHistory[i] });
+    async function computeIndicatorsAndSignal() {
+      if(!currentPrices.length) return;
+      const prices = currentPrices;
+      const calcRSI = (p, period=14) => { if(p.length < period+1) return 50; let gains=0,losses=0; for(let i=p.length-period;i<p.length;i++){ let diff=p[i]-p[i-1]; diff>=0?gains+=diff:losses-=diff; } let avgG=gains/period, avgL=losses/period; if(avgL===0) return 100; let rs=avgG/avgL; return 100-(100/(1+rs)); };
+      rsi = calcRSI(prices); document.getElementById('rsiValue').innerText = rsi.toFixed(1);
+      const calcMACD = (p) => { if(p.length<26) return "Neutral"; let ema=(arr,per)=>{ let k=2/(per+1), emaV=arr[0]; for(let i=1;i<arr.length;i++) emaV=arr[i]*k+emaV*(1-k); return emaV; }; let ema12=ema(p,12), ema26=ema(p,26); let macd=ema12-ema26; let sig=ema([macd,...Array(8).fill(macd)],9); return macd>sig?"Bullish":(macd<sig?"Bearish":"Neutral"); };
+      macdTrend = calcMACD(prices); document.getElementById('macdSignal').innerHTML = macdTrend;
+      try { const fng = await fetch('https://api.alternative.me/fng/?limit=1').then(r=>r.json()); if(fng.data?.[0]) { fearGreed = parseInt(fng.data[0].value); document.getElementById('fngValue').innerText = `${fearGreed} (${fng.data[0].value_classification})`; } } catch(e) {}
+      try { const dex = await fetch('https://api.dexscreener.com/latest/dex/search?q='+currentSymbol).then(r=>r.json()); if(dex.pairs?.length) dexVolume = dex.pairs[0].volume?.h24||0; document.getElementById('dexVolume').innerHTML = `$${(dexVolume/1e6).toFixed(1)}M`; } catch(e){}
+      const sma50 = (arr, per) => { if(arr.length<per) return arr[arr.length-1]; let sum=0; for(let i=arr.length-per;i<arr.length;i++) sum+=arr[i]; return sum/per; };
+      let sma50v = sma50(prices,50), sma200v = sma50(prices,200);
+      let smaStatus = sma50v > sma200v ? 'Golden Cross (bullish)' : (sma50v < sma200v ? 'Death Cross (bearish)' : 'Neutral');
+      document.getElementById('smaStatus').innerHTML = smaStatus;
+      document.getElementById('volProfileDisplay').innerHTML = dexVolume > 5e8 ? 'High activity' : 'Moderate';
+      let techSig = (rsi < 30) ? "BUY" : (rsi > 70) ? "SELL" : (macdTrend === "Bullish" ? "BUY" : (macdTrend === "Bearish" ? "SELL" : "HOLD"));
+      let sentSig = (fearGreed <= 25) ? "BUY" : (fearGreed >= 75) ? "SELL" : "HOLD";
+      let techConf = techSig === "BUY" ? 75 : (techSig === "SELL" ? 70 : 50);
+      let sentConf = sentSig === "BUY" ? 80 : (sentSig === "SELL" ? 75 : 50);
+      document.getElementById('techSigDisplay').innerHTML = `${techSig} ${techConf}%`; document.getElementById('sentSigDisplay').innerHTML = `${sentSig} ${sentConf}%`;
+      let buyScore = (techSig === "BUY" ? 70 : 0) + (sentSig === "BUY" ? 60 : 0) + (dexVolume > 5e8 ? 15 : 0);
+      let sellScore = (techSig === "SELL" ? 70 : 0) + (sentSig === "SELL" ? 60 : 0) + (dexVolume < 2e8 ? 10 : 0);
+      let action = buyScore > sellScore ? "BUY" : (sellScore > buyScore ? "SELL" : "HOLD");
+      let score = Math.max(buyScore, sellScore);
+      document.getElementById('aiStrategyScore').innerHTML = `${score}/150`;
+      finalDecision = { signal: action, fullReason: `Technical: ${techSig} (RSI:${rsi.toFixed(0)} | MACD:${macdTrend})\nSentiment: ${sentSig} (Fear&Greed:${fearGreed})\nVolume: ${dexVolume>5e8 ? 'High' : 'Normal'}\nSMA: ${smaStatus}\nConsensus: ${action}` };
+      document.getElementById('aiSignalBadge').innerHTML = action; 
+      document.getElementById('aiSignalBadge').className = `font-bold uppercase ${action==='BUY'?'text-green-600':action==='SELL'?'text-red-600':'text-yellow-600'}`;
+      document.getElementById('smartOrderText').innerHTML = action === 'BUY' ? `📈 AI suggests accumulating ${currentSymbol.toUpperCase()}` : (action === 'SELL' ? '📉 AI suggests taking profit' : '⚖️ Hold position');
+      document.getElementById('signalFinalBadge').innerHTML = action;
+      let confidenceVal = Math.min(98, Math.floor(score/1.5));
+      document.getElementById('signalConfidence').innerHTML = `${confidenceVal}%`;
+      document.getElementById('confidenceBar').style.width = `${confidenceVal}%`;
+      document.getElementById('techInsight').innerHTML = `${techSig === "BUY" ? "Oversold / Bullish momentum" : techSig === "SELL" ? "Overbought / Bearish divergence" : "Neutral range, waiting for breakout"}`;
+      document.getElementById('volumeInsight').innerHTML = `${dexVolume > 7e8 ? "High volume confirms trend" : "Moderate volume, caution advised"}`;
+      document.getElementById('riskAdvice').innerHTML = action === "BUY" ? "Consider DCA entry, stop-loss -5%" : (action === "SELL" ? "Take partial profits, move to stables" : "Hold with tight risk management");
     }
 
-    // optional zero line
-    ctx.beginPath();
-    const zeroY = getY(0);
-    ctx.moveTo(0, zeroY);
-    ctx.lineTo(w, zeroY);
-    ctx.strokeStyle = '#2D313E';
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-
-    // small hint arrows if trend is positive
-    if (profitHistory.length >= 2 && profitHistory[profitHistory.length-1] > profitHistory[0]) {
-      ctx.fillStyle = '#3B82F6';
-      ctx.font = "10px monospace";
-      ctx.fillText("↑ uptrend", w - 40, 15);
-    } else if (profitHistory.length >= 2) {
-      ctx.fillStyle = '#FF5C5C';
-      ctx.fillText("↓ downtrend", w - 45, 15);
-    }
-  }
-
-  // tooltip handler
-  function setupGraphTooltip() {
-    const canvas = document.getElementById('sparkCanvas');
-    const tooltip = document.getElementById('graphTooltip');
-    canvas.addEventListener('mousemove', (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const mouseX = (e.clientX - rect.left) * scaleX;
-      let closest = null;
-      let minDist = 15;
-      for (let pt of canvasPoints) {
-        const dist = Math.abs(pt.x - mouseX);
-        if (dist < minDist) {
-          minDist = dist;
-          closest = pt;
-        }
-      }
-      if (closest) {
-        tooltip.style.display = 'block';
-        tooltip.innerHTML = `profit: ${closest.profit > 0 ? '+' : ''}${closest.profit.toFixed(2)}%`;
-        const canvasRect = canvas.getBoundingClientRect();
-        const globalX = canvasRect.left + (closest.x / scaleX);
-        const globalY = canvasRect.top + (closest.y / scaleX) - 10;
-        tooltip.style.left = `${globalX}px`;
-        tooltip.style.top = `${globalY}px`;
+    function renderChart() {
+      const ctx = document.getElementById('mainChartCanvas').getContext('2d');
+      const isDark = document.body.classList.contains('dark');
+      if(mainChart) mainChart.destroy();
+      const dataset = (displayMode === 'price') ? currentPrices : (currentMarketCaps.length ? currentMarketCaps : currentPrices);
+      const labelY = displayMode === 'price' ? 'Price (USD)' : 'Market Cap (USD)';
+      if (currentChartType === 'line') {
+        mainChart = new Chart(ctx, { type: 'line', data: { labels: dataset.map((_,i)=>i), datasets: [{ label: `${currentSymbol.toUpperCase()} ${displayMode === 'price' ? 'Price' : 'Market Cap'}`, data: dataset, borderColor: '#3b82f6', borderWidth: 2, fill: false, pointRadius: 0, tension: 0.1 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `$${ctx.raw.toLocaleString()}` } } }, scales: { y: { ticks: { callback: (v) => '$' + v.toLocaleString() } } } } });
       } else {
-        tooltip.style.display = 'none';
+        mainChart = new Chart(ctx, { type: 'bar', data: { labels: dataset.map((_,i)=>i), datasets: [{ label: `${currentSymbol.toUpperCase()} ${displayMode === 'price' ? 'Price' : 'Market Cap'}`, data: dataset, backgroundColor: '#3b82f680', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: true } });
       }
-    });
-    canvas.addEventListener('mouseleave', () => {
-      tooltip.style.display = 'none';
-    });
-    // touch for mobile
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const touch = e.touches[0];
-      const scaleX = canvas.width / rect.width;
-      const mouseX = (touch.clientX - rect.left) * scaleX;
-      let closest = null;
-      let minDist = 20;
-      for (let pt of canvasPoints) {
-        const dist = Math.abs(pt.x - mouseX);
-        if (dist < minDist) {
-          minDist = dist;
-          closest = pt;
-        }
-      }
-      if (closest) {
-        tooltip.style.display = 'block';
-        tooltip.innerHTML = `profit: ${closest.profit > 0 ? '+' : ''}${closest.profit.toFixed(2)}%`;
-        const canvasRect = canvas.getBoundingClientRect();
-        const globalX = canvasRect.left + (closest.x / scaleX);
-        const globalY = canvasRect.top + (closest.y / scaleX) - 10;
-        tooltip.style.left = `${globalX}px`;
-        tooltip.style.top = `${globalY}px`;
-      } else {
-        tooltip.style.display = 'none';
-      }
-    });
-  }
-
-  // progress overlay for manual run
-  async function showProgress(steps = ["Fetching DEX data", "Computing spread", "Gas estimation", "Sending arbitrage tx"]) {
-    return new Promise((resolve) => {
-      const overlay = document.createElement('div');
-      overlay.className = 'progress-overlay';
-      overlay.innerHTML = `
-        <div class="progress-modal">
-          <div class="label-sm" style="margin-bottom: 18px; color:#3B82F6;">⚡ ARBITRAGE ROUTINE</div>
-          <div id="progressStepsList"></div>
-          <div class="progress-bar-bg"><div class="progress-fill" id="progressFillBar"></div></div>
-          <div class="value-mono" style="font-size: 0.7rem; margin-top: 12px;" id="statusMsg">initializing...</div>
-        </div>
-      `;
-      document.body.appendChild(overlay);
-      const stepsContainer = overlay.querySelector('#progressStepsList');
-      steps.forEach(step => {
-        const stepDiv = document.createElement('div');
-        stepDiv.className = 'step';
-        stepDiv.innerHTML = `<i data-lucide="circle" style="width: 14px;"></i><span>${step}</span>`;
-        stepsContainer.appendChild(stepDiv);
-      });
-      lucide.createIcons({ root: stepsContainer });
-      const stepItems = stepsContainer.querySelectorAll('.step');
-      let idx = 0;
-      const fillBar = overlay.querySelector('#progressFillBar');
-      const msgSpan = overlay.querySelector('#statusMsg');
-      function advance() {
-        if (idx < stepItems.length) {
-          stepItems.forEach((item, i) => { item.classList.remove('step-active'); if (i < idx) item.classList.add('step-completed'); });
-          stepItems[idx].classList.add('step-active');
-          const icon = stepItems[idx].querySelector('i');
-          if (icon) icon.setAttribute('data-lucide', 'loader-2');
-          lucide.createIcons({ root: stepItems[idx] });
-          msgSpan.innerText = steps[idx];
-          fillBar.style.width = `${((idx+1)/steps.length)*100}%`;
-          idx++;
-          setTimeout(advance, 700);
-        } else {
-          fillBar.style.width = '100%';
-          msgSpan.innerText = '✓ execution finalized';
-          setTimeout(() => { overlay.remove(); resolve(); }, 500);
-        }
-      }
-      advance();
-    });
-  }
-
-  async function triggerArbitrage() {
-    if (isRunning) { showToast("Agent already busy", false); return; }
-    isRunning = true;
-    const btn = document.getElementById('manualRunBtn');
-    btn.disabled = true;
-    const originalHTML = btn.innerHTML;
-    btn.innerHTML = '<i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i> scanning';
-    lucide.createIcons();
-    try {
-      await showProgress(["Scanning pools", "Price divergence check", "Execution simulation", "Broadcast to Arc"]);
-      const result = await fetchWithRetry(`${API_BASE}?action=run`, { method: 'POST' });
-      showToast(`Arbitrage executed · ${result.profit_percent?.toFixed(2)}% profit`);
-      await Promise.all([fetchWalletData(), fetchLastOpportunity(), fetchHistory(), fetchAgentStatus(), fetchScanner()]);
-    } catch (err) {
-      showToast(`Error: ${err.message}`, true);
-      setErrorBanner(err.message);
-    } finally {
-      isRunning = false;
-      btn.disabled = false;
-      btn.innerHTML = originalHTML;
-      lucide.createIcons();
     }
-  }
 
-  function copyAddress() { navigator.clipboard.writeText(currentFullAddr); showToast("address copied ✓"); }
-  async function fullRefresh() { await Promise.all([fetchWalletData(), fetchAgentStatus(), fetchLastOpportunity(), fetchHistory(), fetchScanner(), fetchAddress()]); showToast("data refreshed"); }
+    // Load coins dropdown
+    async function loadCoinList() {
+      try { const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false'); const data = await res.json(); coinListData = data.map(c => ({ id: c.id, name: c.name, symbol: c.symbol.toUpperCase(), thumb: c.image })); } catch(e) { coinListData = [{ id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' }, { id: 'ethereum', name: 'Ethereum', symbol: 'ETH' }]; }
+      renderCoinDropdown('');
+    }
+    function renderCoinDropdown(search = '') { const filtered = coinListData.filter(c => c.name.toLowerCase().includes(search) || c.symbol.toLowerCase().includes(search)); document.getElementById('coinListContainer').innerHTML = filtered.map(c => `<div class="token-option" data-id="${c.id}" data-name="${c.name}" data-symbol="${c.symbol}"><img src="${c.thumb || 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg'}" class="w-5 h-5"><span>${c.name}</span><span class="text-xs text-gray-500">${c.symbol}</span></div>`).join(''); document.querySelectorAll('#coinListContainer .token-option').forEach(opt => { opt.addEventListener('click', () => { const id = opt.getAttribute('data-id'); currentSymbol = id; fetchChartData(currentSymbol, currentRange); document.getElementById('allCoinsDropdown').classList.remove('show'); }); }); }
+    document.getElementById('allCoinsSelectorBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('allCoinsDropdown').classList.toggle('show'); renderCoinDropdown(document.getElementById('coinSearchInput').value); });
+    document.getElementById('coinSearchInput').addEventListener('input', (e) => renderCoinDropdown(e.target.value));
+    document.addEventListener('click', () => document.getElementById('allCoinsDropdown')?.classList.remove('show'));
 
-  function initMobileNav() {
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const view = item.getAttribute('data-view');
-        if (view === 'wallet') document.querySelector('.data-card')?.scrollIntoView({behavior: 'smooth', block: 'start'});
-        if (view === 'scanner') document.getElementById('profitPercentDisplay')?.scrollIntoView({behavior: 'smooth', block: 'start'});
-        if (view === 'history') document.getElementById('historyList')?.scrollIntoView({behavior: 'smooth', block: 'start'});
-        if (view === 'status') document.querySelector('.data-card:has(#lastRunTime)')?.scrollIntoView({behavior: 'smooth', block: 'start'});
-        navItems.forEach(n => n.classList.remove('active'));
-        item.classList.add('active');
-      });
-    });
-  }
+    // Quick actions
+    document.getElementById('quickBuyBtn').onclick = () => { if(mockBalance>100) { mockBalance -= 100; updateMockUI(); addExecLog(`Quick BUY $100 of ${currentSymbol}`); } };
+    document.getElementById('quickSellBtn').onclick = () => { if(mockBalance>100) { mockBalance -= 100; updateMockUI(); addExecLog(`Quick SELL $100 of ${currentSymbol}`); } };
+    document.getElementById('quickHoldBtn').onclick = () => { addExecLog(`HOLD recommendation confirmed — no action taken.`); };
+    function updateMockUI() { document.getElementById('mockBalance').innerText = `$${mockBalance.toFixed(2)}`; document.getElementById('fromBalance').innerText = mockBalance.toFixed(2); }
+    function addExecLog(msg, isErr = false) { const execToast = document.getElementById('executionToast'); const div = document.createElement('div'); div.className = isErr ? 'text-red-500' : 'text-green-700'; div.innerHTML = `⚡ ${msg}`; execToast.prepend(div); if(execToast.children.length > 5) execToast.removeChild(execToast.lastChild); }
 
-  document.getElementById('manualRunBtn').addEventListener('click', triggerArbitrage);
-  document.getElementById('refreshBalanceBtn').addEventListener('click', fetchWalletData);
-  document.getElementById('copyAddrBtn').addEventListener('click', copyAddress);
-  document.getElementById('loadMoreHistory').addEventListener('click', () => renderHistory(fullHistory));
-  initMobileNav();
-  fullRefresh();
-  setInterval(() => { fetchWalletData(); fetchLastOpportunity(); fetchAgentStatus(); }, 30000);
-  setInterval(() => fetchScanner(), 12000);
-  setInterval(() => fetchHistory(), 45000);
-  fetchAddress();
-  lucide.createIcons();
-  setupGraphTooltip();
-
-  const styleSpin = document.createElement('style');
-  styleSpin.innerText = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .action-btn i[data-lucide="loader-2"] { animation: spin 1s linear infinite; }`;
-  document.head.appendChild(styleSpin);
-  if ('vibrate' in navigator) {
-    const orig = triggerArbitrage;
-    window.triggerArbitrage = async () => { await orig(); if (!isRunning) navigator.vibrate(50); };
-    document.getElementById('manualRunBtn').onclick = window.triggerArbitrage;
-  }
+    // Toggle display mode (Price/Market Cap)
+    document.getElementById('displayModeToggleBtn').addEventListener('click', () => { displayMode = displayMode === 'price' ? 'marketCap' : 'price'; const modeText = document.getElementById('toggleModeText'); modeText.innerText = displayMode === 'price' ? 'Price Mode' : 'Market Cap Mode'; renderChart(); });
+    document.getElementById('chartBTCBtn').onclick = () => { currentSymbol='bitcoin'; fetchChartData(currentSymbol, currentRange); };
+    document.getElementById('chartETHBtn').onclick = () => { currentSymbol='ethereum'; fetchChartData(currentSymbol, currentRange); };
+    document.querySelectorAll('.timeframe-btn').forEach(btn => { btn.addEventListener('click', async () => { document.querySelectorAll('.timeframe-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentRange = btn.getAttribute('data-range'); await fetchChartData(currentSymbol, currentRange); }); });
+    document.querySelectorAll('.chart-type-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.chart-type-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentChartType = btn.getAttribute('data-chart'); if(currentPrices.length) renderChart(); }); });
+    document.getElementById('executeBuyBtn').onclick = () => { if(mockBalance>100) { mockBalance -= 100; updateMockUI(); addExecLog(`BUY order $100`); } };
+    document.getElementById('executeSellBtn').onclick = () => { if(mockBalance>100) { mockBalance -= 100; updateMockUI(); addExecLog(`SELL order $100`); } };
+    document.getElementById('reasonTradeBtn').onclick = () => { document.getElementById('modalReasonContent').innerHTML = finalDecision.fullReason; document.getElementById('reasonModal').style.display = 'flex'; };
+    document.getElementById('closeModalBtn').onclick = () => document.getElementById('reasonModal').style.display = 'none';
+    document.getElementById('modalOkBtn').onclick = () => document.getElementById('reasonModal').style.display = 'none';
+    document.getElementById('walletConnectBtn').onclick = () => { const connected = !window._wallet; window._wallet = !window._wallet; document.getElementById('walletBtnText').innerHTML = window._wallet ? ' Connected' : 'Connect Wallet'; document.getElementById('walletAddressDisplay').innerHTML = window._wallet ? '<span class="wallet-connected-badge">0x3F3...A9E</span>' : 'No wallet connected'; addExecLog(window._wallet ? 'Wallet connected' : 'Disconnected'); };
+    // Basic swap stubs
+    document.getElementById('executeSwapBtn').onclick = () => { if(mockBalance>100) { mockBalance -= 100; updateMockUI(); addExecLog('Swap executed (mock)'); } };
+    document.getElementById('executeGasSwapBtn').onclick = () => { if(mockBalance>10) { mockBalance -= 10; updateMockUI(); addExecLog('Gas swap sent'); } };
+    document.getElementById('exchangeModeBtn').onclick = () => { document.getElementById('exchangeModePanel').classList.remove('hidden'); document.getElementById('gasModePanel').classList.add('hidden'); };
+    document.getElementById('gasModeBtn').onclick = () => { document.getElementById('gasModePanel').classList.remove('hidden'); document.getElementById('exchangeModePanel').classList.add('hidden'); };
+    // XROGA chat
+    let chatHistory = []; const chatDiv = document.getElementById('chatHistoryList'), clearHist = document.getElementById('clearHistoryBtn');
+    function addChat(role, text) { chatHistory.unshift({ role, text }); if(chatHistory.length>50) chatHistory.pop(); chatDiv.innerHTML = chatHistory.slice(0,20).map(m=>`<div class="text-xs bg-gray-100 dark:bg-gray-800/40 p-2 rounded-lg"><span class="text-cyan-600 font-medium">${m.role==='user'?'You':'XROGA'}:</span> ${m.text}</div>`).join(''); lucide.createIcons(); }
+    clearHist.addEventListener('click', () => { chatHistory = []; chatDiv.innerHTML = '<div class="text-gray-500">Cleared</div>'; });
+    async function processCommand(cmd) { let l = cmd.toLowerCase(); if(l.startsWith('/buy')) { let amt = parseFloat(cmd.split(' ')[1]) || 100; if(amt>mockBalance) return "Insufficient"; mockBalance -= amt; updateMockUI(); return `Bought $${amt.toFixed(2)}`; } if(l === '/balance') return `Balance: $${mockBalance.toFixed(2)} USDC`; if(l === '/signal') return `AI Signal: ${finalDecision.signal}`; return "Commands: /balance, /signal, /buy"; }
+    const chatInput = document.getElementById('xroga-chat-input'), chatSend = document.getElementById('xroga-send-btn');
+    const handleChat = async () => { let msg = chatInput.value.trim(); if(!msg) return; addChat('user', msg); let reply = await processCommand(msg); addChat('assistant', reply); chatInput.value = ''; addExecLog(`XROGA: ${reply}`); };
+    chatSend.addEventListener('click', handleChat); chatInput.addEventListener('keypress', e => { if(e.key === 'Enter') handleChat(); });
+    const xRoot = document.getElementById('xrogaRoot'), reveal = document.getElementById('xrogaRevealBtn'), hideChat = document.getElementById('xrogaHideBtn');
+    hideChat.addEventListener('click', () => xRoot.classList.add('chatbar-hidden')); reveal.addEventListener('click', () => xRoot.classList.remove('chatbar-hidden'));
+    document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('-translate-x-full'));
+    document.getElementById('closeSidebar').addEventListener('click', () => document.getElementById('sidebar').classList.add('-translate-x-full'));
+    function setTheme(isDark) { if(isDark) document.body.classList.add('dark'); else document.body.classList.remove('dark'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); lucide.createIcons(); }
+    const savedTheme = localStorage.getItem('theme'); setTheme(savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches));
+    document.getElementById('themeToggle').addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+    loadCoinList(); updateMockUI(); fetchChartData('bitcoin', 30); setInterval(() => fetchChartData(currentSymbol, currentRange), 60000);
+    addChat('assistant', '👋 XROGA ready. Smart Order buttons & Price/Market toggle active.');
+  })();
 </script>
 </body>
 </html>
